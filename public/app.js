@@ -1959,17 +1959,36 @@
      TEMPLATE LEMBAR A4 #4: LAMPIRAN REKAP DAFTAR BNBA PENCAIRAN
      ======================================================================== */
   function renderSheetBnbaList(vendor, units, meta, fullLokasiStr) {
+    const provClean = String(vendor.provinsi || 'PROVINSI NUSA TENGGARA TIMUR').replace(/^PROVINSI\s+/i, '');
+    const kabClean = String(vendor.kabupaten || 'KABUPATEN NAGEKEO').replace(/^KABUPATEN\s+/i, '');
+
     return `
       <div class="print-sheet font-arial">
-        <div class="bnpb-doc-header">
-          <img src="/assets/logo-bnpb.png" class="logo-bnpb" alt="BNPB" />
-          <div class="bnpb-doc-header-center">
-            <h2>BADAN NASIONAL PENANGGULANGAN BENCANA</h2>
-            <h3>${escapeHtml(toTitleCase(vendor.kabupaten))}</h3>
-            <h3>${escapeHtml(toTitleCase(vendor.provinsi))}</h3>
-          </div>
-          <img src="${escapeHtml(vendor.logoUrl || '/assets/logo-emka.svg')}" class="logo-vendor-right" alt="Vendor" />
+        <!-- QUICK TOOLBAR UPLOAD LOGO PEMDA (NO-PRINT) -->
+        <div class="no-print" style="margin-bottom:8px;display:flex;justify-content:flex-end;gap:8px;">
+          <button class="btn btn-sm btn-outline" style="background:#fff;border-color:#2563eb;color:#2563eb;font-weight:600;display:inline-flex;align-items:center;gap:6px;box-shadow:0 1px 2px rgba(0,0,0,0.05);" onclick="window.app.openLogoHeaderModal('${escapeHtml(vendor.id)}')">
+            🏛️ Upload / Ganti Logo Pemda (Provinsi &amp; Kabupaten)
+          </button>
         </div>
+
+        <!-- HEADER 4 LOGO SESUAI GAMBAR 2 -->
+        <div class="lap-header-4logo">
+          <div class="lap-logo-pair">
+            <div class="lap-logo-box"><img src="/assets/logo-bnpb.png" alt="Logo BNPB" /></div>
+            <div class="lap-logo-box"><img src="${escapeHtml(vendor.logoProvinsiUrl || '/assets/logo-provinsi.svg')}" alt="Logo Provinsi" /></div>
+          </div>
+          <div class="lap-header-center">
+            <div class="h-bnpb">BADAN NASIONAL PENANGGULANGAN BENCANA (BNPB)</div>
+            <div class="h-pemda">PEMERINTAH PROVINSI ${escapeHtml(provClean)} — PEMERINTAH<br/>KABUPATEN ${escapeHtml(kabClean)}</div>
+            <div class="h-vendor">PELAKSANA: ${escapeHtml(vendor.nama)}</div>
+            <div class="h-addr">Alamat: ${escapeHtml(vendor.alamat)}, Telp. ${escapeHtml(vendor.telepon || '0812 - 3982 - 0000')}</div>
+          </div>
+          <div class="lap-logo-pair">
+            <div class="lap-logo-box"><img src="${escapeHtml(vendor.logoKabupatenUrl || '/assets/logo-kabupaten.svg')}" alt="Logo Kabupaten" /></div>
+            <div class="lap-logo-box"><img src="${escapeHtml(vendor.logoUrl || '/assets/logo-emka-real_0.png')}" alt="Logo Pelaksana" /></div>
+          </div>
+        </div>
+        <div class="lap-double-rule"></div>
 
         <div style="text-align:center;margin:10px 0 14px;">
           <div style="font-size:12pt;font-weight:bold;text-transform:uppercase;">LAMPIRAN DAFTAR PENERIMA HUNIAN SEMENTARA (BNBA)</div>
@@ -1980,25 +1999,23 @@
         <table class="spp-table" style="font-size:9pt;">
           <thead>
             <tr style="background:#f1f5f9;">
-              <th style="width:32px;">NO</th>
-              <th style="width:52px;">NO BNBA</th>
+              <th style="width:34px;">NO</th>
+              <th style="width:65px;">NO BNBA</th>
               <th>NAMA LENGKAP PENERIMA</th>
-              <th style="width:125px;">NIK / NOMOR KK</th>
-              <th style="width:50px;">NO. RT</th>
+              <th style="width:60px;">NO. RT</th>
               <th>DESA / KELURAHAN</th>
               <th>KECAMATAN</th>
-              <th style="width:65px;">PROGRES</th>
+              <th style="width:75px;">PROGRES</th>
             </tr>
           </thead>
           <tbody>
             ${units.length === 0 ? `
-              <tr><td colspan="8" style="text-align:center;padding:18px;">Belum ada unit yang dipilih.</td></tr>
+              <tr><td colspan="7" style="text-align:center;padding:18px;">Belum ada unit yang dipilih.</td></tr>
             ` : units.map((u, idx) => `
               <tr>
                 <td style="text-align:center;">${idx + 1}</td>
                 <td style="text-align:center;">${u.noBnba}</td>
                 <td><strong>${escapeHtml(u.nama)}</strong></td>
-                <td style="text-align:center;">${escapeHtml(u.nik || u.noKk || '-')}</td>
                 <td style="text-align:center;">${escapeHtml(u.rt)}</td>
                 <td>${escapeHtml(u.desa)}</td>
                 <td>${escapeHtml(u.kecamatan)}</td>
