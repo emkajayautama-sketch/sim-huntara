@@ -2589,12 +2589,12 @@
 
     modalRoot.innerHTML = `
       <div class="modal-backdrop" onclick="if(event.target===this) window.app.closeModal()">
-        <div class="modal-content" style="max-width:1050px;width:95%;">
+        <div class="modal-content" style="max-width:1080px;width:96%;">
           <div class="modal-header">
             <div>
               <h3 style="margin:0;">⚙️ Sesuaikan Item Pekerjaan &amp; Bobot RAB (Penawaran &amp; SPK)</h3>
               <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0 0;">
-                Ubah uraian pekerjaan, bobot %, capaian 0%/50%/100%, serta keterangan agar persis sesuai Penawaran atau SPK Kontrak pekerjaan Anda.
+                Ketik angka <strong>Bobot (%)</strong>, maka kolom <strong>0%, 50%, dan 100%</strong> otomatis terisi sendiri. Anda juga bebas mengubah angka kapan saja.
               </p>
             </div>
             <button class="btn btn-sm btn-danger" onclick="window.app.closeModal()">✕</button>
@@ -2605,12 +2605,15 @@
               <div style="font-size:13px;font-weight:700;color:#1e3a5f;">
                 Daftar Item Pekerjaan (${_rabModalItems.length} Baris):
               </div>
-              <div style="display:flex;gap:8px;">
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-sm btn-primary" onclick="window.app.autoCalculateAllStages()" title="Otomatis isi 0%=0, 100%=Bobot, dan 50%=Pas 50%">
+                  ⚡ Hitung Otomatis 0%, 50%, 100% Sesuai Bobot
+                </button>
                 <button class="btn btn-sm btn-outline" onclick="window.app.resetRabModalToDefault()">
-                  ↺ Reset ke Standar 8 Item
+                  ↺ Reset 8 Item Default
                 </button>
                 <button class="btn btn-sm btn-success" onclick="window.app.addRabModalRow()">
-                  ➕ Tambah Baris Pekerjaan
+                  ➕ Tambah Baris
                 </button>
               </div>
             </div>
@@ -2620,11 +2623,11 @@
                 <thead>
                   <tr style="background:#1e3a5f;color:#fff;">
                     <th style="width:35px;text-align:center;">No</th>
-                    <th style="min-width:240px;text-align:left;">Uraian Pekerjaan</th>
-                    <th style="width:85px;text-align:center;">Bobot (%)</th>
-                    <th style="width:75px;text-align:center;">0%</th>
-                    <th style="width:75px;text-align:center;">50%</th>
-                    <th style="width:75px;text-align:center;">100%</th>
+                    <th style="min-width:240px;text-align:left;">Uraian Pekerjaan (SPK)</th>
+                    <th style="width:105px;text-align:center;">Bobot (%)</th>
+                    <th style="width:80px;text-align:center;">0%<br/><span style="font-size:10px;font-weight:normal;">(Otomatis 0)</span></th>
+                    <th style="width:115px;text-align:center;">50%<br/><span style="font-size:10px;font-weight:normal;">(Tahap 1)</span></th>
+                    <th style="width:95px;text-align:center;">100%<br/><span style="font-size:10px;font-weight:normal;">(= Bobot)</span></th>
                     <th style="min-width:160px;text-align:left;">Keterangan</th>
                     <th style="width:40px;text-align:center;">Aksi</th>
                   </tr>
@@ -2637,16 +2640,21 @@
                         <input type="text" class="form-control" style="font-size:12px;padding:5px 8px;" value="${escapeHtml(it.uraian || '')}" oninput="window.app.updateRabModalField(${idx}, 'uraian', this.value)" placeholder="Nama item pekerjaan..." />
                       </td>
                       <td>
-                        <input type="number" step="0.01" class="form-control" style="font-size:12px;padding:5px 6px;text-align:right;" value="${it.bobot !== undefined ? it.bobot : 0}" oninput="window.app.updateRabModalField(${idx}, 'bobot', Number(this.value))" />
+                        <input type="number" step="0.01" id="rab_bobot_${idx}" class="form-control" style="font-size:12px;padding:5px 6px;text-align:right;font-weight:700;color:#0f172a;background:#fffbeb;" value="${it.bobot !== undefined ? it.bobot : 0}" oninput="window.app.updateRabModalField(${idx}, 'bobot', this.value)" />
                       </td>
                       <td>
-                        <input type="number" step="0.01" class="form-control" style="font-size:12px;padding:5px 6px;text-align:right;" value="${it.p0 !== undefined ? it.p0 : 0}" oninput="window.app.updateRabModalField(${idx}, 'p0', Number(this.value))" />
+                        <input type="number" step="0.01" id="rab_p0_${idx}" class="form-control" style="font-size:12px;padding:5px 6px;text-align:right;background:#f8fafc;" value="${it.p0 !== undefined ? it.p0 : 0}" oninput="window.app.updateRabModalField(${idx}, 'p0', this.value)" />
                       </td>
                       <td>
-                        <input type="number" step="0.01" class="form-control" style="font-size:12px;padding:5px 6px;text-align:right;" value="${it.p50 !== undefined ? it.p50 : 0}" oninput="window.app.updateRabModalField(${idx}, 'p50', Number(this.value))" />
+                        <input type="number" step="0.01" id="rab_p50_${idx}" class="form-control" style="font-size:12px;padding:5px 6px;text-align:right;" value="${it.p50 !== undefined ? it.p50 : 0}" oninput="window.app.updateRabModalField(${idx}, 'p50', this.value)" />
+                        <div style="display:flex;gap:3px;justify-content:center;margin-top:2px;">
+                          <span class="badge" style="cursor:pointer;font-size:9px;padding:1px 3px;background:#e0f2fe;color:#0369a1;" onclick="window.app.quickSetStage50(${idx}, 'FULL')" title="Selesai penuh di 50% (= Bobot)">Penuh</span>
+                          <span class="badge" style="cursor:pointer;font-size:9px;padding:1px 3px;background:#fef3c7;color:#92400e;" onclick="window.app.quickSetStage50(${idx}, 'BALANCE')" title="Sisa agar total pas 50%">Auto</span>
+                          <span class="badge" style="cursor:pointer;font-size:9px;padding:1px 3px;background:#f1f5f9;color:#64748b;" onclick="window.app.quickSetStage50(${idx}, 'ZERO')" title="Belum di 50% (0%)">0%</span>
+                        </div>
                       </td>
                       <td>
-                        <input type="number" step="0.01" class="form-control" style="font-size:12px;padding:5px 6px;text-align:right;" value="${it.p100 !== undefined ? it.p100 : 0}" oninput="window.app.updateRabModalField(${idx}, 'p100', Number(this.value))" />
+                        <input type="number" step="0.01" id="rab_p100_${idx}" class="form-control" style="font-size:12px;padding:5px 6px;text-align:right;font-weight:700;background:#f0fdf4;color:#166534;" value="${it.p100 !== undefined ? it.p100 : 0}" oninput="window.app.updateRabModalField(${idx}, 'p100', this.value)" />
                       </td>
                       <td>
                         <input type="text" class="form-control" style="font-size:12px;padding:5px 8px;" value="${escapeHtml(it.keterangan || '')}" oninput="window.app.updateRabModalField(${idx}, 'keterangan', this.value)" placeholder="Catatan/keterangan..." />
@@ -2660,11 +2668,11 @@
                 <tfoot>
                   <tr style="background:#f1f5f9;font-weight:bold;font-size:12px;">
                     <td colspan="2" style="text-align:center;">TOTAL PROGRES FISIK</td>
-                    <td style="text-align:right;color:${is100 ? '#16a34a' : '#dc2626'};font-weight:800;">${totalBobot.toFixed(2).replace('.', ',')}%</td>
-                    <td style="text-align:right;">${totalP0.toFixed(2).replace('.', ',')}%</td>
-                    <td style="text-align:right;">${totalP50.toFixed(2).replace('.', ',')}%</td>
-                    <td style="text-align:right;">${totalP100.toFixed(2).replace('.', ',')}%</td>
-                    <td colspan="2">
+                    <td id="rabTotalBobotCell" style="text-align:right;color:${is100 ? '#16a34a' : '#dc2626'};font-weight:800;">${totalBobot.toFixed(2).replace('.', ',')}%</td>
+                    <td id="rabTotal0Cell" style="text-align:right;">${totalP0.toFixed(2).replace('.', ',')}%</td>
+                    <td id="rabTotal50Cell" style="text-align:right;color:${Math.abs(totalP50 - 50) < 0.01 ? '#16a34a' : '#b45309'};font-weight:800;">${totalP50.toFixed(2).replace('.', ',')}%</td>
+                    <td id="rabTotal100Cell" style="text-align:right;color:${is100 ? '#16a34a' : '#dc2626'};font-weight:800;">${totalP100.toFixed(2).replace('.', ',')}%</td>
+                    <td colspan="2" id="rabBadgeStatus">
                       ${is100
                         ? `<span class="badge badge-100">✅ Bobot Pas 100%</span>`
                         : `<span class="badge badge-0" style="color:#b91c1c;">⚠️ Total Bobot ${totalBobot.toFixed(2).replace('.', ',')}% (Harus 100%)</span>`
@@ -2676,18 +2684,22 @@
             </div>
 
             <div style="margin-top:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;font-size:12px;color:#475569;">
-              💡 <strong>Petunjuk Penyesuaian dengan Penawaran &amp; SPK:</strong>
+              💡 <strong>Otomatisasi Cerdas:</strong>
               <ul style="margin:4px 0 0 16px;padding:0;line-height:1.55;">
-                <li>Ketik nama item pekerjaan sesuai daftar item yang tercantum di dokumen Penawaran &amp; SPK Kontrak.</li>
-                <li>Isi kolom <strong>Bobot (%)</strong> sesuai persentase kontrak. Sistem otomatis menjumlahkan di baris paling bawah.</li>
-                <li>Kolom <strong>0%</strong>, <strong>50%</strong>, dan <strong>100%</strong> menunjukkan akumulasi capaian progres fisik di setiap tahapan pencairan.</li>
-                <li>Setelah klik <strong>Simpan</strong>, tabel di <strong>Halaman 1 Laporan Progres Fisik</strong> akan otomatis terupdate seketika.</li>
+                <li>Cukup ketik angka di kolom <strong>Bobot (%)</strong>:
+                  <ul>
+                    <li>Kolom <strong>0%</strong> otomatis diset <code>0</code>.</li>
+                    <li>Kolom <strong>100%</strong> otomatis persis sama dengan <strong>Bobot</strong>.</li>
+                    <li>Kolom <strong>50%</strong> otomatis menghitung item struktur penuh (Pondasi/Rangka) dan menggenapkan sisa ke Dinding sehingga pas 50,00%.</li>
+                  </ul>
+                </li>
+                <li>Klik tombol <strong>⚡ Hitung Otomatis 0%, 50%, 100% Sesuai Bobot</strong> di kanan atas kapan saja untuk menyinkronkan seluruh baris sekaligus dalam 1 detik.</li>
               </ul>
             </div>
 
           </div>
           <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-            <div>
+            <div id="rabFooterStatus">
               ${is100
                 ? `<span style="color:#16a34a;font-weight:700;font-size:13px;">✓ Total Bobot Valid (100,00%)</span>`
                 : `<span style="color:#dc2626;font-weight:700;font-size:13px;">⚠️ Total Bobot: ${totalBobot.toFixed(2).replace('.', ',')}% (disarankan genap 100%)</span>`
@@ -2705,9 +2717,133 @@
     `;
   }
 
-  function updateRabModalField(idx, field, val) {
-    if (_rabModalItems[idx]) {
-      _rabModalItems[idx][field] = val;
+  function updateRabModalField(idx, field, rawVal) {
+    const it = _rabModalItems[idx];
+    if (!it) return;
+
+    if (field === 'uraian' || field === 'keterangan') {
+      it[field] = rawVal;
+      return;
+    }
+
+    const num = Number(String(rawVal).replace(',', '.')) || 0;
+    it[field] = num;
+
+    // OTOMATISASI KETIKA MENGETIK BOBOT:
+    if (field === 'bobot') {
+      // 1. Kolom 0% otomatis 0
+      it.p0 = 0;
+      const inp0 = document.getElementById(`rab_p0_${idx}`);
+      if (inp0) inp0.value = 0;
+
+      // 2. Kolom 100% otomatis sama dengan Bobot
+      it.p100 = num;
+      const inp100 = document.getElementById(`rab_p100_${idx}`);
+      if (inp100) inp100.value = num;
+
+      // 3. Kolom 50%:
+      if (idx < 3) {
+        // Item persiapan, pondasi, struktur rangka (idx 0, 1, 2) selesai penuh di tahap 50%
+        it.p50 = num;
+        const inp50 = document.getElementById(`rab_p50_${idx}`);
+        if (inp50) inp50.value = num;
+      } else if (idx >= 4) {
+        // Item atap, pintu, MEP, finishing (idx 4..dst) belum di tahap 50%
+        it.p50 = 0;
+        const inp50 = document.getElementById(`rab_p50_${idx}`);
+        if (inp50) inp50.value = 0;
+      } else if (idx === 3) {
+        // Item dinding/partisi auto sisa agar tahap 50% genap 50.00%
+        const other50 = _rabModalItems.reduce((acc, x, i) => i === 3 ? acc : acc + (Number(x.p50) || 0), 0);
+        const sisa = Math.max(0, Math.round((50 - other50) * 100) / 100);
+        it.p50 = sisa;
+        const inp50 = document.getElementById(`rab_p50_${idx}`);
+        if (inp50) inp50.value = sisa;
+      }
+    }
+
+    refreshRabModalTotals();
+  }
+
+  function quickSetStage50(idx, mode) {
+    const it = _rabModalItems[idx];
+    if (!it) return;
+    const numBobot = Number(it.bobot) || 0;
+    if (mode === 'FULL') {
+      it.p50 = numBobot;
+    } else if (mode === 'ZERO') {
+      it.p50 = 0;
+    } else if (mode === 'BALANCE') {
+      const otherSum = _rabModalItems.reduce((acc, x, i) => i === idx ? acc : acc + (Number(x.p50) || 0), 0);
+      const sisa = Math.max(0, Math.round((50 - otherSum) * 100) / 100);
+      it.p50 = sisa;
+    }
+    const inp50 = document.getElementById(`rab_p50_${idx}`);
+    if (inp50) inp50.value = it.p50;
+    refreshRabModalTotals();
+  }
+
+  function autoCalculateAllStages() {
+    let sumAwal = 0;
+    _rabModalItems.forEach((it, idx) => {
+      it.p0 = 0;
+      it.p100 = Number(it.bobot) || 0;
+      if (idx < 3) {
+        it.p50 = Number(it.bobot) || 0;
+        sumAwal += it.p50;
+      } else {
+        it.p50 = 0;
+      }
+    });
+
+    if (_rabModalItems.length > 3) {
+      const sisa50 = Math.max(0, Math.round((50 - sumAwal) * 100) / 100);
+      _rabModalItems[3].p50 = sisa50;
+    }
+
+    renderRabModalContent();
+  }
+
+  function refreshRabModalTotals() {
+    const totalBobot = _rabModalItems.reduce((acc, it) => acc + (Number(it.bobot) || 0), 0);
+    const totalP0 = _rabModalItems.reduce((acc, it) => acc + (Number(it.p0) || 0), 0);
+    const totalP50 = _rabModalItems.reduce((acc, it) => acc + (Number(it.p50) || 0), 0);
+    const totalP100 = _rabModalItems.reduce((acc, it) => acc + (Number(it.p100) || 0), 0);
+    const is100 = Math.abs(totalBobot - 100) < 0.01;
+    const is50 = Math.abs(totalP50 - 50) < 0.01;
+
+    const elTotalBobot = document.getElementById('rabTotalBobotCell');
+    if (elTotalBobot) {
+      elTotalBobot.textContent = totalBobot.toFixed(2).replace('.', ',') + '%';
+      elTotalBobot.style.color = is100 ? '#16a34a' : '#dc2626';
+    }
+    const elTotal0 = document.getElementById('rabTotal0Cell');
+    if (elTotal0) elTotal0.textContent = totalP0.toFixed(2).replace('.', ',') + '%';
+
+    const elTotal50 = document.getElementById('rabTotal50Cell');
+    if (elTotal50) {
+      elTotal50.textContent = totalP50.toFixed(2).replace('.', ',') + '%';
+      elTotal50.style.color = is50 ? '#16a34a' : '#b45309';
+    }
+
+    const elTotal100 = document.getElementById('rabTotal100Cell');
+    if (elTotal100) {
+      elTotal100.textContent = totalP100.toFixed(2).replace('.', ',') + '%';
+      elTotal100.style.color = is100 ? '#16a34a' : '#dc2626';
+    }
+
+    const elBadge = document.getElementById('rabBadgeStatus');
+    if (elBadge) {
+      elBadge.innerHTML = is100
+        ? `<span class="badge badge-100">✅ Bobot Pas 100%</span>`
+        : `<span class="badge badge-0" style="color:#b91c1c;">⚠️ Total Bobot ${totalBobot.toFixed(2).replace('.', ',')}% (Harus 100%)</span>`;
+    }
+
+    const elFooterStatus = document.getElementById('rabFooterStatus');
+    if (elFooterStatus) {
+      elFooterStatus.innerHTML = is100
+        ? `<span style="color:#16a34a;font-weight:700;font-size:13px;">✓ Total Bobot Valid (100,00%)</span>`
+        : `<span style="color:#dc2626;font-weight:700;font-size:13px;">⚠️ Total Bobot: ${totalBobot.toFixed(2).replace('.', ',')}% (disarankan genap 100%)</span>`;
     }
   }
 
@@ -4034,6 +4170,8 @@
     updateSetting,
     openRabModal,
     updateRabModalField,
+    quickSetStage50,
+    autoCalculateAllStages,
     addRabModalRow,
     deleteRabModalRow,
     resetRabModalToDefault,
