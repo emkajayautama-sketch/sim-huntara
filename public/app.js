@@ -2030,18 +2030,24 @@
 
   /* ========================================================================
      TEMPLATE LEMBAR A4 #4: LAMPIRAN REKAP DAFTAR BNBA PENCAIRAN
-     PAGINASI OTOMATIS: 16 UNIT PER HALAMAN (PAS DENGAN TTD & KOP RESMI)
+     KAPASITAS: HINGGA 25 UNIT MUAT LENGKAP DALAM 1 HALAMAN BESERTA TANDA TANGAN
      ======================================================================== */
   function renderSheetBnbaList(vendor, units, meta, fullLokasiStr) {
     const provClean = String(vendor.provinsi || 'PROVINSI NUSA TENGGARA TIMUR').replace(/^PROVINSI\s+/i, '');
     const kabClean = String(vendor.kabupaten || 'KABUPATEN NAGEKEO').replace(/^KABUPATEN\s+/i, '');
-    const maxUnitsPerPage = 16;
     const totalUnitCount = units ? units.length : 0;
 
     if (!units || units.length === 0) {
       return renderSingleBnbaSheet(vendor, [], meta, fullLokasiStr, provClean, kabClean, 1, 1, 0, 0, true);
     }
 
+    // Hingga 25 unit: muat SEMUA DALAM 1 LEMBAR PENUH (tidak dipotong / tidak ada halaman sambungan kosong)
+    if (totalUnitCount <= 25) {
+      return renderSingleBnbaSheet(vendor, units, meta, fullLokasiStr, provClean, kabClean, 1, 1, 0, totalUnitCount, true);
+    }
+
+    // Jika lebih dari 25 unit (misal 30, 40 unit), bagi per 25 unit per lembar
+    const maxUnitsPerPage = 25;
     const chunks = [];
     for (let i = 0; i < units.length; i += maxUnitsPerPage) {
       chunks.push({
