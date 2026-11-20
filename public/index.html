@@ -57,6 +57,21 @@
         </div>
         <span class="nav-badge ready" id="badgeReadyCount">0</span>
       </button>
+      <div class="nav-sub-menu" id="batchSubMenuNav" style="display:none;">
+        <button type="button" class="nav-sub-item active" data-sub="vendor" onclick="window.app.switchBatchSubTab('vendor')">
+          <span>🏢</span> <span>1. Perusahaan &amp; Surat</span>
+        </button>
+        <button type="button" class="nav-sub-item" data-sub="units" onclick="window.app.switchBatchSubTab('units')">
+          <span>👥</span> <span>2. Pilih Warga BNBA</span>
+          <span class="nav-sub-badge" id="subBadgeSelected">0</span>
+        </button>
+        <button type="button" class="nav-sub-item" data-sub="calc" onclick="window.app.switchBatchSubTab('calc')">
+          <span>🧮</span> <span>3. Kalkulator Tagihan</span>
+        </button>
+        <button type="button" class="nav-sub-item" data-sub="list" onclick="window.app.switchBatchSubTab('list')">
+          <span>📑</span> <span>4. Riwayat Batch Terbit</span>
+        </button>
+      </div>
       <button class="nav-item" data-tab="print">
         <div class="nav-icon-wrap"><span class="nav-icon">📄</span></div>
         <div class="nav-text-wrap">

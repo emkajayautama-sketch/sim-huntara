@@ -1818,6 +1818,160 @@ table.lap-matrix-table td.photo-cell {
   margin: 4px 0;
 }
 
+/* ========================================================================
+   SUB-MENU SISTEM PENGAJUAN PENCAIRAN (SIDEBAR & HEADER SUB-TABS)
+   ======================================================================== */
+.nav-sub-menu {
+  margin: 2px 0 6px 14px;
+  padding: 4px 0 4px 8px;
+  border-left: 2px solid rgba(147, 197, 253, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  font-size: 11px;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.nav-sub-item:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-sub-item.active {
+  color: #38bdf8;
+  font-weight: 700;
+  background: rgba(56, 189, 248, 0.16);
+  border-left: 2px solid #38bdf8;
+}
+
+.nav-sub-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #fff;
+}
+
+/* SUB-TAB NAV ON TOP OF PENGAJUAN PENCAIRAN PAGE */
+.batch-sub-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 22px;
+  background: #f8fafc;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.batch-sub-tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.batch-sub-tab:hover {
+  border-color: #93c5fd;
+  color: #1e40af;
+  background: #f0f9ff;
+  transform: translateY(-1px);
+}
+
+.batch-sub-tab.active {
+  background: linear-gradient(135deg, #091a38 0%, #1e3a8a 100%);
+  color: #ffffff;
+  border-color: #1e40af;
+  box-shadow: 0 4px 14px -2px rgba(30, 58, 138, 0.4);
+}
+
+.batch-sub-tab .sub-tab-icon {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.batch-sub-tab .sub-tab-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.batch-sub-tab .sub-tab-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.batch-sub-tab.active .sub-tab-title {
+  color: #ffffff;
+}
+
+.batch-sub-tab .sub-tab-desc {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.batch-sub-tab.active .sub-tab-desc {
+  color: #93c5fd;
+}
+
+.batch-sub-tab .sub-tab-badge {
+  background: #2563eb;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.batch-sub-tab.active .sub-tab-badge {
+  background: #22c55e;
+  color: #fff;
+}
+
+.batch-sub-tab .sub-tab-badge.secondary {
+  background: #64748b;
+}
+
+.batch-sub-tab.active .sub-tab-badge.secondary {
+  background: #38bdf8;
+  color: #0f172a;
+}
+
 /* PRINT MEDIA QUERY */
 @page {
   size: A4 portrait;

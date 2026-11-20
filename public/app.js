@@ -23,6 +23,8 @@
       statusBatal: 'ALL', // 'ALL', 'AKTIF', 'BATAL'
       search: ''
     },
+    // Sub-tab aktif untuk Pengajuan Pencairan ('vendor', 'units', 'calc', 'list')
+    batchSubTab: 'vendor',
     // State for creating a new Batch (Pencairan Gelondongan)
     batchForm: {
       vendorId: 'vendor-emka-utama',
@@ -453,6 +455,19 @@
     if (elUnit) elUnit.textContent = activeUnits.length;
     if (elReady) elReady.textContent = readyUnits.length;
 
+    // Update Sidebar Sub-Menu untuk Pengajuan Pencairan
+    const batchSubNav = document.getElementById('batchSubMenuNav');
+    if (batchSubNav) {
+      batchSubNav.style.display = state.activeTab === 'batches' ? 'flex' : 'none';
+      batchSubNav.querySelectorAll('.nav-sub-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.sub === (state.batchSubTab || 'vendor'));
+      });
+      const subBadge = document.getElementById('subBadgeSelected');
+      if (subBadge) {
+        subBadge.textContent = state.batchForm.selectedUnitIds.length;
+      }
+    }
+
     const lanBox = document.getElementById('lanInfoBox');
     if (lanBox) {
       const urls = state.serverInfo?.lanUrls || [];
@@ -465,12 +480,25 @@
     }
   }
 
-  function switchTab(tabName) {
+  function switchTab(tabName, subTab = null) {
     state.activeTab = tabName;
+    if (subTab) {
+      state.batchSubTab = subTab;
+    }
     document.querySelectorAll('#sidebarNav .nav-item').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.tab === tabName);
     });
     renderAll();
+  }
+
+  function switchBatchSubTab(subTab) {
+    state.batchSubTab = subTab;
+    state.activeTab = 'batches';
+    document.querySelectorAll('#sidebarNav .nav-item').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === 'batches');
+    });
+    renderAll();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function renderAll() {
@@ -496,8 +524,20 @@
       subEl.textContent = 'Verifikasi checklist fisik 0%, 50%, 100%, dokumentasi foto geolokasi, dan dokumen perubahan denah';
       main.innerHTML = renderUnitsTab();
     } else if (state.activeTab === 'batches') {
-      titleEl.textContent = 'Pengajuan Pencairan Dana (Termin & Batch Penagihan)';
-      subEl.textContent = 'Kompilasi unit selesai 100% menjadi paket berkas tagihan resmi siap diajukan ke PPK BNPB';
+      const sub = state.batchSubTab || 'vendor';
+      if (sub === 'vendor') {
+        titleEl.textContent = 'Pengajuan Pencairan — 1. Perusahaan / Vendor Penagih & Data Surat';
+        subEl.textContent = 'Pilih perusahaan penagih, periksa rekening bank, serta atur nomor dan tanggal Invoice, SPP, dan SPS';
+      } else if (sub === 'units') {
+        titleEl.textContent = 'Pengajuan Pencairan — 2. Pilih Warga Penerima BNBA (Belum Ditagihkan)';
+        subEl.textContent = 'Centang warga penerima acak lintas 10 desa dengan jumlah bebas (minimal 10 unit), atau gunakan fitur pilih acak / ketik No. BNBA';
+      } else if (sub === 'calc') {
+        titleEl.textContent = 'Pengajuan Pencairan — 3. Kalkulator Tagihan Gelondongan & Terbitkan Berkas';
+        subEl.textContent = 'Rincian otomatis Subtotal, Potongan PPn 11%, Potongan PPh 1.5%, Tagihan Bersih Netto dan Penerbitan Berkas';
+      } else if (sub === 'list') {
+        titleEl.textContent = 'Pengajuan Pencairan — 4. Riwayat Batch Pencairan yang Diterbitkan';
+        subEl.textContent = 'Daftar berkas gelondongan yang telah diterbitkan dan siap cetak (Invoice, SPP, SPS, BNBA & Buku Dokumentasi Foto)';
+      }
       main.innerHTML = renderBatchesTab();
     } else if (state.activeTab === 'print') {
       titleEl.textContent = 'Pusat Dokumen Pencairan & Laporan Progres Fisik';
@@ -1104,7 +1144,7 @@
   }
 
   /* ========================================================================
-     TAB 4: PENCAIRAN GELONDONGAN / BATCH TAGIHAN (MINIMAL 10 UNIT, BEBAS ACAK)
+     TAB 4: PENCAIRAN GELONDONGAN / BATCH TAGIHAN (SUB-MENU MANDIRI)
      ======================================================================== */
   function renderBatchesTab() {
     const minUnit = Number(state.settings.minimalUnitTagihan) || 10;
@@ -1153,15 +1193,561 @@
     const isValidCount = selectedCount >= minUnit || (selectedCount > 0 && bf.allowUnderMin);
 
     const vendorBatches = state.batches.filter(b => state.selectedVendorId === 'ALL' || b.vendorId === state.selectedVendorId);
+    const currentSub = state.batchSubTab || 'vendor';
 
     return `
-      <!-- DAFTAR BATCH PENCAIRAN YANG SUDAH DIBUAT -->
+      <!-- SUB-MENU TABS BAR (4 LANGKAH PROSES PENCAIRAN MANDIRI) -->
+      <div class="batch-sub-nav">
+        <button type="button" class="batch-sub-tab ${currentSub === 'vendor' ? 'active' : ''}" onclick="window.app.switchBatchSubTab('vendor')">
+          <span class="sub-tab-icon">🏢</span>
+          <div class="sub-tab-text">
+            <span class="sub-tab-title">1. Perusahaan &amp; Data Surat</span>
+            <span class="sub-tab-desc">${escapeHtml(vendor.nama)}</span>
+          </div>
+        </button>
+
+        <button type="button" class="batch-sub-tab ${currentSub === 'units' ? 'active' : ''}" onclick="window.app.switchBatchSubTab('units')">
+          <span class="sub-tab-icon">👥</span>
+          <div class="sub-tab-text">
+            <span class="sub-tab-title">2. Pilih Warga BNBA</span>
+            <span class="sub-tab-desc">${unbilledUnits.length} Unit Tersedia di 10 Desa</span>
+          </div>
+          <span class="sub-tab-badge">${selectedCount} Dipilih</span>
+        </button>
+
+        <button type="button" class="batch-sub-tab ${currentSub === 'calc' ? 'active' : ''}" onclick="window.app.switchBatchSubTab('calc')">
+          <span class="sub-tab-icon">🧮</span>
+          <div class="sub-tab-text">
+            <span class="sub-tab-title">3. Kalkulator Tagihan</span>
+            <span class="sub-tab-desc">${selectedCount > 0 ? `Netto: Rp ${formatNumberDot(calc.netto)}` : 'Hitung Otomatis Pajak & Netto'}</span>
+          </div>
+          ${selectedCount >= minUnit ? `<span class="sub-tab-badge">Siap</span>` : ''}
+        </button>
+
+        <button type="button" class="batch-sub-tab ${currentSub === 'list' ? 'active' : ''}" onclick="window.app.switchBatchSubTab('list')">
+          <span class="sub-tab-icon">📑</span>
+          <div class="sub-tab-text">
+            <span class="sub-tab-title">4. Riwayat Batch Terbit</span>
+            <span class="sub-tab-desc">${vendorBatches.length} Batch Diterbitkan</span>
+          </div>
+          <span class="sub-tab-badge secondary">${vendorBatches.length}</span>
+        </button>
+      </div>
+
+      <!-- KONTEN MASING-MASING SUB HALAMAN -->
+      ${renderBatchSubPageContent({
+        currentSub,
+        vendor,
+        unbilledUnits,
+        displayedEligible,
+        selectedUnitsList,
+        selectedDesasSummary,
+        selectedCount,
+        calc,
+        isValidCount,
+        minUnit,
+        vendorBatches,
+        bf,
+        kecOptions,
+        desaOptions
+      })}
+    `;
+  }
+
+  function renderBatchSubPageContent(ctx) {
+    const {
+      currentSub,
+      vendor,
+      unbilledUnits,
+      displayedEligible,
+      selectedUnitsList,
+      selectedDesasSummary,
+      selectedCount,
+      calc,
+      isValidCount,
+      minUnit,
+      vendorBatches,
+      bf,
+      kecOptions,
+      desaOptions
+    } = ctx;
+
+    /* ========================================================================
+       SUB-HALAMAN 1: PERUSAHAAN / VENDOR PENAGIH & DATA SURAT
+       ======================================================================== */
+    if (currentSub === 'vendor') {
+      return `
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3>🏢 Langkah 1: Profil Perusahaan / Vendor Penagih &amp; Nomor Surat Pengajuan</h3>
+              <p style="font-size:12.5px;color:var(--text-muted)">Pilih kontraktor penagih, cek nomor rekening bank, serta atur nomor dan tanggal Invoice/Kuitansi, SPP, dan SPS 100%.</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;padding:16px;margin-bottom:20px;">
+              <div class="form-group" style="margin-bottom:12px;">
+                <label style="font-size:13.5px;font-weight:700;color:var(--primary);">Pilih Perusahaan / Vendor Penagih:</label>
+                <select class="form-control" style="font-size:14px;font-weight:600;padding:8px 12px;" onchange="window.app.changeBatchVendor(this.value)">
+                  ${state.vendors.map(v => `<option value="${escapeHtml(v.id)}" ${bf.vendorId === v.id ? 'selected' : ''}>🏢 ${escapeHtml(v.nama)} (Harga: Rp ${formatNumberDot(v.hargaSatuan)}/unit)</option>`).join('')}
+                </select>
+              </div>
+
+              <!-- INFO REKENING & LEGALITAS VENDOR -->
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:12px;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #e2e8f0;font-size:12.5px;">
+                <div>
+                  <span style="color:var(--text-muted);">Nama Direktur:</span><br/>
+                  <strong>${escapeHtml(vendor.direktur)} (${escapeHtml(vendor.jabatan || 'Direktur')})</strong>
+                </div>
+                <div>
+                  <span style="color:var(--text-muted);">Rekening Penampungan:</span><br/>
+                  <strong style="color:#0369a1;">${escapeHtml(vendor.namaBank)} — ${escapeHtml(vendor.noRekening)}</strong><br/>
+                  <span style="font-size:11.5px;color:#64748b;">an. ${escapeHtml(vendor.atasNamaRekening)}</span>
+                </div>
+                <div>
+                  <span style="color:var(--text-muted);">Harga Satuan SPK:</span><br/>
+                  <strong style="color:#16a34a;">Rp ${formatNumberDot(vendor.hargaSatuan)} / Unit</strong><br/>
+                  <span style="font-size:11px;color:#64748b;">PPn ${vendor.ppnPersen}% | PPh ${vendor.pphPersen}%</span>
+                </div>
+                <div>
+                  <span style="color:var(--text-muted);">Wilayah Lokasi Proyek:</span><br/>
+                  <strong>${escapeHtml(vendor.kabupaten)}</strong><br/>
+                  <span style="font-size:11.5px;color:#64748b;">Provinsi ${escapeHtml(vendor.provinsi)}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- FORM IDENTITAS BERKAS & SURAT-SURAT -->
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;margin-bottom:20px;">
+              <h4 style="margin:0 0 14px;color:var(--primary);">Nomor &amp; Tanggal Surat Berkas Pencairan</h4>
+              
+              <div class="form-group" style="margin-bottom:14px;">
+                <label>Nama Gelondongan / Termin Pencairan</label>
+                <input type="text" class="form-control" style="font-weight:600;" value="${escapeHtml(bf.namaBatch)}" oninput="window.app.updateBatchField('namaBatch', this.value)" placeholder="Contoh: Pencairan Gelondongan Tahap 1" />
+              </div>
+
+              <div class="grid-3" style="gap:14px;margin-bottom:14px;">
+                <!-- INVOICE -->
+                <div style="background:#f8fafc;padding:12px;border-radius:8px;border:1px solid #e2e8f0;">
+                  <strong style="font-size:12.5px;color:#1e40af;display:block;margin-bottom:8px;">1. Invoice &amp; Kuitansi</strong>
+                  <div class="form-group" style="margin-bottom:8px;">
+                    <label style="font-size:11.5px;">Nomor Invoice / Kuitansi</label>
+                    <input type="text" class="form-control" value="${escapeHtml(bf.noInvoice)}" oninput="window.app.updateBatchField('noInvoice', this.value)" />
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label style="font-size:11.5px;">Tanggal Invoice / Kuitansi</label>
+                    <div style="display:flex;gap:4px;">
+                      <input type="text" class="form-control" value="${escapeHtml(bf.tglInvoice)}" oninput="window.app.updateBatchField('tglInvoice', this.value)" />
+                      <input type="date" title="Pilih Tanggal" style="width:36px;padding:2px;cursor:pointer;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" onchange="window.app.updateBatchField('tglInvoice', window.app.formatDateToIndo(this.value)); window.app.renderAll();" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SPP -->
+                <div style="background:#f8fafc;padding:12px;border-radius:8px;border:1px solid #e2e8f0;">
+                  <strong style="font-size:12.5px;color:#0f766e;display:block;margin-bottom:8px;">2. Surat Permohonan Pembayaran (SPP)</strong>
+                  <div class="form-group" style="margin-bottom:8px;">
+                    <label style="font-size:11.5px;">Nomor Surat SPP</label>
+                    <input type="text" class="form-control" value="${escapeHtml(bf.noSpp)}" oninput="window.app.updateBatchField('noSpp', this.value)" />
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label style="font-size:11.5px;">Tanggal Surat SPP</label>
+                    <div style="display:flex;gap:4px;">
+                      <input type="text" class="form-control" value="${escapeHtml(bf.tglSpp)}" oninput="window.app.updateBatchField('tglSpp', this.value)" />
+                      <input type="date" title="Pilih Tanggal" style="width:36px;padding:2px;cursor:pointer;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" onchange="window.app.updateBatchField('tglSpp', window.app.formatDateToIndo(this.value)); window.app.renderAll();" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SPS -->
+                <div style="background:#f8fafc;padding:12px;border-radius:8px;border:1px solid #e2e8f0;">
+                  <strong style="font-size:12.5px;color:#7c2d12;display:block;margin-bottom:8px;">3. Surat Pemberitahuan Selesai 100% (SPS)</strong>
+                  <div class="form-group" style="margin-bottom:8px;">
+                    <label style="font-size:11.5px;">Nomor Surat SPS</label>
+                    <input type="text" class="form-control" value="${escapeHtml(bf.noSps)}" oninput="window.app.updateBatchField('noSps', this.value)" />
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label style="font-size:11.5px;">Tanggal Surat SPS 100%</label>
+                    <div style="display:flex;gap:4px;">
+                      <input type="text" class="form-control" value="${escapeHtml(bf.tglSps)}" oninput="window.app.updateBatchField('tglSps', this.value)" />
+                      <input type="date" title="Pilih Tanggal" style="width:36px;padding:2px;cursor:pointer;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" onchange="window.app.updateBatchField('tglSps', window.app.formatDateToIndo(this.value)); window.app.renderAll();" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FOOTER NAVIGASI LANGKAH -->
+            <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e2e8f0;padding-top:16px;">
+              <div style="font-size:12px;color:var(--text-muted)">
+                Langkah 1 dari 3: Data perusahaan dan surat siap. Selanjutnya pilih warga yang ditagihkan.
+              </div>
+              <button type="button" class="btn btn-primary btn-lg" onclick="window.app.switchBatchSubTab('units')">
+                Lanjut ke Langkah 2: Pilih Warga BNBA (${unbilledUnits.length} Unit Belum Ditagihkan) →
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ========================================================================
+       SUB-HALAMAN 2: PILIH WARGA PENERIMA BNBA (LEGA & FULL WIDTH)
+       ======================================================================== */
+    if (currentSub === 'units') {
+      const allDisplayedChecked = displayedEligible.length > 0 && displayedEligible.every(u => bf.selectedUnitIds.includes(u.id));
+
+      return `
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3>👥 Langkah 2: Pilih Warga Penerima BNBA (${unbilledUnits.length} Unit Belum Ditagihkan di 10 Desa)</h3>
+              <p style="font-size:12.5px;color:var(--text-muted)">Bebas pilih acak warga mana saja dari 10 Desa/Kelurahan dengan jumlah berapa pun (bisa 10, 11, 12, 13, 20 unit, dst. minimal ${minUnit} unit).</p>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="window.app.switchBatchSubTab('vendor')">
+                ← Kembali ke Data Surat
+              </button>
+              <button type="button" class="btn btn-success btn-sm" onclick="window.app.switchBatchSubTab('calc')">
+                Lanjut ke Kalkulator (${selectedCount} Dipilih) →
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- STATUS BAR TERPILIH -->
+            <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+              <div>
+                <span style="font-size:13px;color:#166534;">Unit Tercentang Saat Ini:</span>
+                <strong style="font-size:16px;color:#15803d;margin-left:6px;">${selectedCount} Unit</strong>
+                <span style="font-size:12px;color:#166534;">(${escapeHtml(calc.terbilangQty)} Unit)</span>
+                ${selectedCount < minUnit ? `<span class="badge badge-50" style="margin-left:8px;">Minimal ${minUnit} Unit</span>` : `<span class="badge badge-100" style="margin-left:8px;">✅ Memenuhi Syarat</span>`}
+              </div>
+              <div style="font-size:12.5px;color:#166534;">
+                Desa Terpilih: <strong>${escapeHtml(selectedDesasSummary || 'Belum ada warga yang dicentang')}</strong>
+              </div>
+              <div>
+                <span style="font-size:12px;color:#166534;">Estimasi Netto:</span>
+                <strong style="font-size:15px;color:#15803d;margin-left:4px;">Rp ${formatNumberDot(calc.netto)}</strong>
+              </div>
+            </div>
+
+            <!-- FILTER KECAMATAN, DESA & PENCARIAN -->
+            <div style="display:grid;grid-template-columns:1fr 1.2fr 1.5fr;gap:10px;margin-bottom:12px;">
+              <select class="form-control" style="padding:7px 10px;font-size:13px;" onchange="window.app.setBatchKecamatanFilter(this.value)">
+                <option value="ALL">Semua Kecamatan (${unbilledUnits.length} Unit)</option>
+                ${kecOptions.map(k => {
+                  const cnt = unbilledUnits.filter(u => u.kecamatan === k).length;
+                  return `<option value="${escapeHtml(k)}" ${bf.filterKecamatan === k ? 'selected' : ''}>Kec. ${escapeHtml(k)} (${cnt} Unit)</option>`;
+                }).join('')}
+              </select>
+
+              <select class="form-control" style="padding:7px 10px;font-size:13px;" onchange="window.app.setBatchDesaFilter(this.value)">
+                <option value="ALL">Semua Desa/Kelurahan (${desaOptions.length} Desa)</option>
+                ${desaOptions.map(d => {
+                  const cnt = unbilledUnits.filter(u => u.desa === d).length;
+                  return `<option value="${escapeHtml(d)}" ${bf.filterDesa === d ? 'selected' : ''}>${escapeHtml(d)} (${cnt} Unit)</option>`;
+                }).join('')}
+              </select>
+
+              <input type="text" class="form-control" style="padding:7px 10px;font-size:13px;" placeholder="🔍 Cari nama warga, NIK, RT, atau No. BNBA..." value="${escapeHtml(bf.searchQuery || '')}" oninput="window.app.setBatchSearchQuery(this.value)" />
+            </div>
+
+            <!-- TOOLBAR PILIH CEPAT -->
+            <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:12px;margin-bottom:14px;display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:12.5px;font-weight:700;color:#334155;">Pilih Cepat Jumlah Bebas:</span>
+                <input type="number" min="1" max="${unbilledUnits.length}" class="form-control" style="width:75px;padding:5px 8px;font-size:13px;font-weight:bold;text-align:center;" value="${bf.customPickCount || 12}" oninput="window.app.updateBatchField('customPickCount', Number(this.value))" />
+                <button type="button" class="btn btn-primary btn-sm" onclick="window.app.selectBatchRandomCount()">
+                  🎲 Pilih Acak (${bf.customPickCount || 12} Unit)
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="window.app.selectBatchUnitsCount(Number(document.querySelector('[oninput*=customPickCount]')?.value || 12))">
+                  ✓ Ambil ${bf.customPickCount || 12} Unit Teratas
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="window.app.addAllDisplayedToBatch()">
+                  + Centang Semua yang Ditampilkan (${displayedEligible.length})
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" style="margin-left:auto;" onclick="window.app.selectBatchUnitsCount(0)">
+                  🗑️ Reset Pilihan (0)
+                </button>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;">Ketik No. BNBA Acak:</span>
+                <input type="text" id="randomBnbaInput" class="form-control" style="flex:1;padding:5px 10px;font-size:12.5px;" value="${escapeHtml(bf.randomNumbersText || '')}" oninput="window.app.updateBatchField('randomNumbersText', this.value)" placeholder="Contoh: 1, 4, 9, 12, 15, 21, 22, 31, 38, 45, 52, 57" />
+                <button type="button" class="btn btn-outline btn-sm" onclick="window.app.selectByBnbaNumbers()">
+                  Pilih No. BNBA Ini
+                </button>
+              </div>
+            </div>
+
+            <!-- TABEL DAFTAR WARGA (FULL WIDTH & LEGA) -->
+            <div class="table-responsive" style="border:1px solid #cbd5e1;border-radius:8px;max-height:550px;overflow-y:auto;background:#fff;">
+              ${displayedEligible.length === 0 ? `
+                <div style="padding:40px 20px;text-align:center;color:var(--text-muted);">
+                  Tidak ada unit penerima yang sesuai dengan filter atau pencarian di atas.
+                </div>
+              ` : `
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th style="width:45px;text-align:center;">
+                        <input type="checkbox" title="Pilih Semua yang Ditampilkan" style="width:16px;height:16px;cursor:pointer;" ${allDisplayedChecked ? 'checked' : ''} onchange="window.app.toggleSelectAllDisplayedToBatch(this.checked)" />
+                      </th>
+                      <th style="width:75px">No BNBA</th>
+                      <th style="width:75px">Insitu</th>
+                      <th>Nama Lengkap Penerima &amp; NIK</th>
+                      <th>RT</th>
+                      <th>Desa / Kelurahan</th>
+                      <th>Kecamatan</th>
+                      <th>Vendor</th>
+                      <th>Progres Fisik</th>
+                      <th>Dokumentasi Foto</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${displayedEligible.map(u => {
+                      const checked = bf.selectedUnitIds.includes(u.id);
+                      const photoCount = [u.foto0, u.foto50, u.foto100_1, u.foto100_2, u.foto100_3].filter(Boolean).length;
+                      return `
+                        <tr style="cursor:pointer;background:${checked ? '#dcfce7' : 'transparent'};transition:background 0.1s ease;" onclick="window.app.toggleBatchUnit('${escapeHtml(u.id)}')">
+                          <td style="text-align:center;">
+                            <input type="checkbox" style="width:16px;height:16px;cursor:pointer;" ${checked ? 'checked' : ''} onclick="event.stopPropagation(); window.app.toggleBatchUnit('${escapeHtml(u.id)}')" />
+                          </td>
+                          <td><strong>#${u.noBnba}</strong></td>
+                          <td><span class="badge badge-0">No. ${escapeHtml(u.noInsitu || String(u.noBnba).padStart(2, '0'))}</span></td>
+                          <td>
+                            <strong>${escapeHtml(u.nama)}</strong>
+                            ${u.nik ? `<div style="font-size:11.5px;color:var(--text-muted)">NIK: ${escapeHtml(u.nik)}</div>` : ''}
+                          </td>
+                          <td>RT ${escapeHtml(u.rt)}</td>
+                          <td><strong>${escapeHtml(u.desa)}</strong></td>
+                          <td>${escapeHtml(u.kecamatan)}</td>
+                          <td><span style="font-size:12px;font-weight:600">${escapeHtml(vendor.nama)}</span></td>
+                          <td><span class="badge badge-100">${u.progres}%</span></td>
+                          <td>
+                            <span class="badge ${photoCount >= 5 ? 'badge-100' : photoCount > 0 ? 'badge-50' : 'badge-0'}">📷 ${photoCount}/5 Foto</span>
+                            ${u.perubahanDenah ? `<span class="badge badge-denah" title="Perubahan Denah">📝 Denah</span>` : ''}
+                          </td>
+                        </tr>
+                      `;
+                    }).join('')}
+                  </tbody>
+                </table>
+              `}
+            </div>
+
+            <!-- FOOTER NAVIGASI LANGKAH -->
+            <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e2e8f0;padding-top:16px;margin-top:16px;">
+              <button type="button" class="btn btn-outline" onclick="window.app.switchBatchSubTab('vendor')">
+                ← Kembali ke Langkah 1: Perusahaan &amp; Data Surat
+              </button>
+              <button type="button" class="btn btn-success btn-lg" onclick="window.app.switchBatchSubTab('calc')">
+                Lanjut ke Langkah 3: Kalkulator Tagihan &amp; Terbitkan Berkas (${selectedCount} Unit Terpilih) →
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ========================================================================
+       SUB-HALAMAN 3: KALKULATOR TAGIHAN GELONDONGAN (DENGAN KALKULATOR LENGKAP)
+       ======================================================================== */
+    if (currentSub === 'calc') {
+      return `
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3>🧮 Langkah 3: Kalkulator Tagihan Gelondongan &amp; Terbitkan Berkas</h3>
+              <p style="font-size:12.5px;color:var(--text-muted)">Perhitungan otomatis Subtotal, Potongan PPn 11%, Potongan PPh 1.5%, Tagihan Bersih Netto dan terbilang rupiah untuk berkas invoice resmi.</p>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="window.app.switchBatchSubTab('units')">
+              ← Ubah Pilihan Warga BNBA
+            </button>
+          </div>
+          <div class="card-body">
+            <!-- 4 KPI SUMMARY CARDS -->
+            <div class="kpi-grid" style="margin-bottom:18px;">
+              <div class="kpi-card">
+                <div class="kpi-card-header">
+                  <span class="kpi-label">Jumlah Unit Ditagihkan</span>
+                  <div class="kpi-icon-pill blue">🏠</div>
+                </div>
+                <div class="kpi-value">${selectedCount} <small style="font-size:14px;font-weight:600">Unit</small></div>
+                <span class="kpi-sub">Terbilang: <strong>${escapeHtml(calc.terbilangQty)} Unit</strong></span>
+              </div>
+
+              <div class="kpi-card orange">
+                <div class="kpi-card-header">
+                  <span class="kpi-label">Nilai Kontrak Bruto (Sub Total)</span>
+                  <div class="kpi-icon-pill orange">💰</div>
+                </div>
+                <div class="kpi-value" style="font-size:20px;">Rp ${formatNumberDot(calc.totalBruto)}</div>
+                <span class="kpi-sub">${selectedCount} Unit × Rp ${formatNumberDot(calc.hargaSatuan)}</span>
+              </div>
+
+              <div class="kpi-card sky">
+                <div class="kpi-card-header">
+                  <span class="kpi-label">Total Potongan Pajak (PPn + PPh)</span>
+                  <div class="kpi-icon-pill sky">🏛️</div>
+                </div>
+                <div class="kpi-value" style="font-size:20px;color:#dc2626;">- Rp ${formatNumberDot(calc.ppn + calc.pph)}</div>
+                <span class="kpi-sub">PPn 11%: Rp ${formatNumberDot(calc.ppn)} | PPh 1.5%: Rp ${formatNumberDot(calc.pph)}</span>
+              </div>
+
+              <div class="kpi-card green">
+                <div class="kpi-card-header">
+                  <span class="kpi-label">TOTAL TAGIHAN BERSIH (NETTO)</span>
+                  <div class="kpi-icon-pill green">⚡</div>
+                </div>
+                <div class="kpi-value" style="font-size:22px;color:#16a34a;">Rp ${formatNumberDot(calc.netto)}</div>
+                <span class="kpi-sub">Masuk ke Rekening ${escapeHtml(vendor.namaBank)}</span>
+              </div>
+            </div>
+
+            <div class="grid-2" style="gap:20px;margin-bottom:20px;">
+              <!-- KALKULATOR & RINCIAN KEUANGAN -->
+              <div style="background:#f8fafc;border:2px solid ${isValidCount ? '#16a34a' : '#f59e0b'};border-radius:10px;padding:18px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid #cbd5e1;padding-bottom:8px;">
+                  <strong style="font-size:15px;color:var(--primary);">Tabel Perhitungan Keuangan Resmi:</strong>
+                  <span class="badge ${isValidCount ? 'badge-100' : 'badge-50'}">
+                    ${isValidCount ? '✅ Siap Diterbitkan' : '⚠️ Kuota Kurang'}
+                  </span>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr auto;row-gap:8px;font-size:13.5px;margin-bottom:12px;">
+                  <span>Tarif Kontrak Satuan per Unit:</span>
+                  <strong>Rp ${formatNumberDot(calc.hargaSatuan)}</strong>
+
+                  <span>Sub Total Nilai Pekerjaan (${selectedCount} Unit):</span>
+                  <strong>Rp ${formatNumberDot(calc.totalBruto)}</strong>
+
+                  <span>Potongan Pajak Pertambahan Nilai (PPn 11%):</span>
+                  <span style="color:#dc2626">- Rp ${formatNumberDot(calc.ppn)}</span>
+
+                  <span>Potongan Pajak Penghasilan (PPh Pasal 22 - 1.5%):</span>
+                  <span style="color:#dc2626">- Rp ${formatNumberDot(calc.pph)}</span>
+
+                  <span style="font-weight:700;font-size:15px;padding-top:8px;border-top:1.5px solid #cbd5e1;color:#0f172a;">Total Tagihan Bersih (Dikurangi PPn &amp; PPh):</span>
+                  <strong style="font-size:18px;color:#16a34a;padding-top:8px;border-top:1.5px solid #cbd5e1;">Rp ${formatNumberDot(calc.netto)}</strong>
+                </div>
+
+                <div style="background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:12px;margin-bottom:14px;">
+                  <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;">Terbilang Netto:</span>
+                  <div style="font-size:13px;font-weight:700;color:#0f172a;margin-top:2px;font-style:italic;">
+                    "${escapeHtml(calc.terbilangNetto)}"
+                  </div>
+                </div>
+
+                ${selectedCount < minUnit ? `
+                  <div style="padding:10px 12px;background:#fef3c7;color:#92400e;border-radius:8px;font-size:12.5px;margin-bottom:14px;">
+                    ⚠️ <strong>Aturan Minimal Penagihan:</strong> Minimal penagihan gelondongan adalah <strong>${minUnit} unit</strong> (Saat ini baru terpilih: <strong>${selectedCount} unit</strong>).
+                    <label style="display:flex;align-items:center;gap:6px;margin-top:8px;cursor:pointer;font-weight:600;">
+                      <input type="checkbox" ${bf.allowUnderMin ? 'checked' : ''} onchange="window.app.toggleAllowUnderMin(this.checked)" />
+                      Izinkan kurang dari ${minUnit} unit (Khusus pencairan sisa kuota terakhir)
+                    </label>
+                  </div>
+                ` : ''}
+
+                <button type="button" class="btn btn-success btn-lg" style="width:100%;padding:14px;font-size:15px;font-weight:700;" ${!isValidCount ? 'disabled style="opacity:0.5;cursor:not-allowed;width:100%;padding:14px;font-size:15px;font-weight:700;"' : ''} onclick="window.app.createBatch()">
+                  💾 Simpan &amp; Terbitkan Berkas Pencairan (${selectedCount} Unit)
+                </button>
+              </div>
+
+              <!-- INFO KELENGKAPAN BERKAS & PREVIEW SURAT -->
+              <div>
+                <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;padding:16px;margin-bottom:14px;">
+                  <h4 style="margin:0 0 10px;font-size:13.5px;color:var(--primary);">Kelengkapan Dokumen yang Diterbitkan:</h4>
+                  <ul style="margin:0;padding-left:18px;font-size:12.5px;line-height:1.8;color:#334155;">
+                    <li><strong>Invoice Resmi &amp; Kuitansi Pembayaran:</strong> No. ${escapeHtml(bf.noInvoice)} (${escapeHtml(bf.tglInvoice)})</li>
+                    <li><strong>Surat Permohonan Pembayaran (SPP):</strong> No. ${escapeHtml(bf.noSpp)} (${escapeHtml(bf.tglSpp)})</li>
+                    <li><strong>Surat Pemberitahuan Selesai 100% (SPS):</strong> No. ${escapeHtml(bf.noSps)} (${escapeHtml(bf.tglSps)})</li>
+                    <li><strong>Lampiran Rekapitulasi BNBA:</strong> ${selectedCount} Unit (${escapeHtml(selectedDesasSummary || '-')})</li>
+                    <li><strong>Buku Laporan Dokumentasi Foto:</strong> Format 3 Halaman per Unit Lengkap</li>
+                  </ul>
+                </div>
+
+                <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;">
+                  <strong style="font-size:12.5px;color:#1e40af;display:block;margin-bottom:6px;">📍 Cakupan Wilayah &amp; Warga Terpilih:</strong>
+                  <div style="font-size:12px;color:#1e40af;margin-bottom:6px;">
+                    <strong>Desa Terpilih:</strong> ${escapeHtml(selectedDesasSummary || '-')}
+                  </div>
+                  <div style="font-size:12px;color:#1e40af;max-height:80px;overflow-y:auto;background:#fff;padding:6px 10px;border-radius:6px;border:1px solid #cbd5e1;">
+                    <strong>No. BNBA:</strong> ${selectedUnitsList.map(u => '#' + u.noBnba + ' ' + u.nama).join(', ') || '-'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PREVIEW TABEL WARGA TERPILIH -->
+            <div style="border:1px solid #cbd5e1;border-radius:8px;overflow:hidden;background:#fff;">
+              <div style="background:#f8fafc;padding:10px 14px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
+                <strong style="font-size:13px;">Daftar Warga yang Masuk dalam Tagihan Gelondongan Ini (${selectedCount} Unit):</strong>
+                <button type="button" class="btn btn-outline btn-sm" onclick="window.app.switchBatchSubTab('units')">
+                  ✏️ Edit / Tambah Warga
+                </button>
+              </div>
+              <div class="table-responsive" style="max-height:260px;overflow-y:auto;">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th style="width:40px">No</th>
+                      <th style="width:75px">No BNBA</th>
+                      <th>Nama Lengkap Penerima &amp; NIK</th>
+                      <th>RT / Desa / Kelurahan</th>
+                      <th>Kecamatan</th>
+                      <th>Tarif Kontrak</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${selectedUnitsList.length === 0 ? `
+                      <tr>
+                        <td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">
+                          Belum ada warga yang dicentang. Silakan kembali ke Langkah 2 untuk memilih warga.
+                        </td>
+                      </tr>
+                    ` : selectedUnitsList.map((u, idx) => `
+                      <tr>
+                        <td>${idx + 1}</td>
+                        <td><strong>#${u.noBnba}</strong></td>
+                        <td><strong>${escapeHtml(u.nama)}</strong></td>
+                        <td>RT ${escapeHtml(u.rt)} — ${escapeHtml(u.desa)}</td>
+                        <td>${escapeHtml(u.kecamatan)}</td>
+                        <td>Rp ${formatNumberDot(calc.hargaSatuan)}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- FOOTER NAVIGASI LANGKAH -->
+            <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e2e8f0;padding-top:16px;margin-top:16px;">
+              <button type="button" class="btn btn-outline" onclick="window.app.switchBatchSubTab('units')">
+                ← Kembali ke Langkah 2: Ubah Pilihan Warga BNBA
+              </button>
+              <button type="button" class="btn btn-outline" onclick="window.app.switchBatchSubTab('list')">
+                Lihat Riwayat Batch yang Pernah Terbit →
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ========================================================================
+       SUB-HALAMAN 4: RIWAYAT BATCH PENCAIRAN YANG SUDAH DITERBITKAN
+       ======================================================================== */
+    return `
       <div class="card">
         <div class="card-header">
           <div>
-            <h3>📑 Daftar Batch Pencairan Gelondongan yang Sudah Diterbitkan (${vendorBatches.length} Batch)</h3>
-            <p style="font-size:12px;color:var(--text-muted)">Setiap batch mengunci daftar unit rumah yang ditagihkan agar tidak terjadi penagihan ganda pada gelondongan berikutnya.</p>
+            <h3>📑 Langkah 4: Riwayat Batch Pencairan Gelondongan yang Sudah Diterbitkan (${vendorBatches.length} Batch)</h3>
+            <p style="font-size:12.5px;color:var(--text-muted)">Setiap batch mengunci unit yang ditagihkan agar tidak terjadi klaim ganda, dan berkasnya siap dicetak langsung dalam format resmi BNPB.</p>
           </div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="window.app.switchBatchSubTab('vendor')">
+            ➕ Buat Pengajuan Pencairan Baru
+          </button>
         </div>
         <div class="card-body" style="padding:0;">
           <div class="table-responsive">
@@ -1170,20 +1756,23 @@
                 <tr>
                   <th>Nama Batch / Gelondongan</th>
                   <th>Perusahaan (Vendor)</th>
-                  <th>No. Invoice & Tanggal</th>
+                  <th>No. Invoice &amp; Tanggal</th>
                   <th>Jumlah Unit</th>
                   <th>Desa Cakupan</th>
                   <th>Nilai Kontrak Bruto</th>
                   <th>Tagihan Bersih (Netto)</th>
                   <th>Status Pencairan</th>
-                  <th style="text-align:right">Cetak Berkas & Aksi</th>
+                  <th style="text-align:right">Cetak Berkas &amp; Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 ${vendorBatches.length === 0 ? `
                   <tr>
-                    <td colspan="9" style="text-align:center;padding:24px;color:var(--text-muted)">
-                      Belum ada Batch Pencairan yang dibuat. Silakan pilih minimal ${minUnit} unit rumah yang sudah 100% pada formulir di bawah untuk membuat Pencairan Gelondongan.
+                    <td colspan="9" style="text-align:center;padding:32px;color:var(--text-muted)">
+                      Belum ada Batch Pencairan yang dibuat.<br/>
+                      <button type="button" class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="window.app.switchBatchSubTab('vendor')">
+                        Mulai Buat Pengajuan Pencairan Baru →
+                      </button>
                     </td>
                   </tr>
                 ` : vendorBatches.map(b => {
@@ -1212,13 +1801,13 @@
                         </select>
                       </td>
                       <td style="text-align:right;white-space:nowrap;">
-                        <button class="btn btn-primary btn-sm" onclick="window.app.openPrintForBatch('${escapeHtml(b.id)}', 'ALL_LETTERS')">
-                          🖨️ Cetak Surat & Invoice
+                        <button type="button" class="btn btn-primary btn-sm" onclick="window.app.openPrintForBatch('${escapeHtml(b.id)}', 'ALL_LETTERS')">
+                          🖨️ Cetak Surat &amp; Invoice
                         </button>
-                        <button class="btn btn-outline btn-sm" onclick="window.app.openPrintForBatch('${escapeHtml(b.id)}', 'LAPORAN_PROGRES')">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="window.app.openPrintForBatch('${escapeHtml(b.id)}', 'LAPORAN_PROGRES')">
                           📕 Cetak Laporan Progres (${b.unitIds.length} Unit)
                         </button>
-                        <button class="btn btn-danger btn-sm" title="Batalkan Batch & Kembalikan Unit ke Siap Tagih" onclick="window.app.deleteBatch('${escapeHtml(b.id)}')">
+                        <button type="button" class="btn btn-danger btn-sm" title="Batalkan Batch &amp; Kembalikan Unit ke Siap Tagih" onclick="window.app.deleteBatch('${escapeHtml(b.id)}')">
                           🗑️
                         </button>
                       </td>
@@ -1227,209 +1816,6 @@
                 }).join('')}
               </tbody>
             </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- FORM BUAT PENCAIRAN GELONDONGAN BARU -->
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <h3>➕ Buat Pengajuan Pencairan Gelondongan Baru (Minimal ${minUnit} Unit — Bebas Pilih Acak Lintas Desa)</h3>
-            <p style="font-size:12px;color:var(--text-muted)">Bebas pilih acak warga mana saja dari 10 Desa/Kelurahan dengan jumlah berapa pun (bisa 10, 11, 12, 13, 21, 22 unit, dst. minimal ${minUnit} unit).</p>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="grid-2">
-            <!-- KOLOM KIRI: INFO SURAT & RINGKASAN KEUANGAN -->
-            <div>
-              <div class="form-group">
-                <label>Perusahaan / Vendor Penagih</label>
-                <select class="form-control" onchange="window.app.changeBatchVendor(this.value)">
-                  ${state.vendors.map(v => `<option value="${escapeHtml(v.id)}" ${bf.vendorId === v.id ? 'selected' : ''}>${escapeHtml(v.nama)} (Harga: Rp ${formatNumberDot(v.hargaSatuan)}/unit)</option>`).join('')}
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Nama Gelondongan / Termin Pencairan</label>
-                <input type="text" class="form-control" value="${escapeHtml(bf.namaBatch)}" oninput="window.app.updateBatchField('namaBatch', this.value)" placeholder="Contoh: Pencairan Gelondongan Tahap 1" />
-              </div>
-              <div class="grid-2" style="gap:12px;">
-                <div class="form-group">
-                  <label>Nomor Invoice / Kuitansi No</label>
-                  <input type="text" class="form-control" value="${escapeHtml(bf.noInvoice)}" oninput="window.app.updateBatchField('noInvoice', this.value)" />
-                </div>
-                <div class="form-group">
-                  <label>Tanggal Invoice / Kuitansi</label>
-                  <div style="display:flex;gap:4px;">
-                    <input type="text" class="form-control" value="${escapeHtml(bf.tglInvoice)}" oninput="window.app.updateBatchField('tglInvoice', this.value)" />
-                    <input type="date" title="Pilih Tanggal Invoice" style="width:38px;padding:3px;cursor:pointer;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" onchange="window.app.updateBatchField('tglInvoice', window.app.formatDateToIndo(this.value)); window.app.renderBatchModal();" />
-                  </div>
-                </div>
-              </div>
-              <div class="grid-2" style="gap:12px;">
-                <div class="form-group">
-                  <label>Nomor Surat Permohonan (SPP)</label>
-                  <input type="text" class="form-control" value="${escapeHtml(bf.noSpp)}" oninput="window.app.updateBatchField('noSpp', this.value)" />
-                </div>
-                <div class="form-group">
-                  <label>Tanggal Surat Permohonan (SPP)</label>
-                  <div style="display:flex;gap:4px;">
-                    <input type="text" class="form-control" value="${escapeHtml(bf.tglSpp)}" oninput="window.app.updateBatchField('tglSpp', this.value)" />
-                    <input type="date" title="Pilih Tanggal Permohonan SPP" style="width:38px;padding:3px;cursor:pointer;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" onchange="window.app.updateBatchField('tglSpp', window.app.formatDateToIndo(this.value)); window.app.renderBatchModal();" />
-                  </div>
-                </div>
-              </div>
-              <div class="grid-2" style="gap:12px;">
-                <div class="form-group">
-                  <label>Nomor Surat Selesai 100% (SPS)</label>
-                  <input type="text" class="form-control" value="${escapeHtml(bf.noSps)}" oninput="window.app.updateBatchField('noSps', this.value)" />
-                </div>
-                <div class="form-group">
-                  <label>Tanggal Surat Selesai 100% (SPS)</label>
-                  <div style="display:flex;gap:4px;">
-                    <input type="text" class="form-control" value="${escapeHtml(bf.tglSps)}" oninput="window.app.updateBatchField('tglSps', this.value)" />
-                    <input type="date" title="Pilih Tanggal Selesai SPS" style="width:38px;padding:3px;cursor:pointer;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" onchange="window.app.updateBatchField('tglSps', window.app.formatDateToIndo(this.value)); window.app.renderBatchModal();" />
-                  </div>
-                </div>
-              </div>
-
-              <!-- KOTAK KALKULASI OTOMATIS -->
-              <div style="background:#f8fafc;border:2px solid ${isValidCount ? '#16a34a' : '#f59e0b'};border-radius:10px;padding:16px;margin-top:8px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                  <span style="font-weight:700;font-size:14px;">Kalkulasi Tagihan Gelondongan:</span>
-                  <span class="badge ${isValidCount ? 'badge-100' : 'badge-50'}">
-                    ${selectedCount} Unit Dipilih (${escapeHtml(calc.terbilangQty)} Unit)
-                  </span>
-                </div>
-                ${selectedCount > 0 ? `
-                  <div style="font-size:12px;color:#0369a1;background:#e0f2fe;padding:6px 10px;border-radius:6px;margin-bottom:10px;">
-                    <strong>📍 Desa Terpilih:</strong> ${escapeHtml(selectedDesasSummary)}<br/>
-                    <strong>🔢 No. BNBA Terpilih:</strong> ${selectedUnitsList.map(u => '#' + u.noBnba).join(', ')}
-                  </div>
-                ` : ''}
-                <div style="display:grid;grid-template-columns:1fr auto;row-gap:6px;font-size:13px;">
-                  <span>Sub Total (${selectedCount} × Rp ${formatNumberDot(calc.hargaSatuan)}):</span>
-                  <strong>Rp ${formatNumberDot(calc.totalBruto)}</strong>
-                  <span>Potongan PPn (${calc.ppnPersen}%):</span>
-                  <span style="color:#dc2626">- Rp ${formatNumberDot(calc.ppn)}</span>
-                  <span>Potongan PPh (${calc.pphPersen}%):</span>
-                  <span style="color:#dc2626">- Rp ${formatNumberDot(calc.pph)}</span>
-                  <span style="font-weight:700;font-size:14.5px;padding-top:6px;border-top:1px solid #cbd5e1;">Total Tagihan Bersih (Dikurangi PPn & PPh):</span>
-                  <strong style="font-size:16px;color:#16a34a;padding-top:6px;border-top:1px solid #cbd5e1;">Rp ${formatNumberDot(calc.netto)}</strong>
-                </div>
-                <div style="margin-top:10px;font-size:12px;background:#fff;padding:8px 10px;border-radius:6px;border:1px solid #e2e8f0;">
-                  <strong>Terbilang Netto:</strong> <em>${escapeHtml(calc.terbilangNetto)}</em>
-                </div>
-
-                ${selectedCount < minUnit ? `
-                  <div style="margin-top:10px;padding:8px 10px;background:#fef3c7;color:#92400e;border-radius:6px;font-size:12px;">
-                    ⚠️ <strong>Aturan Minimal Penagihan:</strong> Minimal penagihan gelondongan adalah <strong>${minUnit} unit</strong> (Saat ini terpilih: ${selectedCount} unit).
-                    <label style="display:flex;align-items:center;gap:6px;margin-top:6px;cursor:pointer;font-weight:600;">
-                      <input type="checkbox" ${bf.allowUnderMin ? 'checked' : ''} onchange="window.app.toggleAllowUnderMin(this.checked)" />
-                      Izinkan kurang dari ${minUnit} unit (Khusus pencairan sisa kuota terakhir)
-                    </label>
-                  </div>
-                ` : ''}
-
-                <button class="btn btn-success btn-lg" style="width:100%;margin-top:14px;" ${!isValidCount ? 'disabled style="opacity:0.5;cursor:not-allowed;width:100%;margin-top:14px;"' : ''} onclick="window.app.createBatch()">
-                  💾 Simpan & Terbitkan Berkas Pencairan (${selectedCount} Unit)
-                </button>
-              </div>
-            </div>
-
-            <!-- KOLOM KANAN: PILIH UNIT ACAK LINTAS 10 DESA / KECAMATAN -->
-            <div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <label style="font-weight:700;font-size:13.5px;">
-                  Pilih Warga Penerima BNBA (${unbilledUnits.length} Unit Belum Ditagihkan di 10 Desa)
-                </label>
-                <span class="badge badge-100">Tercentang: ${selectedCount} Unit</span>
-              </div>
-
-              <!-- FILTER KECAMATAN, SEMUA 10 DESA & PENCARIAN NAMA -->
-              <div style="display:grid;grid-template-columns:1fr 1.2fr 1.2fr;gap:8px;margin-bottom:10px;">
-                <select class="form-control" style="padding:6px 8px;font-size:12.5px;" onchange="window.app.setBatchKecamatanFilter(this.value)">
-                  <option value="ALL">Semua Kecamatan (${unbilledUnits.length})</option>
-                  ${kecOptions.map(k => {
-                    const cnt = unbilledUnits.filter(u => u.kecamatan === k).length;
-                    return `<option value="${escapeHtml(k)}" ${bf.filterKecamatan === k ? 'selected' : ''}>Kec. ${escapeHtml(k)} (${cnt} Unit)</option>`;
-                  }).join('')}
-                </select>
-
-                <select class="form-control" style="padding:6px 8px;font-size:12.5px;" onchange="window.app.setBatchDesaFilter(this.value)">
-                  <option value="ALL">Semua Desa/Kelurahan (${desaOptions.length} Desa)</option>
-                  ${desaOptions.map(d => {
-                    const cnt = unbilledUnits.filter(u => u.desa === d).length;
-                    return `<option value="${escapeHtml(d)}" ${bf.filterDesa === d ? 'selected' : ''}>${escapeHtml(d)} (${cnt} Unit)</option>`;
-                  }).join('')}
-                </select>
-
-                <input type="text" class="form-control" style="padding:6px 8px;font-size:12.5px;" placeholder="🔍 Cari nama / No BNBA / RT..." value="${escapeHtml(bf.searchQuery || '')}" oninput="window.app.setBatchSearchQuery(this.value)" />
-              </div>
-
-              <!-- PILIH JUMLAH BEBAS (11, 12, 13, 21, 22, DST) ATAU KETIK NOMOR BNBA ACAK -->
-              <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:10px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;">
-                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-                  <span style="font-size:12px;font-weight:600;">Jumlah Unit Bebas:</span>
-                  <input type="number" min="1" max="${unbilledUnits.length}" class="form-control" style="width:72px;padding:4px 8px;font-size:12.5px;font-weight:bold;" value="${bf.customPickCount || 12}" oninput="window.app.updateBatchField('customPickCount', Number(this.value))" />
-                  <button class="btn btn-primary btn-sm" onclick="window.app.selectBatchRandomCount()">
-                    🎲 Pilih Acak (${bf.customPickCount || 12} Unit)
-                  </button>
-                  <button class="btn btn-outline btn-sm" onclick="window.app.selectBatchUnitsCount(Number(document.querySelector('[oninput*=customPickCount]')?.value || 12))">
-                    ✓ Pilih ${bf.customPickCount || 12} Unit
-                  </button>
-                  <button class="btn btn-outline btn-sm" onclick="window.app.addAllDisplayedToBatch()">
-                    + Centang Semua Desa Ini (${displayedEligible.length})
-                  </button>
-                  <button class="btn btn-danger btn-sm" style="margin-left:auto;" onclick="window.app.selectBatchUnitsCount(0)">
-                    Reset (0)
-                  </button>
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;">
-                  <input type="text" id="randomBnbaInput" class="form-control" style="flex:1;padding:4px 8px;font-size:12px;" value="${escapeHtml(bf.randomNumbersText || '')}" oninput="window.app.updateBatchField('randomNumbersText', this.value)" placeholder="Atau ketik No. BNBA acak (Contoh: 1, 4, 9, 12, 15, 21, 22, 31, 38, 45, 52, 57)" />
-                  <button class="btn btn-outline btn-sm" onclick="window.app.selectByBnbaNumbers()">
-                    Pilih No. BNBA Ini
-                  </button>
-                </div>
-              </div>
-
-              <!-- TABEL DAFTAR WARGA UNTUK DICENTANG ACAK -->
-              <div style="border:1px solid #cbd5e1;border-radius:8px;max-height:430px;overflow-y:auto;background:#fff;">
-                ${displayedEligible.length === 0 ? `
-                  <div style="padding:32px 20px;text-align:center;color:var(--text-muted);">
-                    Tidak ada unit yang sesuai dengan pencarian/filter di atas.
-                  </div>
-                ` : `
-                  <table class="data-table">
-                    <thead>
-                      <tr>
-                        <th style="width:40px">Pilih</th>
-                        <th style="width:70px">No BNBA</th>
-                        <th>Nama Penerima</th>
-                        <th>RT / Desa / Kelurahan</th>
-                        <th>Kecamatan</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${displayedEligible.map(u => {
-                        const checked = bf.selectedUnitIds.includes(u.id);
-                        return `
-                          <tr style="cursor:pointer;background:${checked ? '#dcfce7' : 'transparent'}" onclick="window.app.toggleBatchUnit('${escapeHtml(u.id)}')">
-                            <td>
-                              <input type="checkbox" style="width:16px;height:16px;cursor:pointer;" ${checked ? 'checked' : ''} onclick="event.stopPropagation(); window.app.toggleBatchUnit('${escapeHtml(u.id)}')" />
-                            </td>
-                            <td><strong>#${u.noBnba}</strong></td>
-                            <td><strong>${escapeHtml(u.nama)}</strong></td>
-                            <td>RT ${escapeHtml(u.rt)} — <strong>${escapeHtml(u.desa)}</strong></td>
-                            <td>${escapeHtml(u.kecamatan)}</td>
-                          </tr>
-                        `;
-                      }).join('')}
-                    </tbody>
-                  </table>
-                `}
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -4502,6 +4888,7 @@
     return state.units.filter(u =>
       u.vendorId === bf.vendorId &&
       !u.batchId &&
+      !u.statusBatal &&
       (bf.filterKecamatan === 'ALL' || u.kecamatan === bf.filterKecamatan) &&
       (bf.filterDesa === 'ALL' || u.desa === bf.filterDesa)
     );
@@ -4544,6 +4931,20 @@
       u.progres = 100;
     }
     bf.selectedUnitIds = [...setIds];
+    renderAll();
+  }
+
+  function toggleSelectAllDisplayedToBatch(checked) {
+    const bf = state.batchForm;
+    const eligible = getFilteredUnbilledForBatch();
+    const eligibleIds = new Set(eligible.map(u => u.id));
+    if (checked) {
+      const merged = new Set([...bf.selectedUnitIds, ...eligibleIds]);
+      bf.selectedUnitIds = [...merged];
+      eligible.forEach(u => { u.progres = 100; });
+    } else {
+      bf.selectedUnitIds = bf.selectedUnitIds.filter(id => !eligibleIds.has(id));
+    }
     renderAll();
   }
 
@@ -5057,6 +5458,7 @@
     setDesaProgress,
     bulkSetFilteredProgress,
     quickDemo100,
+    switchBatchSubTab,
     changeBatchVendor,
     updateBatchField,
     setBatchKecamatanFilter,
@@ -5067,6 +5469,7 @@
     selectBatchUnitsCount,
     selectBatchRandomCount,
     addAllDisplayedToBatch,
+    toggleSelectAllDisplayedToBatch,
     selectByBnbaNumbers,
     createBatch,
     updateBatchStatus,
