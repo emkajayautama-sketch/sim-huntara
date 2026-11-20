@@ -91,24 +91,24 @@ body {
 }
 
 .sidebar-brand {
-  padding: 18px 20px;
+  padding: 12px 16px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   border-bottom: 1px solid rgba(59, 130, 246, 0.2);
   background: linear-gradient(135deg, #071428 0%, #132f5d 100%);
 }
 
 .sidebar-brand-logo-wrap {
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
   background: #ffffff;
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  padding: 3px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   flex-shrink: 0;
 }
 
@@ -156,9 +156,9 @@ body {
 }
 
 .sidebar-vendor-box {
-  margin: 12px 14px 6px;
-  padding: 12px 14px;
-  border-radius: 10px;
+  margin: 6px 10px 2px;
+  padding: 7px 10px;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: var(--bg-sidebar-card);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -167,24 +167,24 @@ body {
 .sidebar-vendor-box label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 10.5px;
+  gap: 5px;
+  font-size: 9.5px;
   text-transform: uppercase;
-  letter-spacing: 0.7px;
+  letter-spacing: 0.6px;
   color: #94a3b8;
-  margin-bottom: 7px;
+  margin-bottom: 4px;
   font-weight: 700;
 }
 
 .sidebar-vendor-select {
   width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
+  padding: 5px 8px;
+  border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: #1e293b;
   color: #ffffff;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 11.5px;
   cursor: pointer;
   transition: all 0.2s ease;
   outline: none;
@@ -192,57 +192,57 @@ body {
 
 .sidebar-vendor-select:focus {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
 .nav-menu {
-  padding: 8px 12px;
+  padding: 2px 8px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .nav-section-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: #64748b;
-  padding: 12px 12px 4px;
+  color: #60a5fa;
+  padding: 6px 8px 1px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 10px;
-  border-radius: 10px;
+  gap: 8px;
+  padding: 4.5px 7px;
+  border-radius: 7px;
   color: #cbd5e1;
   cursor: pointer;
   border: 1px solid transparent;
   background: transparent;
   width: 100%;
   text-align: left;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.15s ease;
   position: relative;
 }
 
 .nav-icon-wrap {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+  width: 25px;
+  height: 25px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .nav-icon-wrap .nav-icon {
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1;
   display: flex;
   align-items: center;
@@ -252,16 +252,16 @@ body {
 .nav-text-wrap {
   display: flex;
   flex-direction: column;
-  gap: 1.5px;
+  gap: 0px;
   min-width: 0;
   flex: 1;
 }
 
 .nav-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #f1f5f9;
-  line-height: 1.25;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -269,51 +269,50 @@ body {
 }
 
 .nav-subtitle {
-  font-size: 10.5px;
+  font-size: 9.2px;
   color: #94a3b8;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.15;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.07);
   border-color: rgba(255, 255, 255, 0.12);
   color: #ffffff;
-  transform: translateX(3px);
+  transform: translateX(2px);
 }
 
 .nav-item:hover .nav-icon-wrap {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.24) 0%, rgba(30, 64, 175, 0.45) 100%);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.3) 0%, rgba(30, 64, 175, 0.5) 100%);
   border-color: rgba(96, 165, 250, 0.45);
-  box-shadow: 0 4px 18px -2px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 10px -2px rgba(37, 99, 235, 0.35);
   transform: translateX(2px);
 }
 
 .nav-item.active::before {
   content: '';
   position: absolute;
-  left: -8px;
-  top: 8px;
-  bottom: 8px;
-  width: 4px;
-  border-radius: 4px;
+  left: -6px;
+  top: 5px;
+  bottom: 5px;
+  width: 3.5px;
+  border-radius: 3px;
   background: #38bdf8;
-  box-shadow: 0 0 10px #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
 }
 
 .nav-item.active .nav-icon-wrap {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.5);
 }
 
 .nav-item.active .nav-title {
