@@ -20,6 +20,7 @@
       desa: 'ALL',
       progres: 'ALL',
       statusTagihan: 'ALL',
+      statusBatal: 'ALL', // 'ALL', 'AKTIF', 'BATAL'
       search: ''
     },
     // State for creating a new Batch (Pencairan Gelondongan)
@@ -436,7 +437,7 @@
     }
 
     const activeUnits = getActiveUnits();
-    const readyUnits = activeUnits.filter(u => Number(u.progres) === 100 && !u.batchId);
+    const readyUnits = activeUnits.filter(u => Number(u.progres) === 100 && !u.batchId && !u.statusBatal);
 
     const elVendor = document.getElementById('badgeVendorCount');
     const elUnit = document.getElementById('badgeUnitCount');
@@ -516,15 +517,18 @@
     const minUnit = Number(state.settings.minimalUnitTagihan) || 10;
 
     const totalUnits = units.length;
-    const count0 = units.filter(u => Number(u.progres) === 0).length;
-    const count50 = units.filter(u => Number(u.progres) === 50).length;
-    const count100 = units.filter(u => Number(u.progres) === 100).length;
-    const countReady = units.filter(u => Number(u.progres) === 100 && !u.batchId).length;
-    const countBilled = units.filter(u => Boolean(u.batchId)).length;
-    const countDenah = units.filter(u => Boolean(u.perubahanDenah)).length;
+    const countBatal = units.filter(u => Boolean(u.statusBatal)).length;
+    const activeUnitsOnly = units.filter(u => !u.statusBatal);
 
-    const weightedProgress = totalUnits > 0
-      ? (((count50 * 50) + (count100 * 100)) / totalUnits).toFixed(1)
+    const count0 = activeUnitsOnly.filter(u => Number(u.progres) === 0).length;
+    const count50 = activeUnitsOnly.filter(u => Number(u.progres) === 50).length;
+    const count100 = activeUnitsOnly.filter(u => Number(u.progres) === 100).length;
+    const countReady = activeUnitsOnly.filter(u => Number(u.progres) === 100 && !u.batchId).length;
+    const countBilled = activeUnitsOnly.filter(u => Boolean(u.batchId)).length;
+    const countDenah = activeUnitsOnly.filter(u => Boolean(u.perubahanDenah)).length;
+
+    const weightedProgress = activeUnitsOnly.length > 0
+      ? (((count50 * 50) + (count100 * 100)) / activeUnitsOnly.length).toFixed(1)
       : '0.0';
 
     // Group by Kecamatan & Desa
@@ -541,18 +545,23 @@
           p100: 0,
           ready: 0,
           billed: 0,
-          denah: 0
+          denah: 0,
+          batal: 0
         };
       }
       const d = desaMap[key];
       d.total++;
-      if (Number(u.progres) === 100) d.p100++;
-      else if (Number(u.progres) === 50) d.p50++;
-      else d.p0++;
+      if (u.statusBatal) {
+        d.batal++;
+      } else {
+        if (Number(u.progres) === 100) d.p100++;
+        else if (Number(u.progres) === 50) d.p50++;
+        else d.p0++;
 
-      if (Number(u.progres) === 100 && !u.batchId) d.ready++;
-      if (u.batchId) d.billed++;
-      if (u.perubahanDenah) d.denah++;
+        if (Number(u.progres) === 100 && !u.batchId) d.ready++;
+        if (u.batchId) d.billed++;
+        if (u.perubahanDenah) d.denah++;
+      }
     }
     const desaList = Object.values(desaMap).sort((a, b) =>
       a.kecamatan.localeCompare(b.kecamatan) || b.total - a.total
@@ -588,7 +597,11 @@
             <div class="kpi-icon-pill blue">🏠</div>
           </div>
           <div class="kpi-value">${totalUnits} <small style="font-size:14px;font-weight:600">Unit</small></div>
-          <span class="kpi-sub">Nilai Kontrak: <strong>Rp ${formatNumberDot(finTotal.totalBruto)}</strong></span>
+          <span class="kpi-sub">
+            Aktif: <strong>${activeUnitsOnly.length} Unit</strong>
+            ${countBatal > 0 ? ` • <span style="color:#dc2626;font-weight:700;">🚫 ${countBatal} Batal</span>` : ''}
+            <br/>Nilai Kontrak: <strong>Rp ${formatNumberDot(finTotal.totalBruto)}</strong>
+          </span>
         </div>
         <div class="kpi-card orange">
           <div class="kpi-card-header">
@@ -597,10 +610,10 @@
           </div>
           <div class="kpi-value">${weightedProgress}%</div>
           <div class="progress-track" style="height:6px;margin:8px 0 6px;">
-            <div class="progress-fill-100" style="width:${totalUnits > 0 ? (count100 / totalUnits * 100) : 0}%"></div>
-            <div class="progress-fill-50" style="width:${totalUnits > 0 ? (count50 / totalUnits * 100) : 0}%"></div>
+            <div class="progress-fill-100" style="width:${activeUnitsOnly.length > 0 ? (count100 / activeUnitsOnly.length * 100) : 0}%"></div>
+            <div class="progress-fill-50" style="width:${activeUnitsOnly.length > 0 ? (count50 / activeUnitsOnly.length * 100) : 0}%"></div>
           </div>
-          <span class="kpi-sub">0%: <b>${count0}</b> | 50%: <b>${count50}</b> | 100%: <b>${count100}</b></span>
+          <span class="kpi-sub">0%: <b>${count0}</b> | 50%: <b>${count50}</b> | 100%: <b>${count100}</b> ${countBatal > 0 ? `| 🚫 Batal: <b style="color:#dc2626">${countBatal}</b>` : ''}</span>
         </div>
         <div class="kpi-card green">
           <div class="kpi-card-header">
@@ -706,7 +719,10 @@
                       <td>${idx + 1}</td>
                       <td><strong>${escapeHtml(d.desa)}</strong></td>
                       <td>${escapeHtml(d.kecamatan)}</td>
-                      <td><strong>${d.total} Unit</strong></td>
+                      <td>
+                        <strong>${d.total} Unit</strong>
+                        ${d.batal > 0 ? `<div style="font-size:11px;color:#dc2626;font-weight:700;">(${d.batal} Batal)</div>` : ''}
+                      </td>
                       <td><span class="badge badge-0">${d.p0} Unit</span></td>
                       <td><span class="badge badge-50">${d.p50} Unit</span></td>
                       <td><span class="badge badge-100">${d.p100} Unit</span></td>
@@ -889,6 +905,7 @@
      ======================================================================== */
   function renderUnitsTab() {
     const activeUnits = getActiveUnits();
+    const countBatal = activeUnits.filter(u => Boolean(u.statusBatal)).length;
     const kecOptions = [...new Set(activeUnits.map(u => u.kecamatan).filter(Boolean))].sort();
     const desaOptions = [...new Set(
       activeUnits
@@ -901,9 +918,11 @@
       if (state.unitFilter.kecamatan !== 'ALL' && u.kecamatan !== state.unitFilter.kecamatan) return false;
       if (state.unitFilter.desa !== 'ALL' && u.desa !== state.unitFilter.desa) return false;
       if (state.unitFilter.progres !== 'ALL' && String(u.progres) !== String(state.unitFilter.progres)) return false;
-      if (state.unitFilter.statusTagihan === 'SIAP_TAGIH' && !(Number(u.progres) === 100 && !u.batchId)) return false;
+      if (state.unitFilter.statusTagihan === 'SIAP_TAGIH' && !(Number(u.progres) === 100 && !u.batchId && !u.statusBatal)) return false;
       if (state.unitFilter.statusTagihan === 'SUDAH_TAGIH' && !u.batchId) return false;
-      if (state.unitFilter.statusTagihan === 'BELUM_TAGIH' && u.batchId) return false;
+      if (state.unitFilter.statusTagihan === 'BELUM_TAGIH' && (u.batchId || u.statusBatal)) return false;
+      if (state.unitFilter.statusBatal === 'AKTIF' && u.statusBatal) return false;
+      if (state.unitFilter.statusBatal === 'BATAL' && !u.statusBatal) return false;
       if (state.unitFilter.search) {
         const q = state.unitFilter.search.toLowerCase();
         const match =
@@ -911,6 +930,7 @@
           String(u.nik || '').toLowerCase().includes(q) ||
           String(u.desa || '').toLowerCase().includes(q) ||
           String(u.rt || '').toLowerCase().includes(q) ||
+          String(u.alasanBatal || '').toLowerCase().includes(q) ||
           String(u.noBnba || '').toLowerCase().includes(q);
         if (!match) return false;
       }
@@ -971,6 +991,14 @@
                 <option value="BELUM_TAGIH" ${state.unitFilter.statusTagihan === 'BELUM_TAGIH' ? 'selected' : ''}>Belum Ditagihkan</option>
               </select>
             </div>
+            <div class="form-group" style="margin-bottom:0;min-width:160px;">
+              <label>Status Keaktifan</label>
+              <select class="form-control" onchange="window.app.setUnitFilter('statusBatal', this.value)">
+                <option value="ALL" ${state.unitFilter.statusBatal === 'ALL' ? 'selected' : ''}>Semua (Aktif & Batal)</option>
+                <option value="AKTIF" ${state.unitFilter.statusBatal === 'AKTIF' ? 'selected' : ''}>✅ Hanya Penerima Aktif</option>
+                <option value="BATAL" ${state.unitFilter.statusBatal === 'BATAL' ? 'selected' : ''}>🚫 Dibatalkan / Batal (${countBatal})</option>
+              </select>
+            </div>
             <div class="form-group" style="margin-bottom:0;flex:1;min-width:200px;">
               <label>Cari Nama / NIK / RT / No. BNBA</label>
               <input type="text" class="form-control" placeholder="Ketik nama warga, NIK, RT, atau desa..." value="${escapeHtml(state.unitFilter.search)}" oninput="window.app.setUnitFilter('search', this.value)" />
@@ -1005,26 +1033,35 @@
                   </tr>
                 ` : filtered.map(u => {
                   const vendor = getVendorById(u.vendorId);
+                  const isBatal = Boolean(u.statusBatal);
                   const photoCount = [u.foto0, u.foto50, u.foto100_1, u.foto100_2, u.foto100_3].filter(Boolean).length;
                   const batchObj = u.batchId ? state.batches.find(b => b.id === u.batchId) : null;
                   return `
-                    <tr>
-                      <td><strong>#${u.noBnba}</strong> ${u.tambahan ? '<span title="Data Tambahan (V)" style="color:#16a34a;font-weight:bold">✓</span>' : ''}</td>
+                    <tr style="${isBatal ? 'background:#fef2f2;' : ''}">
+                      <td>
+                        <strong>#${u.noBnba}</strong> ${u.tambahan ? '<span title="Data Tambahan (V)" style="color:#16a34a;font-weight:bold">✓</span>' : ''}
+                        ${isBatal ? `<div style="margin-top:2px;"><span class="badge" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;font-weight:700;font-size:10px;">🚫 BATAL</span></div>` : ''}
+                      </td>
                       <td><span class="badge badge-0">No. ${escapeHtml(u.noInsitu || String(u.noBnba).padStart(2, '0'))}</span></td>
                       <td>
-                        <strong>${escapeHtml(u.nama)}</strong>
+                        <strong style="${isBatal ? 'text-decoration:line-through;color:#991b1b;' : ''}">${escapeHtml(u.nama)}</strong>
                         ${u.nik ? `<div style="font-size:11.5px;color:var(--text-muted)">NIK/KK: ${escapeHtml(u.nik)}</div>` : `<div style="font-size:11px;color:#94a3b8">NIK belum diisi</div>`}
+                        ${isBatal ? `<div style="font-size:11.5px;color:#dc2626;font-weight:600;margin-top:2px;">⚠️ Alasan: ${escapeHtml(u.alasanBatal || 'Dibatalkan (Arsip)')}</div>` : ''}
                       </td>
                       <td>RT ${escapeHtml(u.rt)}</td>
                       <td><strong>${escapeHtml(u.desa)}</strong></td>
                       <td>${escapeHtml(u.kecamatan)}</td>
                       <td><span style="font-size:12px;font-weight:600">${escapeHtml(vendor.nama)}</span></td>
                       <td>
-                        <div style="display:inline-flex;gap:4px;">
-                          <button class="btn btn-sm ${Number(u.progres) === 0 ? 'btn-danger' : 'btn-outline'}" onclick="window.app.quickSetUnitProgress('${escapeHtml(u.id)}', 0)">0%</button>
-                          <button class="btn btn-sm ${Number(u.progres) === 50 ? 'btn-warning' : 'btn-outline'}" onclick="window.app.quickSetUnitProgress('${escapeHtml(u.id)}', 50)">50%</button>
-                          <button class="btn btn-sm ${Number(u.progres) === 100 ? 'btn-success' : 'btn-outline'}" onclick="window.app.quickSetUnitProgress('${escapeHtml(u.id)}', 100)">100%</button>
-                        </div>
+                        ${isBatal ? `
+                          <span class="badge" style="background:#f1f5f9;color:#64748b;font-size:11px;">🚫 Dinonaktifkan</span>
+                        ` : `
+                          <div style="display:inline-flex;gap:4px;">
+                            <button class="btn btn-sm ${Number(u.progres) === 0 ? 'btn-danger' : 'btn-outline'}" onclick="window.app.quickSetUnitProgress('${escapeHtml(u.id)}', 0)">0%</button>
+                            <button class="btn btn-sm ${Number(u.progres) === 50 ? 'btn-warning' : 'btn-outline'}" onclick="window.app.quickSetUnitProgress('${escapeHtml(u.id)}', 50)">50%</button>
+                            <button class="btn btn-sm ${Number(u.progres) === 100 ? 'btn-success' : 'btn-outline'}" onclick="window.app.quickSetUnitProgress('${escapeHtml(u.id)}', 100)">100%</button>
+                          </div>
+                        `}
                       </td>
                       <td>
                         <span class="badge ${photoCount >= 5 ? 'badge-100' : photoCount > 0 ? 'badge-50' : 'badge-0'}">📷 ${photoCount}/5 Foto</span>
@@ -1032,20 +1069,34 @@
                       </td>
                       <td>
                         ${
-                          batchObj
-                            ? `<span class="badge badge-billed" title="${escapeHtml(batchObj.namaBatch)}">💰 ${escapeHtml(batchObj.namaBatch)}</span>`
-                            : Number(u.progres) === 100
-                              ? `<span class="badge badge-100">✅ Siap Ditagihkan</span>`
-                              : `<span class="badge badge-0">Belum Selesai</span>`
+                          isBatal
+                            ? `<span class="badge" style="background:#fee2e2;color:#b91c1c;border:1px solid #f87171;">🚫 Dibatalkan (Tidak Ditagihkan)</span>`
+                            : batchObj
+                              ? `<span class="badge badge-billed" title="${escapeHtml(batchObj.namaBatch)}">💰 ${escapeHtml(batchObj.namaBatch)}</span>`
+                              : Number(u.progres) === 100
+                                ? `<span class="badge badge-100">✅ Siap Ditagihkan</span>`
+                                : `<span class="badge badge-0">Belum Selesai</span>`
                         }
                       </td>
                       <td style="text-align:right;white-space:nowrap;display:flex;gap:4px;justify-content:flex-end;">
-                        <button class="btn btn-outline btn-sm" title="Cetak Laporan Dokumentasi Progres 3 Halaman (Model laporan.pdf)" onclick="window.app.printSingleUnit('${escapeHtml(u.id)}')">
-                          🖨️ Cetak Laporan
-                        </button>
-                        <button class="btn btn-primary btn-sm" onclick="window.app.openUnitModal('${escapeHtml(u.id)}')">
-                          📷 Detail & Foto
-                        </button>
+                        ${isBatal ? `
+                          <button class="btn btn-success btn-sm" title="Aktifkan kembali penerima ini" onclick="window.app.toggleUnitBatal('${escapeHtml(u.id)}')">
+                            ♻️ Aktifkan
+                          </button>
+                          <button class="btn btn-primary btn-sm" onclick="window.app.openUnitModal('${escapeHtml(u.id)}')">
+                            📷 Detail & Alasan
+                          </button>
+                        ` : `
+                          <button class="btn btn-outline btn-sm" title="Cetak Laporan Dokumentasi Progres 3 Halaman (Model laporan.pdf)" onclick="window.app.printSingleUnit('${escapeHtml(u.id)}')">
+                            🖨️ Cetak
+                          </button>
+                          <button class="btn btn-outline btn-sm" style="color:#dc2626;border-color:#fca5a5;" title="Tandai Batal (Data TIDAK dihapus, tersimpan aman)" onclick="window.app.promptBatalkanUnit('${escapeHtml(u.id)}')">
+                            🚫 Batal
+                          </button>
+                          <button class="btn btn-primary btn-sm" onclick="window.app.openUnitModal('${escapeHtml(u.id)}')">
+                            📷 Detail & Foto
+                          </button>
+                        `}
                       </td>
                     </tr>
                   `;
@@ -1069,9 +1120,9 @@
     }
     const vendor = getVendorById(bf.vendorId);
 
-    // Semua unit milik vendor yang belum masuk batch pencairan sebelumnya (semua 10 desa tampil lengkap!)
+    // Semua unit milik vendor yang belum masuk batch pencairan sebelumnya dan TIDAK berstatus BATAL
     const allVendorUnits = state.units.filter(u => u.vendorId === vendor.id);
-    const unbilledUnits = allVendorUnits.filter(u => !u.batchId);
+    const unbilledUnits = allVendorUnits.filter(u => !u.batchId && !u.statusBatal);
 
     // Daftar semua Kecamatan & semua 10 Desa/Kelurahan milik vendor
     const kecOptions = [...new Set(allVendorUnits.map(u => u.kecamatan).filter(Boolean))].sort();
@@ -3608,6 +3659,9 @@
       foto100_1: '',
       foto100_2: '',
       foto100_3: '',
+      statusBatal: false,
+      alasanBatal: '',
+      tglBatal: '',
       perubahanDenah: false,
       keteranganDenah: 'PEMILIK RUMAH INGIN MEMBANGUN CLOSET DI LUAR HUNTARA (MATERIAL DI BERIKAN)',
       alasanPerubahan: '',
@@ -3618,6 +3672,11 @@
       batchId: null,
       statusTagihan: 'BELUM_DITAGIHKAN'
     };
+    if (existing) {
+      u.statusBatal = Boolean(existing.statusBatal);
+      u.alasanBatal = existing.alasanBatal || '';
+      u.tglBatal = existing.tglBatal || '';
+    }
 
     window._editingUnit = u;
     window._editingUnitIsExisting = Boolean(existing);
@@ -3651,6 +3710,57 @@
             <button class="btn btn-sm btn-danger" onclick="window.app.closeModal()">✕</button>
           </div>
           <div class="modal-body">
+            <!-- STATUS KEAKTIFAN PENERIMA (FITUR BATAL / NONAKTIF TANPA HAPUS DATA) -->
+            <div style="background:${u.statusBatal ? '#fef2f2' : '#f0fdf4'};border:2px solid ${u.statusBatal ? '#ef4444' : '#86efac'};border-radius:10px;padding:14px;margin-bottom:18px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                <div>
+                  <div style="font-weight:700;font-size:14px;color:${u.statusBatal ? '#991b1b' : '#166534'};display:flex;align-items:center;gap:6px;">
+                    ${u.statusBatal ? '🚫 STATUS: PENERIMA DIBATALKAN (TIDAK DITAGIHKAN)' : '✅ STATUS: PENERIMA AKTIF'}
+                  </div>
+                  <div style="font-size:12px;color:${u.statusBatal ? '#b91c1c' : '#15803d'};margin-top:2px;">
+                    ${u.statusBatal
+                      ? 'Penerima ini ditandai BATAL. Seluruh data, foto & riwayat BNBA tetap tersimpan aman di database, namun otomatis dikeluarkan dari antrian pencairan/tagihan.'
+                      : 'Penerima aktif dalam kuota BNBA dan akan masuk ke daftar siap tagih jika progres 100%.'}
+                  </div>
+                </div>
+                <div>
+                  <button type="button" class="btn ${u.statusBatal ? 'btn-success' : 'btn-danger'} btn-sm" onclick="window.app.toggleModalStatusBatal()">
+                    ${u.statusBatal ? '♻️ Pulihkan / Aktifkan Kembali' : '🚫 Tandai Batal (Tanpa Hapus Data)'}
+                  </button>
+                </div>
+              </div>
+
+              ${u.statusBatal ? `
+                <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #fca5a5;">
+                  <label style="font-weight:600;font-size:12.5px;color:#991b1b;margin-bottom:6px;display:block;">
+                    Pilih Cepat / Tulis Alasan Pembatalan:
+                  </label>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+                    <button type="button" class="btn btn-outline btn-sm" style="font-size:11px;background:#fff;" onclick="window._editingUnit.alasanBatal='Masalah Lahan / Lokasi Tanah Sengketa'; window.app.renderUnitModalContent();">
+                      Masalah Lahan / Sengketa
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm" style="font-size:11px;background:#fff;" onclick="window._editingUnit.alasanBatal='Pindah Domisili / Mengundurkan Diri'; window.app.renderUnitModalContent();">
+                      Pindah Domisili / Mundur
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm" style="font-size:11px;background:#fff;" onclick="window._editingUnit.alasanBatal='Sudah Menerima Bantuan Perumahan Lain (Double Funding)'; window.app.renderUnitModalContent();">
+                      Sudah Terima Bantuan Lain
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm" style="font-size:11px;background:#fff;" onclick="window._editingUnit.alasanBatal='Tidak Memenuhi Syarat Verifikasi Lapangan'; window.app.renderUnitModalContent();">
+                      Tidak Memenuhi Syarat
+                    </button>
+                  </div>
+                  <div class="grid-2" style="gap:10px;">
+                    <div class="form-group" style="margin-bottom:0;">
+                      <input type="text" class="form-control" value="${escapeHtml(u.alasanBatal || '')}" oninput="window._editingUnit.alasanBatal=this.value" placeholder="Ketik alasan pembatalan atau pilih tombol cepat di atas..." />
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                      <input type="text" class="form-control" value="${escapeHtml(u.tglBatal || '')}" oninput="window._editingUnit.tglBatal=this.value" placeholder="Tanggal Pembatalan (cth: 20 November 2026)" />
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+
             <!-- BAGIAN 1: BIODATA PENERIMA & LOKASI DESA -->
             <h4 style="margin-bottom:10px;color:var(--primary);">1. Identitas Penerima BNBA & Lokasi Desa</h4>
             <div class="grid-3" style="margin-bottom:18px;">
@@ -4038,11 +4148,67 @@
   }
 
   function deleteUnit(unitId) {
-    if (!confirm('Yakin ingin menghapus data penerima BNBA ini?')) return;
-    state.units = state.units.filter(u => u.id !== unitId);
+    const u = state.units.find(x => x.id === unitId);
+    const msg = u
+      ? `Apakah Anda yakin ingin MENGHAPUS PERMANEN penerima BNBA #${u.noBnba} - ${u.nama}?\n\n💡 REKOMENDASI: Jika penerima tidak jadi dibangun/batal, gunakan tombol "🚫 Batal" agar seluruh data & arsip foto tidak hilang.`
+      : 'Yakin ingin menghapus data penerima BNBA ini?';
+    if (!confirm(msg)) return;
+    state.units = state.units.filter(x => x.id !== unitId);
     closeModal();
     saveState('Data penerima dihapus');
     renderAll();
+  }
+
+  function promptBatalkanUnit(unitId) {
+    const u = state.units.find(x => x.id === unitId);
+    if (!u) return;
+    const defaultReason = 'Masalah Lahan / Belum Siap Bangun';
+    const reason = prompt(
+      `Tandai BATAL untuk penerima: #${u.noBnba} - ${u.nama}?\n\n` +
+      `CATATAN:\n` +
+      `• Data TIDAK DIHAPUS dan tetap tersimpan aman di sistem sebagai arsip.\n` +
+      `• Unit yang batal otomatis dikeluarkan dari daftar siap tagih & batch pencairan.\n\n` +
+      `Masukkan alasan pembatalan:`,
+      defaultReason
+    );
+    if (reason === null) return;
+    u.statusBatal = true;
+    u.alasanBatal = reason.trim() || defaultReason;
+    u.tglBatal = getTodayIndonesian();
+    if (u.batchId) {
+      const b = state.batches.find(x => x.id === u.batchId);
+      if (b) {
+        b.unitIds = b.unitIds.filter(id => id !== u.id);
+      }
+      u.batchId = null;
+    }
+    saveState(`Penerima BNBA #${u.noBnba} - ${u.nama} ditandai BATAL: ${u.alasanBatal}`);
+    renderAll();
+  }
+
+  function toggleUnitBatal(unitId) {
+    const u = state.units.find(x => x.id === unitId);
+    if (!u) return;
+    if (u.statusBatal) {
+      if (confirm(`Aktifkan kembali penerima BNBA #${u.noBnba} - ${u.nama}?`)) {
+        u.statusBatal = false;
+        saveState(`Penerima BNBA #${u.noBnba} - ${u.nama} diaktifkan kembali`);
+        renderAll();
+      }
+    } else {
+      promptBatalkanUnit(unitId);
+    }
+  }
+
+  function toggleModalStatusBatal() {
+    const u = window._editingUnit;
+    if (!u) return;
+    u.statusBatal = !u.statusBatal;
+    if (u.statusBatal) {
+      if (!u.alasanBatal) u.alasanBatal = 'Masalah Lahan / Belum Siap Bangun';
+      if (!u.tglBatal) u.tglBatal = getTodayIndonesian();
+    }
+    renderUnitModalContent();
   }
 
   function setUnitFilter(key, val) {
@@ -4052,7 +4218,7 @@
   }
 
   function resetUnitFilter() {
-    state.unitFilter = { kecamatan: 'ALL', desa: 'ALL', progres: 'ALL', statusTagihan: 'ALL', search: '' };
+    state.unitFilter = { kecamatan: 'ALL', desa: 'ALL', progres: 'ALL', statusTagihan: 'ALL', statusBatal: 'ALL', search: '' };
     renderAll();
   }
 
@@ -4065,6 +4231,10 @@
   function quickSetUnitProgress(unitId, prog) {
     const u = state.units.find(x => x.id === unitId);
     if (!u) return;
+    if (u.statusBatal) {
+      alert(`Unit BNBA #${u.noBnba} (${u.nama}) berstatus BATAL (${u.alasanBatal || 'Dibatalkan'}).\n\nAktifkan kembali unit terlebih dahulu jika ingin mengubah progres fisik.`);
+      return;
+    }
     u.progres = prog;
     const p50Len = (state.settings.pekerjaan50 || []).length || 4;
     const p100Len = (state.settings.pekerjaan100 || []).length || 6;
@@ -4080,6 +4250,7 @@
     const p100Len = (state.settings.pekerjaan100 || []).length || 6;
     for (const u of state.units) {
       if (state.selectedVendorId !== 'ALL' && u.vendorId !== state.selectedVendorId) continue;
+      if (u.statusBatal) continue; // Jangan ubah progres unit yang dibatalkan
       if (u.kecamatan === kecamatan && u.desa === desa) {
         u.progres = prog;
         u.check50 = prog >= 50 ? Array(p50Len).fill(true) : Array(p50Len).fill(false);
@@ -4095,6 +4266,7 @@
     const activeUnits = getActiveUnits();
     let count = 0;
     for (const u of activeUnits) {
+      if (u.statusBatal) continue; // Jangan ubah progres unit yang dibatalkan
       if (state.unitFilter.kecamatan !== 'ALL' && u.kecamatan !== state.unitFilter.kecamatan) continue;
       if (state.unitFilter.desa !== 'ALL' && u.desa !== state.unitFilter.desa) continue;
       if (state.unitFilter.progres !== 'ALL' && String(u.progres) !== String(state.unitFilter.progres)) continue;
@@ -4108,10 +4280,11 @@
   }
 
   function quickDemo100() {
-    // Set first 20 units of active vendor to 100% so user can immediately test 10 or 20 unit batch disbursement
+    // Set first 20 active units of active vendor to 100% (lewati yang berstatus batal)
     const activeUnits = getActiveUnits();
     let changed = 0;
     for (const u of activeUnits) {
+      if (u.statusBatal) continue;
       if (Number(u.progres) < 100 && changed < 20) {
         u.progres = 100;
         u.check50 = [true, true, true, true, true, true];
@@ -4120,7 +4293,7 @@
       }
     }
     if (changed === 0 && activeUnits.length > 0) {
-      alert('Semua unit sudah berada di progres 100%!');
+      alert('Semua unit aktif sudah berada di progres 100%!');
       return;
     }
     saveState(`${changed} unit disimulasikan Selesai 100% dan siap ditagihkan!`);
@@ -4736,6 +4909,9 @@
     setModalUnitProgress,
     saveUnitModal,
     deleteUnit,
+    promptBatalkanUnit,
+    toggleUnitBatal,
+    toggleModalStatusBatal,
     closeModal,
     setUnitFilter,
     resetUnitFilter,
