@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200" width="240" height="200">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d4af37" />
+      <stop offset="50%" stop-color="#aa8220" />
+      <stop offset="100%" stop-color="#f3d266" />
+    </linearGradient>
+    <linearGradient id="navyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+  </defs>
+  <!-- Shield / Emblem Base -->
+  <path d="M120 12 L212 56 L212 118 C212 158 170 182 120 194 C70 182 28 158 28 118 L28 56 Z" fill="url(#navyGrad)" stroke="url(#goldGrad)" stroke-width="6"/>
+  <!-- Roof / Huntara Symbol -->
+  <path d="M55 88 L120 42 L185 88 L170 88 L120 53 L70 88 Z" fill="url(#goldGrad)"/>
+  <!-- Monogram EMKA -->
+  <text x="120" y="132" font-family="Georgia, serif" font-size="44" font-weight="bold" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="2">EMKA</text>
+  <text x="120" y="158" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="4">UTAMA</text>
+  <!-- Bottom Gold Ribbon -->
+  <line x1="45" y1="170" x2="195" y2="170" stroke="url(#goldGrad)" stroke-width="3"/>
+</svg>
+

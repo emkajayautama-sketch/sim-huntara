@@ -1,0 +1,11 @@
+{
+  "name": "aplikasi-pencairan-huntara-bnpb",
+  "version": "1.0.0",
+  "description": "Aplikasi Pemantauan Progres & Pencairan Huntara Multi-Vendor (SIM-HUNTARA BNPB)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  }
+}
+

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" width="200" height="220">
+  <!-- Shield Provinsi NTT -->
+  <path d="M20 20 L180 20 L180 120 C180 175 100 205 100 205 C100 205 20 175 20 120 Z" fill="#dc2626" stroke="#facc15" stroke-width="8"/>
+  <path d="M100 24 L176 24 L176 120 C176 172 100 201 100 201 Z" fill="#1e3a8a"/>
+  <!-- Star -->
+  <polygon points="100,45 108,68 132,68 112,82 120,105 100,90 80,105 88,82 68,68 92,68" fill="#facc15"/>
+  <!-- Komodo / Emblem Center -->
+  <rect x="52" y="118" width="96" height="26" rx="4" fill="#facc15"/>
+  <text x="100" y="136" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0f172a" text-anchor="middle">PROV. NTT</text>
+  <text x="100" y="172" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">1958</text>
+</svg>
+
