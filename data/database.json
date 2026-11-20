@@ -237,10 +237,10 @@
         true,
         true
       ],
-      "foto0": "",
-      "foto50": "",
+      "foto0": "/uploads/wm_bnba2_foto0_1795138278344_cc0799.jpg",
+      "foto50": "/uploads/wm_bnba2_foto50_1795138318121_9a9849.jpg",
       "foto100_1": "",
-      "foto100_2": "",
+      "foto100_2": "/uploads/wm_bnba2_foto100_2_1795138363779_441eaf.jpg",
       "foto100_3": "",
       "perubahanDenah": false,
       "keteranganDenah": "PEMILIK RUMAH INGIN MEMBANGUN CLOSET DI LUAR HUNTARA (MATERIAL DI BERIKAN)",
@@ -249,8 +249,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101644642",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-003",
@@ -390,8 +390,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101644642",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-006",
@@ -437,8 +437,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101644642",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-007",
@@ -484,8 +484,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101644642",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-008",
@@ -531,8 +531,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101644642",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-009",
@@ -766,8 +766,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101644642",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-014",
@@ -813,8 +813,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101665122",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-015",
@@ -860,8 +860,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101644642",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-016",
@@ -1001,8 +1001,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101665122",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-019",
@@ -1095,8 +1095,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101665122",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-021",
@@ -1142,8 +1142,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101665122",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-022",
@@ -1565,8 +1565,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101665122",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-031",
@@ -1612,8 +1612,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101665122",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-032",
@@ -1800,8 +1800,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101644642",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-036",
@@ -1894,8 +1894,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101665122",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-038",
@@ -1941,8 +1941,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101665122",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-039",
@@ -2035,8 +2035,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101665122",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-041",
@@ -2176,8 +2176,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101665122",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-044",
@@ -2270,8 +2270,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101644642",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-046",
@@ -2317,8 +2317,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101644642",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-047",
@@ -2458,8 +2458,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101644642",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-050",
@@ -2505,8 +2505,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101665122",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-051",
@@ -2552,8 +2552,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101665122",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-052",
@@ -2646,8 +2646,8 @@
       "namaKepalaDesa": "",
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
-      "batchId": "batch-1795101644642",
-      "statusTagihan": "DIAJUKAN"
+      "batchId": null,
+      "statusTagihan": "BELUM_DITAGIHKAN"
     },
     {
       "id": "emka-054",
@@ -2932,62 +2932,5 @@
       "statusTagihan": "BELUM_DITAGIHKAN"
     }
   ],
-  "batches": [
-    {
-      "id": "batch-1795101644642",
-      "vendorId": "vendor-emka-utama",
-      "namaBatch": "Pencairan Gelondongan Tahap 1",
-      "noInvoice": "EMKA00011126",
-      "tglInvoice": "19 November 2026",
-      "noSpp": "001/EMKA/XI/2026",
-      "tglSpp": "19 November 2026",
-      "noSps": "01/EMKA/SPS/XI/2026",
-      "tglSps": "19 November 2026",
-      "tglCoverDokumentasi": "19 November 2026",
-      "unitIds": [
-        "emka-002",
-        "emka-005",
-        "emka-006",
-        "emka-007",
-        "emka-008",
-        "emka-013",
-        "emka-015",
-        "emka-035",
-        "emka-045",
-        "emka-046",
-        "emka-049",
-        "emka-053"
-      ],
-      "status": "DIAJUKAN",
-      "createdAt": "2026-11-19T15:20:44.642Z"
-    },
-    {
-      "id": "batch-1795101665122",
-      "vendorId": "vendor-emka-utama",
-      "namaBatch": "Pencairan Gelondongan Tahap 2",
-      "noInvoice": "EMKA00021126",
-      "tglInvoice": "19 November 2026",
-      "noSpp": "002/EMKA/XI/2026",
-      "tglSpp": "19 November 2026",
-      "noSps": "02/EMKA/SPS/XI/2026",
-      "tglSps": "19 November 2026",
-      "tglCoverDokumentasi": "19 November 2026",
-      "unitIds": [
-        "emka-014",
-        "emka-018",
-        "emka-020",
-        "emka-021",
-        "emka-030",
-        "emka-031",
-        "emka-037",
-        "emka-038",
-        "emka-040",
-        "emka-043",
-        "emka-050",
-        "emka-051"
-      ],
-      "status": "DIAJUKAN",
-      "createdAt": "2026-11-19T15:21:05.122Z"
-    }
-  ]
+  "batches": []
 }

@@ -2446,7 +2446,7 @@
               <input type="file" id="wmFileInput" accept="image/*" class="form-control" onchange="window.app.previewWatermark()" />
             </div>
             <div style="text-align:center;margin:12px 0;">
-              <canvas id="wmCanvas" width="800" height="540" style="max-width:100%;border:1px solid #cbd5e1;border-radius:8px;background:#e2e8f0;"></canvas>
+              <canvas id="wmCanvas" width="800" height="540" style="max-width:100%;height:auto;border:1px solid #cbd5e1;border-radius:8px;background:#e2e8f0;"></canvas>
             </div>
             <div style="display:flex;gap:10px;">
               <button class="btn btn-success" style="flex:1" onclick="window.app.saveWatermarkedToUnit()">
@@ -4156,33 +4156,42 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // Draw BNPB Logo top-right
+      // Draw BNPB Logo top-right (proporsional dan bulat sempurna)
       const logo = new Image();
       logo.onload = () => {
-        ctx.drawImage(logo, canvas.width - 96, 14, 80, 80);
+        const logoSize = Math.max(50, Math.round(Math.min(canvas.width, canvas.height) * 0.12));
+        const pad = Math.max(12, Math.round(logoSize * 0.18));
+        ctx.drawImage(logo, canvas.width - logoSize - pad, pad, logoSize, logoSize);
 
         // Draw bottom overlay bar & GPS info
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.52)';
-        ctx.fillRect(0, canvas.height - 86, canvas.width, 86);
+        const barHeight = Math.max(68, Math.round(canvas.height * 0.14));
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.58)';
+        ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight);
 
         // Mini map box bottom-left
+        const boxH = Math.max(48, Math.round(barHeight * 0.74));
+        const boxW = Math.max(68, Math.round(boxH * 1.3));
+        const boxY = canvas.height - barHeight + Math.round((barHeight - boxH) / 2);
         ctx.fillStyle = '#e0f2fe';
-        ctx.fillRect(14, canvas.height - 76, 88, 66);
+        ctx.fillRect(14, boxY, boxW, boxH);
         ctx.fillStyle = '#0369a1';
         ctx.font = 'bold 11px Arial';
-        ctx.fillText('GPS MAP', 28, canvas.height - 46);
+        ctx.fillText('GPS MAP', 22, boxY + 20);
         ctx.font = '10px Arial';
-        ctx.fillText(u ? u.desa.slice(0, 11) : 'Lokasi', 22, canvas.height - 28);
+        ctx.fillText(u ? u.desa.slice(0, 11) : 'Lokasi', 20, boxY + 36);
 
-        // Right-aligned timestamp, GPS, Kegiatan, Nama Penerima
+        // Right-aligned timestamp, GPS, Kegiatan, Nama Penerima (proporsional tidak gepeng)
+        const fontSize = Math.max(11, Math.min(16, Math.round(barHeight * 0.17)));
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'right';
-        ctx.font = 'bold 14px Arial';
-        ctx.fillText(dateStr, canvas.width - 16, canvas.height - 60);
-        ctx.fillText(gpsStr, canvas.width - 16, canvas.height - 41);
-        ctx.fillText(`KEGIATAN : Pembangunan Huntara Insitu ${u ? u.desa : ''}`, canvas.width - 16, canvas.height - 23);
+        ctx.font = `bold ${fontSize + 1}px Arial`;
+        ctx.fillText(dateStr, canvas.width - 16, canvas.height - barHeight + (barHeight * 0.28));
+        ctx.font = `${fontSize}px Arial`;
+        ctx.fillText(gpsStr, canvas.width - 16, canvas.height - barHeight + (barHeight * 0.50));
+        ctx.fillText(`KEGIATAN : Pembangunan Huntara Insitu ${u ? u.desa : ''}`, canvas.width - 16, canvas.height - barHeight + (barHeight * 0.72));
         ctx.fillStyle = '#fde047';
-        ctx.fillText(`Nama : ${u ? u.nama : '-'} (RT ${u ? u.rt : '-'})`, canvas.width - 16, canvas.height - 6);
+        ctx.font = `bold ${fontSize + 1}px Arial`;
+        ctx.fillText(`Nama : ${u ? u.nama : '-'} (RT ${u ? u.rt : '-'})`, canvas.width - 16, canvas.height - barHeight + (barHeight * 0.92));
         ctx.textAlign = 'left';
       };
       logo.src = '/assets/logo-bnpb.png';
@@ -4192,11 +4201,30 @@
       const reader = new FileReader();
       reader.onload = (e) => {
         const img = new Image();
-        img.onload = () => drawStamp(img);
+        img.onload = () => {
+          // Sesuaikan dimensi canvas mengikuti RASIO ASLI FOTO agar tidak tertarik/gepeng/melebar
+          let w = img.naturalWidth || img.width;
+          let h = img.naturalHeight || img.height;
+          const maxDim = 1200;
+          if (w > maxDim || h > maxDim) {
+            if (w >= h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          drawStamp(img);
+        };
         img.src = e.target.result;
       };
       reader.readAsDataURL(fileInput.files[0]);
     } else {
+      canvas.width = 800;
+      canvas.height = 540;
       drawStamp(null);
     }
   }
