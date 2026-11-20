@@ -1084,25 +1084,13 @@
                                 : `<span class="badge badge-0">Belum Selesai</span>`
                         }
                       </td>
-                      <td style="text-align:right;white-space:nowrap;display:flex;gap:4px;justify-content:flex-end;">
-                        ${isBatal ? `
-                          <button class="btn btn-success btn-sm" title="Aktifkan kembali penerima ini" onclick="window.app.toggleUnitBatal('${escapeHtml(u.id)}')">
-                            ♻️ Aktifkan
+                      <td style="text-align:right;white-space:nowrap;">
+                        <div class="action-dropdown-wrap">
+                          <button type="button" class="action-btn-pill" id="actionBtn-${escapeHtml(u.id)}" onclick="window.app.toggleActionDropdown(event, '${escapeHtml(u.id)}')">
+                            <span>⚙️ Aksi</span>
+                            <span class="arrow-icon">▼</span>
                           </button>
-                          <button class="btn btn-primary btn-sm" onclick="window.app.openUnitModal('${escapeHtml(u.id)}')">
-                            📷 Detail & Alasan
-                          </button>
-                        ` : `
-                          <button class="btn btn-outline btn-sm" title="Cetak Laporan Dokumentasi Progres 3 Halaman (Model laporan.pdf)" onclick="window.app.printSingleUnit('${escapeHtml(u.id)}')">
-                            🖨️ Cetak
-                          </button>
-                          <button class="btn btn-outline btn-sm" style="color:#dc2626;border-color:#fca5a5;" title="Tandai Batal (Data TIDAK dihapus, tersimpan aman)" onclick="window.app.promptBatalkanUnit('${escapeHtml(u.id)}')">
-                            🚫 Batal
-                          </button>
-                          <button class="btn btn-primary btn-sm" onclick="window.app.openUnitModal('${escapeHtml(u.id)}')">
-                            📷 Detail & Foto
-                          </button>
-                        `}
+                        </div>
                       </td>
                     </tr>
                   `;
@@ -4217,6 +4205,146 @@
     renderUnitModalContent();
   }
 
+  /* ========================================================================
+     KOLOM AKSI TABEL BNBA: DROPDOWN SUB-MENU MELAYANG (ACTION SUB-MENU)
+     ======================================================================== */
+  let _activeDropdownUnitId = null;
+
+  function closeActionDropdown() {
+    const menu = document.getElementById('globalActionMenu');
+    if (menu) {
+      menu.classList.remove('open');
+      menu.style.display = 'none';
+    }
+    if (_activeDropdownUnitId) {
+      const btn = document.getElementById(`actionBtn-${_activeDropdownUnitId}`);
+      if (btn) btn.classList.remove('active');
+      _activeDropdownUnitId = null;
+    }
+  }
+
+  function toggleActionDropdown(event, unitId) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    let menu = document.getElementById('globalActionMenu');
+    if (!menu) {
+      menu = document.createElement('div');
+      menu.id = 'globalActionMenu';
+      menu.className = 'action-floating-menu';
+      document.body.appendChild(menu);
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#globalActionMenu') && !e.target.closest('.action-btn-pill')) {
+          closeActionDropdown();
+        }
+      });
+      window.addEventListener('scroll', closeActionDropdown, true);
+      window.addEventListener('resize', closeActionDropdown);
+    }
+
+    if (_activeDropdownUnitId === unitId) {
+      closeActionDropdown();
+      return;
+    }
+
+    closeActionDropdown();
+
+    const u = state.units.find(x => x.id === unitId);
+    if (!u) return;
+
+    _activeDropdownUnitId = unitId;
+    const btn = event ? event.currentTarget : document.getElementById(`actionBtn-${unitId}`);
+    if (btn) btn.classList.add('active');
+
+    const isBatal = Boolean(u.statusBatal);
+
+    menu.innerHTML = `
+      <div class="action-menu-header">
+        <strong>#${u.noBnba}</strong> • ${escapeHtml(u.nama)}
+        <div style="font-size:10px;color:#64748b;font-weight:normal;margin-top:1px;">RT ${escapeHtml(u.rt)} — ${escapeHtml(u.desa)}</div>
+      </div>
+
+      <button type="button" class="action-menu-item" onclick="window.app.closeActionDropdown(); window.app.openUnitModal('${escapeHtml(u.id)}')">
+        <span class="item-icon">📷</span>
+        <span>${isBatal ? 'Detail & Alasan Batal' : 'Detail & Foto Dokumentasi'}</span>
+      </button>
+
+      <button type="button" class="action-menu-item" onclick="window.app.closeActionDropdown(); window.app.printSingleUnit('${escapeHtml(u.id)}')">
+        <span class="item-icon">🖨️</span>
+        <span>Cetak Laporan (3 Halaman PDF)</span>
+      </button>
+
+      <button type="button" class="action-menu-item" onclick="window.app.closeActionDropdown(); window.app.openUnitDenahModal('${escapeHtml(u.id)}')">
+        <span class="item-icon">📝</span>
+        <span>Surat Perubahan Denah</span>
+      </button>
+
+      <div class="action-menu-divider"></div>
+
+      <div style="padding:4px 14px 2px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;">
+        Ubah Cepat Progres Fisik:
+      </div>
+      <div style="display:flex;gap:4px;padding:4px 14px 6px;">
+        <button type="button" class="btn btn-sm ${Number(u.progres) === 0 ? 'btn-danger' : 'btn-outline'}" style="flex:1;padding:3px 6px;font-size:11px;" onclick="window.app.closeActionDropdown(); window.app.quickSetUnitProgress('${escapeHtml(u.id)}', 0)">0%</button>
+        <button type="button" class="btn btn-sm ${Number(u.progres) === 50 ? 'btn-warning' : 'btn-outline'}" style="flex:1;padding:3px 6px;font-size:11px;" onclick="window.app.closeActionDropdown(); window.app.quickSetUnitProgress('${escapeHtml(u.id)}', 50)">50%</button>
+        <button type="button" class="btn btn-sm ${Number(u.progres) === 100 ? 'btn-success' : 'btn-outline'}" style="flex:1;padding:3px 6px;font-size:11px;" onclick="window.app.closeActionDropdown(); window.app.quickSetUnitProgress('${escapeHtml(u.id)}', 100)">100%</button>
+      </div>
+
+      <div class="action-menu-divider"></div>
+
+      ${isBatal ? `
+        <button type="button" class="action-menu-item success" onclick="window.app.closeActionDropdown(); window.app.toggleUnitBatal('${escapeHtml(u.id)}')">
+          <span class="item-icon">♻️</span>
+          <span>Aktifkan Kembali Unit Ini</span>
+        </button>
+      ` : `
+        <button type="button" class="action-menu-item danger" onclick="window.app.closeActionDropdown(); window.app.promptBatalkanUnit('${escapeHtml(u.id)}')">
+          <span class="item-icon">🚫</span>
+          <span>Tandai Batal (Tanpa Hapus)</span>
+        </button>
+      `}
+
+      <div class="action-menu-divider"></div>
+
+      <button type="button" class="action-menu-item" style="color:#dc2626;" onclick="window.app.closeActionDropdown(); window.app.deleteUnit('${escapeHtml(u.id)}')">
+        <span class="item-icon">🗑️</span>
+        <span>Hapus Permanen</span>
+      </button>
+    `;
+
+    // Position menu below button
+    menu.style.display = 'block';
+    if (btn) {
+      const rect = btn.getBoundingClientRect();
+      const menuWidth = 230;
+      let left = rect.right - menuWidth;
+      if (left < 10) left = 10;
+
+      let top = rect.bottom + 4;
+      const menuHeight = menu.offsetHeight || 280;
+      if (top + menuHeight > window.innerHeight - 10) {
+        top = rect.top - menuHeight - 4;
+      }
+
+      menu.style.top = `${Math.max(10, top)}px`;
+      menu.style.left = `${left}px`;
+    }
+    menu.classList.add('open');
+  }
+
+  function openUnitDenahModal(unitId) {
+    openUnitModal(unitId);
+    setTimeout(() => {
+      const denahEl = document.querySelector('.modal-body input[type="checkbox"][onchange*="perubahanDenah"]');
+      if (denahEl) {
+        denahEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 150);
+  }
+
   function setUnitFilter(key, val) {
     state.unitFilter[key] = val;
     if (key === 'kecamatan') state.unitFilter.desa = 'ALL';
@@ -4915,6 +5043,9 @@
     setModalUnitProgress,
     saveUnitModal,
     deleteUnit,
+    toggleActionDropdown,
+    closeActionDropdown,
+    openUnitDenahModal,
     promptBatalkanUnit,
     toggleUnitBatal,
     toggleModalStatusBatal,
