@@ -55,6 +55,10 @@
       showInvoiceTaxNumbers: true,
       taxMode: 'DPP', // 'DPP' (100/111) | 'DIRECT' (Langsung dari Sub Total)
       overrideTanggal: '',
+      overrideTglInvoice: '',
+      overrideTglSpp: '',
+      overrideTglSps: '',
+      overrideTglCover: '',
       overrideNoInvoice: '',
       overrideNoSpp: '',
       overrideNoSps: '',
@@ -69,6 +73,24 @@
     ];
     const d = new Date();
     return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  function formatDateToIndo(dateStr) {
+    if (!dateStr) return '';
+    const parts = String(dateStr).split('-');
+    if (parts.length === 3) {
+      const y = parseInt(parts[0], 10);
+      const m = parseInt(parts[1], 10) - 1;
+      const d = parseInt(parts[2], 10);
+      const bulan = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+      if (!isNaN(y) && !isNaN(m) && !isNaN(d) && bulan[m]) {
+        return `${d} ${bulan[m]} ${y}`;
+      }
+    }
+    return String(dateStr);
   }
 
   function generateAutoKuitansiNo(vendor, seqNum = 1) {
@@ -1188,8 +1210,11 @@
                   <input type="text" class="form-control" value="${escapeHtml(bf.noInvoice)}" oninput="window.app.updateBatchField('noInvoice', this.value)" />
                 </div>
                 <div class="form-group">
-                  <label>Tanggal Invoice</label>
-                  <input type="text" class="form-control" value="${escapeHtml(bf.tglInvoice)}" oninput="window.app.updateBatchField('tglInvoice', this.value)" />
+                  <label>Tanggal Invoice / Kuitansi</label>
+                  <div style="display:flex;gap:4px;">
+                    <input type="text" class="form-control" value="${escapeHtml(bf.tglInvoice)}" oninput="window.app.updateBatchField('tglInvoice', this.value)" />
+                    <input type="date" title="Pilih Tanggal Invoice" style="width:38px;padding:3px;cursor:pointer;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" onchange="window.app.updateBatchField('tglInvoice', window.app.formatDateToIndo(this.value)); window.app.renderBatchModal();" />
+                  </div>
                 </div>
               </div>
               <div class="grid-2" style="gap:12px;">
@@ -1199,7 +1224,10 @@
                 </div>
                 <div class="form-group">
                   <label>Tanggal Surat Permohonan (SPP)</label>
-                  <input type="text" class="form-control" value="${escapeHtml(bf.tglSpp)}" oninput="window.app.updateBatchField('tglSpp', this.value)" />
+                  <div style="display:flex;gap:4px;">
+                    <input type="text" class="form-control" value="${escapeHtml(bf.tglSpp)}" oninput="window.app.updateBatchField('tglSpp', this.value)" />
+                    <input type="date" title="Pilih Tanggal Permohonan SPP" style="width:38px;padding:3px;cursor:pointer;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" onchange="window.app.updateBatchField('tglSpp', window.app.formatDateToIndo(this.value)); window.app.renderBatchModal();" />
+                  </div>
                 </div>
               </div>
               <div class="grid-2" style="gap:12px;">
@@ -1208,8 +1236,11 @@
                   <input type="text" class="form-control" value="${escapeHtml(bf.noSps)}" oninput="window.app.updateBatchField('noSps', this.value)" />
                 </div>
                 <div class="form-group">
-                  <label>Tanggal Surat Selesai (SPS)</label>
-                  <input type="text" class="form-control" value="${escapeHtml(bf.tglSps)}" oninput="window.app.updateBatchField('tglSps', this.value)" />
+                  <label>Tanggal Surat Selesai 100% (SPS)</label>
+                  <div style="display:flex;gap:4px;">
+                    <input type="text" class="form-control" value="${escapeHtml(bf.tglSps)}" oninput="window.app.updateBatchField('tglSps', this.value)" />
+                    <input type="date" title="Pilih Tanggal Selesai SPS" style="width:38px;padding:3px;cursor:pointer;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" onchange="window.app.updateBatchField('tglSps', window.app.formatDateToIndo(this.value)); window.app.renderBatchModal();" />
+                  </div>
                 </div>
               </div>
 
@@ -1378,12 +1409,12 @@
 
     let meta = {
       noInvoice: pc.overrideNoInvoice || autoKuitansi,
-      tglInvoice: pc.overrideTanggal || todayStr,
+      tglInvoice: pc.overrideTglInvoice || pc.overrideTanggal || todayStr,
       noSpp: pc.overrideNoSpp || `${String(seqNum).padStart(3, '0')}/${code}/XI/2026`,
-      tglSpp: pc.overrideTanggal || todayStr,
+      tglSpp: pc.overrideTglSpp || pc.overrideTanggal || todayStr,
       noSps: pc.overrideNoSps || `${String(seqNum).padStart(2, '0')}/${code}/SPS/XI/2026`,
-      tglSps: pc.overrideTanggal || todayStr,
-      tglCoverDokumentasi: pc.overrideTanggal || todayStr,
+      tglSps: pc.overrideTglSps || todayStr,
+      tglCoverDokumentasi: pc.overrideTglCover || pc.overrideTglInvoice || pc.overrideTanggal || todayStr,
       lokasiLabel: ''
     };
 
@@ -1397,12 +1428,12 @@
           ? batch.noInvoice
           : generateAutoKuitansiNo(vendor, batchSeq > 0 ? batchSeq : 1);
         meta.noInvoice = pc.overrideNoInvoice || batchKuitansi;
-        meta.tglInvoice = pc.overrideTanggal || batch.tglInvoice || todayStr;
+        meta.tglInvoice = pc.overrideTglInvoice || batch.tglInvoice || pc.overrideTanggal || todayStr;
         meta.noSpp = pc.overrideNoSpp || batch.noSpp || meta.noSpp;
-        meta.tglSpp = pc.overrideTanggal || batch.tglSpp || todayStr;
+        meta.tglSpp = pc.overrideTglSpp || batch.tglSpp || pc.overrideTanggal || todayStr;
         meta.noSps = pc.overrideNoSps || batch.noSps || meta.noSps;
-        meta.tglSps = pc.overrideTanggal || batch.tglSps || todayStr;
-        meta.tglCoverDokumentasi = pc.overrideTanggal || batch.tglCoverDokumentasi || batch.tglInvoice || todayStr;
+        meta.tglSps = pc.overrideTglSps || batch.tglSps || todayStr;
+        meta.tglCoverDokumentasi = pc.overrideTglCover || batch.tglCoverDokumentasi || batch.tglInvoice || todayStr;
       }
     } else {
       targetUnits = state.units.filter(u => {
@@ -1563,37 +1594,58 @@
             </div>
           </div>
 
-          <!-- BARIS 2: PANEL PARAMETER OTOMATIS INVOICE, PAJAK & NOMOR SURAT -->
-          <div class="filter-bar" style="margin-bottom:0;background:#eff6ff;border-color:#bfdbfe;">
-            <div class="form-group" style="margin-bottom:0;width:155px;">
-              <label>TanggaL Invoice/Surat</label>
-              <input type="text" class="form-control" value="${escapeHtml(meta.tglInvoice)}" oninput="window.app.setPrintConfig('overrideTanggal', this.value)" />
+          <!-- BARIS 2: PANEL PARAMETER TANGGAL BERKAS & PAJAK PENCAIRAN -->
+          <div class="filter-bar" style="margin-bottom:0;background:#eff6ff;border-color:#bfdbfe;gap:12px;">
+            <div class="form-group" style="margin-bottom:0;min-width:185px;">
+              <label style="color:#1e3a8a;font-weight:700;">📅 Tgl Selesai 100% (SPS)</label>
+              <div style="display:flex;gap:4px;">
+                <input type="text" class="form-control" style="font-weight:600;" value="${escapeHtml(meta.tglSps)}" oninput="window.app.setPrintConfig('overrideTglSps', this.value)" placeholder="Tgl Selesai Fisik" />
+                <input type="date" title="Pilih Tanggal Selesai Fisik (SPS)" style="width:38px;padding:3px;cursor:pointer;border-radius:6px;border:1px solid #93c5fd;background:#fff;" onchange="window.app.setPrintConfig('overrideTglSps', window.app.formatDateToIndo(this.value))" />
+              </div>
             </div>
-            <div class="form-group" style="margin-bottom:0;width:155px;">
+
+            <div class="form-group" style="margin-bottom:0;min-width:185px;">
+              <label style="color:#1e3a8a;font-weight:700;">📅 Tgl Permohonan (SPP)</label>
+              <div style="display:flex;gap:4px;">
+                <input type="text" class="form-control" style="font-weight:600;" value="${escapeHtml(meta.tglSpp)}" oninput="window.app.setPrintConfig('overrideTglSpp', this.value)" placeholder="Tgl Pengajuan SPP" />
+                <input type="date" title="Pilih Tanggal Pengajuan (SPP)" style="width:38px;padding:3px;cursor:pointer;border-radius:6px;border:1px solid #93c5fd;background:#fff;" onchange="window.app.setPrintConfig('overrideTglSpp', window.app.formatDateToIndo(this.value))" />
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;min-width:185px;">
+              <label style="color:#1e3a8a;font-weight:700;">📅 Tgl Invoice &amp; Kuitansi</label>
+              <div style="display:flex;gap:4px;">
+                <input type="text" class="form-control" style="font-weight:600;" value="${escapeHtml(meta.tglInvoice)}" oninput="window.app.setPrintConfig('overrideTglInvoice', this.value)" placeholder="Tgl Kuitansi/Invoice" />
+                <input type="date" title="Pilih Tanggal Invoice" style="width:38px;padding:3px;cursor:pointer;border-radius:6px;border:1px solid #93c5fd;background:#fff;" onchange="window.app.setPrintConfig('overrideTglInvoice', window.app.formatDateToIndo(this.value))" />
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;width:150px;">
               <label>Kuitansi No (Otomatis)</label>
               <input type="text" class="form-control" value="${escapeHtml(meta.noInvoice)}" oninput="window.app.setPrintConfig('overrideNoInvoice', this.value)" />
             </div>
-            <div class="form-group" style="margin-bottom:0;width:155px;">
+
+            <div class="form-group" style="margin-bottom:0;width:140px;">
               <label>Harga/Unit (Rp)</label>
               <input type="number" class="form-control" value="${vendor.hargaSatuan}" onchange="window.app.quickUpdateVendorRate('${escapeHtml(vendor.id)}', 'hargaSatuan', Number(this.value))" />
             </div>
-            <div class="form-group" style="margin-bottom:0;width:85px;">
+            <div class="form-group" style="margin-bottom:0;width:80px;">
               <label>PPn (%)</label>
               <input type="number" step="0.01" class="form-control" value="${vendor.ppnPersen}" onchange="window.app.quickUpdateVendorRate('${escapeHtml(vendor.id)}', 'ppnPersen', Number(this.value))" />
             </div>
-            <div class="form-group" style="margin-bottom:0;width:85px;">
+            <div class="form-group" style="margin-bottom:0;width:80px;">
               <label>PPh (%)</label>
               <input type="number" step="0.01" class="form-control" value="${vendor.pphPersen}" onchange="window.app.quickUpdateVendorRate('${escapeHtml(vendor.id)}', 'pphPersen', Number(this.value))" />
             </div>
-            <div class="form-group" style="margin-bottom:0;width:185px;">
+            <div class="form-group" style="margin-bottom:0;width:175px;">
               <label>Basis Hitung Potongan Pajak</label>
               <select class="form-control" onchange="window.app.setPrintConfig('taxMode', this.value)">
                 <option value="DPP" ${pc.taxMode === 'DPP' ? 'selected' : ''}>Dari DPP (100/111 × SubTotal)</option>
                 <option value="DIRECT" ${pc.taxMode === 'DIRECT' ? 'selected' : ''}>Langsung (% × SubTotal)</option>
               </select>
             </div>
-            <div class="form-group" style="margin-bottom:0;flex:1;min-width:220px;">
-              <label>Deskripsi Lokasi (Otomatis sesuai Desa/Kecamatan)</label>
+            <div class="form-group" style="margin-bottom:0;flex:1;min-width:210px;">
+              <label>Deskripsi Lokasi (Otomatis)</label>
               <input type="text" class="form-control" value="${escapeHtml(fullLokasiStr)}" oninput="window.app.setPrintConfig('overrideDeskripsiLokasi', this.value)" />
             </div>
           </div>
@@ -4296,6 +4348,9 @@
       state.printConfig.overrideDeskripsiLokasi = '';
       state.printConfig.overrideNoInvoice = '';
       state.printConfig.overrideTanggal = '';
+      state.printConfig.overrideTglInvoice = '';
+      state.printConfig.overrideTglSpp = '';
+      state.printConfig.overrideTglSps = '';
     }
     renderAll();
   }
@@ -4672,7 +4727,8 @@
     addRabModalRow,
     deleteRabModalRow,
     resetRabModalToDefault,
-    saveRabModal
+    saveRabModal,
+    formatDateToIndo
   };
 })();
 
