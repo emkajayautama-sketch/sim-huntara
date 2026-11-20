@@ -477,32 +477,32 @@
       : getVendorById(state.selectedVendorId).nama;
 
     if (state.activeTab === 'dashboard') {
-      titleEl.textContent = `Dashboard & Pemantauan Progres Per Desa — ${vendorLabel}`;
-      subEl.textContent = 'Rekapitulasi progres fisik (0%, 50%, 100%) per Kecamatan & Desa serta kesiapan pencairan gelondongan';
+      titleEl.textContent = `Dashboard Pemantauan Progres Wilayah — ${vendorLabel}`;
+      subEl.textContent = 'Rekapitulasi progres fisik 0%, 50%, 100% per Kecamatan & Desa serta kesiapan pencairan dana';
       main.innerHTML = renderDashboardTab();
     } else if (state.activeTab === 'vendors') {
-      titleEl.textContent = 'Master Data Perusahaan / Vendor Pelaksana Huntara';
-      subEl.textContent = 'Kelola profil CV, Direktur, Rekening Bank, Harga Satuan, Logo Kop Surat, serta Tanda Tangan & Stempel';
+      titleEl.textContent = 'Profil Perusahaan (Vendor) Pelaksana Huntara';
+      subEl.textContent = 'Data legalitas, direktur, nomor rekening bank, harga kontrak, serta tanda tangan & stempel resmi';
       main.innerHTML = renderVendorsTab();
     } else if (state.activeTab === 'units') {
-      titleEl.textContent = `Data BNBA & Progres Fisik Rumah — ${vendorLabel}`;
-      subEl.textContent = 'Pantau dan perbarui checklist pekerjaan 0%, 50%, 100%, foto dokumentasi, dan surat perubahan denah per KK';
+      titleEl.textContent = `Daftar Penerima Manfaat (BNBA) & Progres Fisik — ${vendorLabel}`;
+      subEl.textContent = 'Verifikasi checklist fisik 0%, 50%, 100%, dokumentasi foto geolokasi, dan dokumen perubahan denah';
       main.innerHTML = renderUnitsTab();
     } else if (state.activeTab === 'batches') {
-      titleEl.textContent = 'Pencairan Gelondongan / Batch Penagihan (Minimal 10 Unit)';
-      subEl.textContent = 'Pilih rumah yang sudah selesai 100% (bisa 10 unit, 20 unit, dst.) untuk diterbitkan berkas tagihan tanpa dobel klaim';
+      titleEl.textContent = 'Pengajuan Pencairan Dana (Termin & Batch Penagihan)';
+      subEl.textContent = 'Kompilasi unit selesai 100% menjadi paket berkas tagihan resmi siap diajukan ke PPK BNPB';
       main.innerHTML = renderBatchesTab();
     } else if (state.activeTab === 'print') {
-      titleEl.textContent = 'Pusat Cetak Dokumen Pencairan & Buku Dokumentasi Foto';
-      subEl.textContent = 'Cetak / Simpan PDF ukuran A4: Invoice, Surat Permohonan Pembayaran, SPS 100%, Daftar BNBA & Dokumentasi Foto';
+      titleEl.textContent = 'Pusat Dokumen Pencairan & Laporan Progres Fisik';
+      subEl.textContent = 'Preview & Cetak PDF A4: Invoice Resmi, Surat Permohonan Pembayaran (SPP), SPS 100%, Lampiran BNBA & Buku Dokumentasi';
       main.innerHTML = renderPrintTab();
     } else if (state.activeTab === 'tools') {
-      titleEl.textContent = 'Studio Auto-Watermark Foto BNPB & Blanko Lapangan';
-      subEl.textContent = 'Beri stempel otomatis Logo BNPB + Koordinat GPS + Nama Penerima pada foto & cetak blanko perubahan denah';
+      titleEl.textContent = 'Studio Dokumentasi Foto & Blanko Lapangan';
+      subEl.textContent = 'Geotagging otomatis, watermark identitas penerima BNPB, serta generator formulir kesepakatan perubahan denah';
       main.innerHTML = renderToolsTab();
     } else if (state.activeTab === 'sharing') {
-      titleEl.textContent = 'Sharing Tim, Kolaborasi WiFi & Backup Data Vendor';
-      subEl.textContent = 'Bagikan akses ke laptop/HP tim lapangan atau kirim/gabungkan file paket data antar vendor via WhatsApp';
+      titleEl.textContent = 'Kolaborasi Tim Lapangan & Manajemen Cadangan Data';
+      subEl.textContent = 'Akses jaringan lokal WiFi untuk tim lapangan, ekspor paket data, dan sinkronisasi berkas';
       main.innerHTML = renderSharingTab();
     }
   }
