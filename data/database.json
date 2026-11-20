@@ -120,8 +120,8 @@
       "telepon": "0812 - 3982 - 0000",
       "kotaTtd": "Mauponggo",
       "kodeSurat": "EMKA",
-      "kabupaten": "KABUPATEN NAGEKEO",
-      "provinsi": "PROVINSI NUSA TENGGARA TIMUR",
+      "kabupaten": "Kabupaten Nagekeo",
+      "provinsi": "Provinsi Nusa Tenggara Timur",
       "namaBank": "Bank BRI",
       "noRekening": "2185 01 006476 53 6",
       "atasNamaRekening": "CV. Em Ka Utama",
@@ -131,7 +131,9 @@
       "logoUrl": "/uploads/logo_1795016077279_0d6c7e.jpg",
       "kopSuratUrl": "/uploads/kop_1795026014153_6d225d.png",
       "ttdStempelUrl": "/uploads/ttd_1795026093395_e28f19.png",
-      "spesimenUrl": "/uploads/spesimen_1795026246923_b3ccdb.png"
+      "spesimenUrl": "/uploads/spesimen_1795026246923_b3ccdb.png",
+      "logoProvinsiUrl": "/uploads/prov_1795136786734_8ac849.png",
+      "logoKabupatenUrl": "/uploads/kab_1795136802239_3d3a4d.png"
     },
     {
       "id": "vendor-tahta-permata",
@@ -141,8 +143,8 @@
       "jabatan": "Direktur",
       "alamat": "Jl. Mesjid No. 8 Bandar Khalipah, Kec. Percut Sei Tuan, Kab. Deli Serdang, Provinsi Sumatera Utara 20371",
       "kotaTtd": "Deli Serdang",
-      "kabupaten": "KABUPATEN MALUKU TENGAH",
-      "provinsi": "PROVINSI MALUKU",
+      "kabupaten": "Kabupaten Maluku Tengah",
+      "provinsi": "Provinsi Maluku",
       "namaBank": "PT. BANK NEGARA INDONESIA (BNI)",
       "noRekening": "1370538119",
       "atasNamaRekening": "CV. TAHTA PERMATA JAYA",

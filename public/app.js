@@ -93,6 +93,18 @@
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   }
 
+  function toTitleCase(str) {
+    if (!str) return '';
+    const romanNumerals = new Set(['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']);
+    const keepUpper = new Set(['RT', 'RW', 'KK', 'NIK', 'BNPB', 'SPK', 'SPP', 'SPS', 'BNBA', 'DSP', 'DTH', 'PPN', 'PPH']);
+    return String(str).replace(/[A-Za-zÀ-ÿ0-9]+/g, (match) => {
+      const upper = match.toUpperCase();
+      if (romanNumerals.has(upper)) return upper;
+      if (keepUpper.has(upper)) return upper;
+      return match.charAt(0).toUpperCase() + match.slice(1).toLowerCase();
+    });
+  }
+
   function terbilangDasar(n) {
     n = Math.floor(Math.abs(n));
     const angka = [
@@ -359,8 +371,8 @@
       jabatan: 'Direktur',
       alamat: 'Mbay, Kab. Nagekeo',
       kotaTtd: 'Mbay',
-      kabupaten: 'KABUPATEN NAGEKEO',
-      provinsi: 'PROVINSI NUSA TENGGARA TIMUR',
+      kabupaten: 'Kabupaten Nagekeo',
+      provinsi: 'Provinsi Nusa Tenggara Timur',
       namaBank: 'BANK BNI / BANK NTT',
       noRekening: '-',
       atasNamaRekening: 'CV. EMKA UTAMA',
@@ -1411,8 +1423,10 @@
       ? `Kecamatan ${uniqueKecs.join(' & ')}`
       : (pc.kecamatan !== 'ALL' ? `Kecamatan ${pc.kecamatan}` : 'Kecamatan Aesesa');
 
-    const autoLokasiStr = `${desaStr} ${kecStr} ${vendor.kabupaten} ${vendor.provinsi}`;
-    const fullLokasiStr = pc.overrideDeskripsiLokasi.trim() || autoLokasiStr;
+    const kabTitle = toTitleCase(vendor.kabupaten || 'Kabupaten Nagekeo');
+    const provTitle = toTitleCase(vendor.provinsi || 'Provinsi Nusa Tenggara Timur');
+    const autoLokasiStr = `${toTitleCase(desaStr)}, ${toTitleCase(kecStr)}, ${kabTitle}, ${provTitle}`;
+    const fullLokasiStr = toTitleCase(pc.overrideDeskripsiLokasi.trim()) || autoLokasiStr;
 
     // Render selected sheets
     let sheetsHtml = '';
@@ -1601,11 +1615,16 @@
 
     const pphLabel = String(fin.pphPersen).replace('.', ',');
 
-    // Format deskripsi bertingkat persis seperti INVOICE HUNTARA.pdf
+    // Format deskripsi bertingkat persis seperti INVOICE HUNTARA.pdf (Title Case - huruf depan besar)
     const customDesc = state.printConfig.overrideDeskripsiLokasi?.trim();
+    const formattedDesa = toTitleCase(desaStr || 'Desa/Kel. Marapokot, Mbay I');
+    const formattedKec = toTitleCase(kecStr || 'Kecamatan Aesesa');
+    const formattedKab = toTitleCase(vendor.kabupaten || 'Kabupaten Nagekeo');
+    const formattedProv = toTitleCase(vendor.provinsi || 'Provinsi Nusa Tenggara Timur');
+
     const lokasiLinesHtml = customDesc
-      ? `Di ${escapeHtml(customDesc)}`
-      : `Di ${escapeHtml(desaStr || 'Desa/Kel. Marapokot, Mbay I')}<br/>${escapeHtml(kecStr || 'Kecamatan Aesesa')}<br/>${escapeHtml(vendor.kabupaten || 'KABUPATEN NAGEKEO')}<br/>${escapeHtml(vendor.provinsi || 'PROVINSI NUSA TENGGARA TIMUR')}`;
+      ? `Di ${escapeHtml(toTitleCase(customDesc))}`
+      : `Di ${escapeHtml(formattedDesa)}<br/>${escapeHtml(formattedKec)}<br/>${escapeHtml(formattedKab)}<br/>${escapeHtml(formattedProv)}`;
 
     return `
       <div class="print-sheet invoice-emka">
@@ -1681,11 +1700,10 @@
             <tr>
               <td style="text-align:center;">1.</td>
               <td style="padding-right:10px;">
-                Tagihan untuk<br/>
+                Tagihan Untuk<br/>
                 Pekerjaan<br/>
-                pembangunan Hunian<br/>
-                Sementara (<br/>
-                Huntara )<br/>
+                Pembangunan Hunian<br/>
+                Sementara (Huntara)<br/>
                 ${lokasiLinesHtml}
               </td>
               <td style="text-align:center;">Unit</td>
@@ -1802,7 +1820,7 @@
 
         <div style="margin-bottom:10px;font-size:11pt;text-align:justify;line-height:1.55;">
           Dengan hormat,<br/>
-          Sehubungan dengan pelaksanaan Pembangunan Hunian Sementara (Huntara) di ${escapeHtml(fullLokasiStr)} yang dilaksanakan oleh ${escapeHtml(vendor.nama)}, dengan ini kami mengajukan Permohonan Pembayaran dengan Nilai Kontrak ${escapeHtml(fin.terbilangQty)} (${fin.qty}) Unit Huntara Rp. ${formatNumberDot(fin.totalBruto)},- ( ${escapeHtml(fin.terbilangBruto)} ).
+          Sehubungan dengan pelaksanaan Pembangunan Hunian Sementara (Huntara) di ${escapeHtml(toTitleCase(fullLokasiStr))} yang dilaksanakan oleh ${escapeHtml(vendor.nama)}, dengan ini kami mengajukan Permohonan Pembayaran dengan Nilai Kontrak ${escapeHtml(fin.terbilangQty)} (${fin.qty}) Unit Huntara Rp. ${formatNumberDot(fin.totalBruto)},- ( ${escapeHtml(fin.terbilangBruto)} ).
         </div>
 
         <div style="margin-bottom:6px;font-size:11pt;">Dengan rincian sebagai berikut:</div>
@@ -1918,7 +1936,7 @@
         </table>
 
         <div style="text-align:justify;line-height:1.65;margin-bottom:14px;">
-          Sehubungan Dengan pekerjaan Pembangunan Hunian Sementara sebanyak ${fin.qty} (${escapeHtml(fin.terbilangQty)}) unit di ${escapeHtml(fullLokasiStr)} Kami ${escapeHtml(vendor.nama)} selaku Pelaksana Pekerjaan tersebut memberitahukan bahwasanya pekerjaan tersebut sudah selesai kami kerjakan 100%.
+          Sehubungan Dengan pekerjaan Pembangunan Hunian Sementara sebanyak ${fin.qty} (${escapeHtml(fin.terbilangQty)}) unit di ${escapeHtml(toTitleCase(fullLokasiStr))} Kami ${escapeHtml(vendor.nama)} selaku Pelaksana Pekerjaan tersebut memberitahukan bahwasanya pekerjaan tersebut sudah selesai kami kerjakan 100%.
         </div>
 
         <div style="text-align:justify;line-height:1.55;margin-bottom:32px;">
@@ -1947,15 +1965,15 @@
           <img src="/assets/logo-bnpb.png" class="logo-bnpb" alt="BNPB" />
           <div class="bnpb-doc-header-center">
             <h2>BADAN NASIONAL PENANGGULANGAN BENCANA</h2>
-            <h3>${escapeHtml(vendor.kabupaten)}</h3>
-            <h3>${escapeHtml(vendor.provinsi)}</h3>
+            <h3>${escapeHtml(toTitleCase(vendor.kabupaten))}</h3>
+            <h3>${escapeHtml(toTitleCase(vendor.provinsi))}</h3>
           </div>
           <img src="${escapeHtml(vendor.logoUrl || '/assets/logo-emka.svg')}" class="logo-vendor-right" alt="Vendor" />
         </div>
 
         <div style="text-align:center;margin:10px 0 14px;">
           <div style="font-size:12pt;font-weight:bold;text-transform:uppercase;">LAMPIRAN DAFTAR PENERIMA HUNIAN SEMENTARA (BNBA)</div>
-          <div style="font-size:10pt;">PELAKSANA : <strong>${escapeHtml(vendor.nama)}</strong> — LOKASI : <strong>${escapeHtml(fullLokasiStr)}</strong></div>
+          <div style="font-size:10pt;">PELAKSANA : <strong>${escapeHtml(vendor.nama)}</strong> — LOKASI : <strong>${escapeHtml(toTitleCase(fullLokasiStr))}</strong></div>
           <div style="font-size:9.5pt;">Jumlah Unit : <strong>${units.length} Unit</strong> | Lampiran Invoice No: ${escapeHtml(meta.noInvoice)}</div>
         </div>
 
@@ -2914,8 +2932,8 @@
       jabatan: 'Direktur',
       alamat: '',
       kotaTtd: 'Mbay',
-      kabupaten: 'KABUPATEN NAGEKEO',
-      provinsi: 'PROVINSI NUSA TENGGARA TIMUR',
+      kabupaten: 'Kabupaten Nagekeo',
+      provinsi: 'Provinsi Nusa Tenggara Timur',
       namaBank: 'PT. BANK NEGARA INDONESIA (BNI)',
       noRekening: '',
       atasNamaRekening: '',
