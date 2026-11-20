@@ -2613,14 +2613,15 @@
 
   function getDefaultRabItems() {
     return [
-      { no: 1, uraian: 'Pekerjaan Persiapan & Pembersihan Lahan', bobot: 5.0, p0: 0.0, p50: 5.0, p100: 5.0, keterangan: 'Bouwplank & land clearing' },
-      { no: 2, uraian: 'Pekerjaan Pondasi & Lantai (Umpak / Rabat Beton)', bobot: 18.0, p0: 0.0, p50: 18.0, p100: 18.0, keterangan: 'Selesai di tahap 50%' },
-      { no: 3, uraian: 'Pekerjaan Struktur & Rangka (Baja Ringan / Kayu)', bobot: 22.0, p0: 0.0, p50: 22.0, p100: 22.0, keterangan: 'Rangka utama berdiri' },
-      { no: 4, uraian: 'Pekerjaan Dinding & Partisi (GRC / Kalsiboard)', bobot: 18.0, p0: 0.0, p50: 5.0, p100: 18.0, keterangan: 'Pemasangan & nat' },
-      { no: 5, uraian: 'Pekerjaan Atap & Listplank (Spandek / Seng)', bobot: 15.0, p0: 0.0, p50: 0.0, p100: 15.0, keterangan: 'Termasuk nok & talang' },
-      { no: 6, uraian: 'Pekerjaan Pintu, Jendela & Pengunci', bobot: 10.0, p0: 0.0, p50: 0.0, p100: 10.0, keterangan: 'Terpasang & berfungsi' },
-      { no: 7, uraian: 'Pekerjaan MEP & Sanitasi (Listrik & MCK/Air)', bobot: 8.0, p0: 0.0, p50: 0.0, p100: 8.0, keterangan: 'Uji nyala & aliran air' },
-      { no: 8, uraian: 'Pekerjaan Finishing & Pembersihan Akhir', bobot: 4.0, p0: 0.0, p50: 0.0, p100: 4.0, keterangan: 'Pengecatan & serah terima' }
+      { no: 1, uraian: 'PEKERJAAN PERSIAPAN', bobot: 4.79, p0: 0.0, p50: 4.79, p100: 4.79, keterangan: 'Pengukuran, bouwplank & galian tanah' },
+      { no: 2, uraian: 'PEKERJAAN LANTAI', bobot: 2.64, p0: 0.0, p50: 2.64, p100: 2.64, keterangan: 'Cor beton lantai mutu K-175' },
+      { no: 3, uraian: 'PEKERJAAN RANGKA DINDING', bobot: 29.78, p0: 0.0, p50: 29.78, p100: 29.78, keterangan: 'Rangka dinding baja ringan C75' },
+      { no: 4, uraian: 'PEKERJAAN DINDING', bobot: 24.32, p0: 0.0, p50: 12.79, p100: 24.32, keterangan: 'Partisi GRC 3.5mm & pengecatan tembok' },
+      { no: 5, uraian: 'PEKERJAAN ATAP', bobot: 21.94, p0: 0.0, p50: 0.0, p100: 21.94, keterangan: 'Rangka atap C75, spandek & lisplank' },
+      { no: 6, uraian: 'PEKERJAAN PINTU DAN JENDELA', bobot: 6.97, p0: 0.0, p50: 0.0, p100: 6.97, keterangan: 'Pintu uk. 80*200, 70*200 & jendela' },
+      { no: 7, uraian: 'PEKERJAAN KANOPI', bobot: 1.10, p0: 0.0, p50: 0.0, p100: 1.10, keterangan: 'Rangka kanopi & atap spandek' },
+      { no: 8, uraian: 'PEKERJAAN SANITASI', bobot: 3.55, p0: 0.0, p50: 0.0, p100: 3.55, keterangan: 'Closet jongkok, kran & septictank' },
+      { no: 9, uraian: 'PEKERJAAN LISTRIK', bobot: 4.91, p0: 0.0, p50: 0.0, p100: 4.91, keterangan: 'Kabel NYM, lampu LED, saklar & MCB' }
     ];
   }
 
@@ -3487,19 +3488,19 @@
   function renderUnitModalContent() {
     const u = window._editingUnit;
     if (!u) return;
-    const p50Items = state.settings.pekerjaan50 || [
-      '1. RANGKA UTAMA BAJA RINGAN',
-      '2. RANGKA DAN PASANG ATAP',
-      '3. PASANG GRC',
-      '4. COR LANTAI',
-      '5. RANGKA TOILET DAN KAMAR',
-      '6. RANGKA KANOPI DAN PASANG ATAP'
+    const p50Items = (state.settings.pekerjaan50 && state.settings.pekerjaan50.length > 0) ? state.settings.pekerjaan50 : [
+      '1. PEKERJAAN PERSIAPAN (Pengukuran & Galian Tanah - Bobot 4,79%)',
+      '2. PEKERJAAN LANTAI (Cor Rabat Beton Mutu K-175 - Bobot 2,64%)',
+      '3. PEKERJAAN RANGKA DINDING (Baja Ringan C75 - Bobot 29,78%)',
+      '4. PEKERJAAN DINDING (Pemasangan Partisi GRC Tahap 1 - Bobot 12,79%)'
     ];
-    const p100Items = state.settings.pekerjaan100 || [
-      '1. INSTALASI TOILET',
-      '2. INSTALASI LISTRIK',
-      '3. INSTALASI SEPTITANK',
-      '4. FINISHING BANGUNAN HUNTARA'
+    const p100Items = (state.settings.pekerjaan100 && state.settings.pekerjaan100.length > 0) ? state.settings.pekerjaan100 : [
+      '1. PEKERJAAN DINDING & FINISHING (Partisi GRC Lengkap & Pengecatan Tembok)',
+      '2. PEKERJAAN ATAP (Rangka Atap C75, Spandek & Lisplank KalsiPlank - Bobot 21,94%)',
+      '3. PEKERJAAN PINTU DAN JENDELA (Pintu 80*200, 70*200 & Jendela - Bobot 6,97%)',
+      '4. PEKERJAAN KANOPI (Rangka Kanopi & Atap Spandek - Bobot 1,10%)',
+      '5. PEKERJAAN SANITASI (Closet Jongkok, Kran & Septictank Buis Beton - Bobot 3,55%)',
+      '6. PEKERJAAN LISTRIK (Kabel NYM, Lampu LED, Saklar & MCB - Bobot 4,91%)'
     ];
 
     const modalRoot = document.getElementById('modalRoot');
@@ -3565,36 +3566,47 @@
               </div>
             </div>
 
-            <!-- BAGIAN 2: STATUS PROGRES & CHECKLIST PEKERJAAN -->
-            <h4 style="margin-bottom:10px;color:var(--primary);">2. Status Progres Fisik & Checklist Item Pekerjaan</h4>
-            <div style="display:flex;gap:10px;margin-bottom:14px;">
+            <!-- BAGIAN 2: STATUS PROGRES & CHECKLIST PEKERJAAN SESUAI RAB HUNTARA -->
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+              <h4 style="margin:0;color:var(--primary);">2. Status Progres Fisik &amp; Checklist Item Pekerjaan (Sesuai RAB Huntara)</h4>
+              <button type="button" class="btn btn-warning btn-sm" onclick="window.app.openRabModal()">
+                ⚙️ Sesuaikan Bobot &amp; Item RAB
+              </button>
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
               <button class="btn ${Number(u.progres) === 0 ? 'btn-danger' : 'btn-outline'}" onclick="window.app.setModalUnitProgress(0)">
-                Progres 0% (Benchmarking)
+                Progres 0% (Kondisi Awal / Benchmarking)
               </button>
               <button class="btn ${Number(u.progres) === 50 ? 'btn-warning' : 'btn-outline'}" onclick="window.app.setModalUnitProgress(50)">
-                Progres 50% (Rangka, Atap, GRC, Cor)
+                Progres 50% (Persiapan, Lantai, Rangka C75 &amp; GRC)
               </button>
               <button class="btn ${Number(u.progres) === 100 ? 'btn-success' : 'btn-outline'}" onclick="window.app.setModalUnitProgress(100)">
-                ✅ Progres 100% (Selesai Siap Tagih)
+                ✅ Progres 100% (Atap, Pintu/Jendela, Kanopi, Sanitasi &amp; Listrik)
               </button>
             </div>
 
             <div class="grid-2" style="margin-bottom:18px;">
-              <div class="checklist-box">
-                <strong style="font-size:13px;display:block;margin-bottom:6px;">Checklist Pekerjaan 50%:</strong>
+              <div class="checklist-box" style="background:#fff;border:1px solid #fed7aa;border-radius:8px;padding:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px solid #ffedd5;padding-bottom:4px;">
+                  <strong style="font-size:13px;color:#c2410c;">Checklist Pekerjaan Tahap 50% (Total Bobot 50,00%):</strong>
+                  <span class="badge badge-50">Tahap 50%</span>
+                </div>
                 ${p50Items.map((item, i) => `
-                  <label class="checklist-item">
+                  <label class="checklist-item" style="margin-bottom:6px;">
                     <input type="checkbox" ${u.check50?.[i] ? 'checked' : ''} onchange="window._editingUnit.check50[${i}]=this.checked" />
-                    <span>${escapeHtml(item)}</span>
+                    <span style="font-size:12px;">${escapeHtml(item)}</span>
                   </label>
                 `).join('')}
               </div>
-              <div class="checklist-box">
-                <strong style="font-size:13px;display:block;margin-bottom:6px;">Checklist Pekerjaan 100%:</strong>
+              <div class="checklist-box" style="background:#fff;border:1px solid #bbf7d0;border-radius:8px;padding:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px solid #dcfce7;padding-bottom:4px;">
+                  <strong style="font-size:13px;color:#15803d;">Checklist Pekerjaan Tahap 100% (Total Bobot 100,00%):</strong>
+                  <span class="badge badge-100">Tahap 100%</span>
+                </div>
                 ${p100Items.map((item, i) => `
-                  <label class="checklist-item">
+                  <label class="checklist-item" style="margin-bottom:6px;">
                     <input type="checkbox" ${u.check100?.[i] ? 'checked' : ''} onchange="window._editingUnit.check100[${i}]=this.checked" />
-                    <span>${escapeHtml(item)}</span>
+                    <span style="font-size:12px;">${escapeHtml(item)}</span>
                   </label>
                 `).join('')}
               </div>
@@ -3838,8 +3850,10 @@
     const u = window._editingUnit;
     if (!u) return;
     u.progres = prog;
-    if (prog >= 50) u.check50 = [true, true, true, true, true, true];
-    if (prog === 100) u.check100 = [true, true, true, true];
+    const p50Len = (state.settings.pekerjaan50 || []).length || 4;
+    const p100Len = (state.settings.pekerjaan100 || []).length || 6;
+    u.check50 = prog >= 50 ? Array(p50Len).fill(true) : Array(p50Len).fill(false);
+    u.check100 = prog === 100 ? Array(p100Len).fill(true) : Array(p100Len).fill(false);
     renderUnitModalContent();
   }
 
@@ -3913,20 +3927,24 @@
     const u = state.units.find(x => x.id === unitId);
     if (!u) return;
     u.progres = prog;
-    if (prog >= 50) u.check50 = [true, true, true, true, true, true];
-    if (prog === 100) u.check100 = [true, true, true, true];
+    const p50Len = (state.settings.pekerjaan50 || []).length || 4;
+    const p100Len = (state.settings.pekerjaan100 || []).length || 6;
+    u.check50 = prog >= 50 ? Array(p50Len).fill(true) : Array(p50Len).fill(false);
+    u.check100 = prog === 100 ? Array(p100Len).fill(true) : Array(p100Len).fill(false);
     saveState(`BNBA #${u.noBnba} diset ${prog}%`);
     renderAll();
   }
 
   function setDesaProgress(kecamatan, desa, prog) {
     let count = 0;
+    const p50Len = (state.settings.pekerjaan50 || []).length || 4;
+    const p100Len = (state.settings.pekerjaan100 || []).length || 6;
     for (const u of state.units) {
       if (state.selectedVendorId !== 'ALL' && u.vendorId !== state.selectedVendorId) continue;
       if (u.kecamatan === kecamatan && u.desa === desa) {
         u.progres = prog;
-        if (prog >= 50) u.check50 = [true, true, true, true, true, true];
-        if (prog === 100) u.check100 = [true, true, true, true];
+        u.check50 = prog >= 50 ? Array(p50Len).fill(true) : Array(p50Len).fill(false);
+        u.check100 = prog === 100 ? Array(p100Len).fill(true) : Array(p100Len).fill(false);
         count++;
       }
     }

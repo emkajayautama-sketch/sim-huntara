@@ -9,21 +9,21 @@
     "alamatTujuanSurat": "Graha BNPB Jl. Pramuka Kav. 38 Matraman - Jakarta Timur",
     "minimalUnitTagihan": 10,
     "pekerjaan0": [
-      "1. BENCHMARKING"
+      "1. BENCHMARKING (Pengukuran, Bouwplank & Galian Tanah)"
     ],
     "pekerjaan50": [
-      "1. RANGKA UTAMA BAJA RINGAN",
-      "2. RANGKA DAN PASANG ATAP",
-      "3. PASANG GRC",
-      "4. COR LANTAI",
-      "5. RANGKA TOILET DAN KAMAR",
-      "6. RANGKA KANOPI DAN PASANG ATAP"
+      "1. PEKERJAAN PERSIAPAN (Pengukuran & Galian Tanah - Bobot 4,79%)",
+      "2. PEKERJAAN LANTAI (Cor Rabat Beton Mutu K-175 - Bobot 2,64%)",
+      "3. PEKERJAAN RANGKA DINDING (Baja Ringan C75 - Bobot 29,78%)",
+      "4. PEKERJAAN DINDING (Pemasangan Partisi GRC Tahap 1 - Bobot 12,79%)"
     ],
     "pekerjaan100": [
-      "1. INSTALASI TOILET",
-      "2. INSTALASI LISTRIK",
-      "3. INSTALASI SEPTITANK",
-      "4. FINISHING BANGUNAN HUNTARA"
+      "1. PEKERJAAN DINDING & FINISHING (Partisi GRC Lengkap & Pengecatan Tembok)",
+      "2. PEKERJAAN ATAP (Rangka Baja Ringan C75, Spandek & Lisplank KalsiPlank - Bobot 21,94%)",
+      "3. PEKERJAAN PINTU DAN JENDELA (Pintu 80*200, 70*200 & Jendela - Bobot 6,97%)",
+      "4. PEKERJAAN KANOPI (Rangka Kanopi Baja Ringan & Atap Spandek - Bobot 1,10%)",
+      "5. PEKERJAAN SANITASI (Closet Jongkok, Kran & Septictank Buis Beton - Bobot 3,55%)",
+      "6. PEKERJAAN LISTRIK (Instalasi Kabel NYM, Lampu LED, Saklar & MCB - Bobot 4,91%)"
     ],
     "itemRab": [
       {
@@ -33,7 +33,7 @@
         "p0": 0,
         "p50": 4.79,
         "p100": 4.79,
-        "keterangan": "Bouwplank & land clearing"
+        "keterangan": "Pengukuran, bouwplank & galian tanah"
       },
       {
         "no": 2,
@@ -42,7 +42,7 @@
         "p0": 0,
         "p50": 2.64,
         "p100": 2.64,
-        "keterangan": "Selesai di tahap 50%"
+        "keterangan": "Cor beton lantai mutu K-175"
       },
       {
         "no": 3,
@@ -51,16 +51,16 @@
         "p0": 0,
         "p50": 29.78,
         "p100": 29.78,
-        "keterangan": "Rangka utama berdiri"
+        "keterangan": "Rangka dinding baja ringan C75"
       },
       {
         "no": 4,
         "uraian": "PEKERJAAN DINDING",
-        "bobot": 24.34,
+        "bobot": 24.32,
         "p0": 0,
         "p50": 12.79,
-        "p100": 24.34,
-        "keterangan": "Pemasangan & nat"
+        "p100": 24.32,
+        "keterangan": "Partisi GRC 3.5mm & pengecatan tembok"
       },
       {
         "no": 5,
@@ -69,7 +69,7 @@
         "p0": 0,
         "p50": 0,
         "p100": 21.94,
-        "keterangan": "Termasuk nok & talang"
+        "keterangan": "Rangka atap C75, spandek & lisplank"
       },
       {
         "no": 6,
@@ -78,7 +78,7 @@
         "p0": 0,
         "p50": 0,
         "p100": 6.97,
-        "keterangan": "Terpasang & berfungsi"
+        "keterangan": "Pintu uk. 80*200, 70*200 & jendela"
       },
       {
         "no": 7,
@@ -87,7 +87,7 @@
         "p0": 0,
         "p50": 0,
         "p100": 1.1,
-        "keterangan": "Uji nyala & aliran air"
+        "keterangan": "Rangka kanopi & atap spandek"
       },
       {
         "no": 8,
@@ -96,16 +96,16 @@
         "p0": 0,
         "p50": 0,
         "p100": 3.55,
-        "keterangan": "Pengecatan & serah terima"
+        "keterangan": "Closet jongkok, kran & septictank"
       },
       {
         "no": 9,
-        "uraian": "Pekerjaan Baru",
+        "uraian": "PEKERJAAN LISTRIK",
         "bobot": 4.91,
         "p0": 0,
         "p50": 0,
         "p100": 4.91,
-        "keterangan": ""
+        "keterangan": "Kabel NYM, lampu LED, saklar & MCB"
       }
     ]
   },
@@ -190,7 +190,7 @@
         true,
         true
       ],
-      "foto0": "/uploads/wm_bnba1_foto0_1795104459464_52df7f.jpg",
+      "foto0": "",
       "foto50": "",
       "foto100_1": "",
       "foto100_2": "",
@@ -237,10 +237,10 @@
         true,
         true
       ],
-      "foto0": "/uploads/wm_bnba2_foto0_1795138278344_cc0799.jpg",
-      "foto50": "/uploads/wm_bnba2_foto50_1795138318121_9a9849.jpg",
+      "foto0": "",
+      "foto50": "",
       "foto100_1": "",
-      "foto100_2": "/uploads/wm_bnba2_foto100_2_1795138363779_441eaf.jpg",
+      "foto100_2": "",
       "foto100_3": "",
       "perubahanDenah": false,
       "keteranganDenah": "PEMILIK RUMAH INGIN MEMBANGUN CLOSET DI LUAR HUNTARA (MATERIAL DI BERIKAN)",
