@@ -2195,7 +2195,12 @@
       const page2 = `
         <div class="print-sheet lap-sheet">
           <div>
-            <div class="lap-sec-title" style="margin-top:0;">3. Lembar Dokumentasi Foto (0% — 50% — 100%)</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0;margin-bottom:6px;">
+              <div class="lap-sec-title" style="margin:0;">3. Lembar Dokumentasi Foto (0% — 50% — 100%)</div>
+              <button class="btn btn-sm btn-outline no-print" style="background:#fff;border-color:#2563eb;color:#2563eb;font-weight:600;display:inline-flex;align-items:center;gap:4px;" onclick="window.app.openUnitModal('${escapeHtml(u.id)}')">
+                📷 Upload / Ganti / Hapus Foto Unit Ini
+              </button>
+            </div>
             <div class="lap-unit-bar">
               <div><strong>Unit / Blok:</strong> ${escapeHtml(unitCode)}</div>
               <div><strong>Koordinat GPS:</strong> ${escapeHtml(gpsText)}</div>
@@ -2250,6 +2255,11 @@
       const page3 = `
         <div class="print-sheet lap-sheet">
           <div>
+            <div class="no-print" style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+              <button class="btn btn-sm btn-outline" style="background:#fff;border-color:#2563eb;color:#2563eb;font-weight:600;display:inline-flex;align-items:center;gap:4px;" onclick="window.app.openUnitModal('${escapeHtml(u.id)}')">
+                📷 Upload / Ganti / Hapus Foto Unit Ini
+              </button>
+            </div>
             <table class="lap-matrix-table">
               <thead>
                 <tr>
@@ -3040,7 +3050,7 @@
                       📤 Upload Logo
                       <input type="file" accept="image/*" style="display:none;" onchange="window.app.handleVendorImageUpload(this, 'v_logoUrl', 'logo')" />
                     </label>
-                    <button type="button" class="btn btn-danger btn-sm" title="Hapus Logo" onclick="window.app.clearVendorImageField('v_logoUrl', 'Belum Ada Logo')">✕</button>
+                    <button type="button" class="btn btn-danger btn-sm" title="Hapus Logo" onclick="window.app.clearVendorImageField('v_logoUrl', 'Belum Ada Logo')">🗑️ Hapus</button>
                   </div>
                 </div>
 
@@ -3057,7 +3067,7 @@
                       📤 Upload Kop Surat
                       <input type="file" accept="image/*" style="display:none;" onchange="window.app.handleVendorImageUpload(this, 'v_kopSuratUrl', 'kop')" />
                     </label>
-                    <button type="button" class="btn btn-danger btn-sm" title="Hapus Kop Surat" onclick="window.app.clearVendorImageField('v_kopSuratUrl', 'Pakai Kop Teks Otomatis')">✕</button>
+                    <button type="button" class="btn btn-danger btn-sm" title="Hapus Kop Surat" onclick="window.app.clearVendorImageField('v_kopSuratUrl', 'Pakai Kop Teks Otomatis')">🗑️ Hapus</button>
                   </div>
                 </div>
 
@@ -3074,7 +3084,7 @@
                       📤 Upload TT & Cap
                       <input type="file" accept="image/*" style="display:none;" onchange="window.app.handleVendorImageUpload(this, 'v_ttdStempelUrl', 'ttd')" />
                     </label>
-                    <button type="button" class="btn btn-danger btn-sm" title="Hapus TT & Cap" onclick="window.app.clearVendorImageField('v_ttdStempelUrl', 'Belum Ada TT & Cap')">✕</button>
+                    <button type="button" class="btn btn-danger btn-sm" title="Hapus TT & Cap" onclick="window.app.clearVendorImageField('v_ttdStempelUrl', 'Belum Ada TT & Cap')">🗑️ Hapus</button>
                   </div>
                 </div>
 
@@ -3091,7 +3101,7 @@
                       📤 Upload Spesimen
                       <input type="file" accept="image/*" style="display:none;" onchange="window.app.handleVendorImageUpload(this, 'v_spesimenUrl', 'spesimen')" />
                     </label>
-                    <button type="button" class="btn btn-danger btn-sm" title="Hapus Spesimen" onclick="window.app.clearVendorImageField('v_spesimenUrl', 'Belum Ada Spesimen')">✕</button>
+                    <button type="button" class="btn btn-danger btn-sm" title="Hapus Spesimen" onclick="window.app.clearVendorImageField('v_spesimenUrl', 'Belum Ada Spesimen')">🗑️ Hapus</button>
                   </div>
                 </div>
 
@@ -3576,10 +3586,17 @@
             </div>
 
             <!-- BAGIAN 3: UPLOAD FOTO DOKUMENTASI 0%, 50%, 100% (SESUAI LAPORAN.PDF) -->
-            <h4 style="margin-bottom:6px;color:var(--primary);">3. Foto Dokumentasi Progres Fisik (0% — 50% — 100%)</h4>
-            <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">
-              Upload foto progres utama (Tampak Depan 0%, 50%, 100%, Bagian Dalam/Interior, MCK/Sanitasi, serta Tampak Samping/Belakang).
-            </p>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+              <div>
+                <h4 style="margin:0;color:var(--primary);">3. Foto Dokumentasi Progres Fisik (0% — 50% — 100%)</h4>
+                <p style="font-size:12px;color:var(--text-muted);margin:2px 0 0 0;">
+                  Upload foto progres utama (Tampak Depan 0%, 50%, 100%, Interior, MCK/Sanitasi, serta Tampak Samping/Belakang).
+                </p>
+              </div>
+              <button type="button" class="btn btn-outline btn-sm" style="color:#dc2626;border-color:#fca5a5;background:#fef2f2;font-size:11px;font-weight:600;" onclick="window.app.clearAllUnitPhotos()">
+                🗑️ Kosongkan Semua Foto Rumah Ini
+              </button>
+            </div>
             <div class="photo-slot-grid" style="margin-bottom:20px;">
               ${renderPhotoSlotHtml(u, 'foto0', 'A1. Foto 0% — Tampak Depan (Lahan Awal)')}
               ${renderPhotoSlotHtml(u, 'foto50', 'A2. Foto 50% — Tampak Depan (Pondasi & Rangka)')}
@@ -3648,14 +3665,43 @@
         <strong style="font-size:12px;">${escapeHtml(label)}</strong>
         ${val ? `<img src="${escapeHtml(val)}" alt="${escapeHtml(label)}" />` : `<div class="photo-placeholder">Belum Ada Foto</div>`}
         <div style="display:flex;gap:6px;width:100%;">
-          <label class="btn btn-outline btn-sm" style="flex:1;cursor:pointer;">
-            📤 Upload Foto
+          <label class="btn btn-outline btn-sm" style="flex:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;">
+            📤 ${val ? 'Ganti Foto' : 'Upload Foto'}
             <input type="file" accept="image/*" style="display:none;" onchange="window.app.handleUnitPhotoUpload(this, '${field}')" />
           </label>
-          ${val ? `<button class="btn btn-danger btn-sm" onclick="window._editingUnit['${field}']=''; window.app.renderUnitModalContent();">✕</button>` : ''}
+          ${val ? `
+            <button type="button" class="btn btn-danger btn-sm" title="Hapus foto ini" style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;font-weight:600;" onclick="window.app.deleteUnitPhoto('${field}')">
+              🗑️ Hapus
+            </button>
+          ` : ''}
         </div>
       </div>
     `;
+  }
+
+  function deleteUnitPhoto(field) {
+    if (!window._editingUnit) return;
+    window._editingUnit[field] = '';
+    renderUnitModalContent();
+  }
+
+  function clearAllUnitPhotos() {
+    if (!window._editingUnit) return;
+    if (confirm('Yakin ingin menghapus / mengosongkan semua foto pada rumah penerima ini?')) {
+      const u = window._editingUnit;
+      u.foto0 = '';
+      u.foto50 = '';
+      u.foto100_1 = '';
+      u.foto100_samping = '';
+      u.foto100_2 = '';
+      u.foto100_3 = '';
+      u.foto0_samping = '';
+      u.foto50_samping = '';
+      u.foto0_dalam = '';
+      u.foto50_dalam = '';
+      u.fotoSuratPernyataan = '';
+      renderUnitModalContent();
+    }
   }
 
   async function handleUnitPhotoUpload(inputEl, field) {
@@ -4373,6 +4419,8 @@
     openUnitModal,
     renderUnitModalContent,
     handleUnitPhotoUpload,
+    deleteUnitPhoto,
+    clearAllUnitPhotos,
     setModalUnitProgress,
     saveUnitModal,
     deleteUnit,
