@@ -309,7 +309,7 @@
 
   async function saveState(msg = 'Tersimpan Otomatis') {
     const statusEl = document.getElementById('saveStatusText');
-    if (statusEl) statusEl.textContent = '⏳ Menyimpan...';
+    if (statusEl) statusEl.innerHTML = '<span class="save-icon">⏳</span> Menyimpan...';
     try {
       const payload = {
         settings: state.settings,
@@ -327,10 +327,16 @@
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error('Server save error');
-      if (statusEl) statusEl.textContent = `✅ ${msg}`;
+      if (statusEl) {
+        statusEl.innerHTML = '<span class="save-icon">✅</span> Tersimpan Otomatis';
+        clearTimeout(window._saveStatusTimer);
+        window._saveStatusTimer = setTimeout(() => {
+          if (statusEl) statusEl.innerHTML = '<span class="save-icon">💾</span> Tersimpan Otomatis';
+        }, 2500);
+      }
     } catch (err) {
       console.error('Save error:', err);
-      if (statusEl) statusEl.textContent = '⚠️ Tersimpan di Browser Lokal';
+      if (statusEl) statusEl.innerHTML = '<span class="save-icon">⚠️</span> Tersimpan di Browser Lokal';
     }
     updateSidebarBadges();
   }
@@ -4182,7 +4188,7 @@
       }
       u.batchId = null;
     }
-    saveState(`Penerima BNBA #${u.noBnba} - ${u.nama} ditandai BATAL: ${u.alasanBatal}`);
+    saveState('Penerima BNBA ditandai BATAL');
     renderAll();
   }
 
@@ -4192,7 +4198,7 @@
     if (u.statusBatal) {
       if (confirm(`Aktifkan kembali penerima BNBA #${u.noBnba} - ${u.nama}?`)) {
         u.statusBatal = false;
-        saveState(`Penerima BNBA #${u.noBnba} - ${u.nama} diaktifkan kembali`);
+        saveState('Penerima BNBA diaktifkan kembali');
         renderAll();
       }
     } else {
