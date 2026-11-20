@@ -807,6 +807,9 @@
                       <button class="btn btn-outline btn-sm" onclick="window.app.selectVendor('${escapeHtml(v.id)}')">
                         ✓ Jadikan Vendor Aktif
                       </button>
+                      <button class="btn btn-outline btn-sm" style="border-color:#2563eb;color:#2563eb;" onclick="window.app.openLogoHeaderModal('${escapeHtml(v.id)}')">
+                        🏛️ Logo Pemda (Prov/Kab)
+                      </button>
                       <button class="btn btn-primary btn-sm" onclick="window.app.openVendorModal('${escapeHtml(v.id)}')">
                         ✏️ Edit Profil & Kop/Rekening
                       </button>
@@ -1447,6 +1450,9 @@
             <p style="font-size:12px;color:var(--text-muted)">Semua Nomor, Tanggal, Deskripsi Lokasi, Sub Total, Potongan PPn, PPh, Total Tagihan Bersih & Terbilang dihitung otomatis.</p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-outline btn-lg" style="background:#fff;border-color:#2563eb;color:#2563eb;font-weight:600;" onclick="window.app.openLogoHeaderModal('${escapeHtml(vendor.id)}')">
+              🏛️ Upload Logo Pemda (Prov/Kab)
+            </button>
             <button class="btn btn-warning btn-lg" onclick="window.app.openRabModal()">
               ⚙️ Atur Item RAB & Bobot SPK
             </button>
@@ -2072,6 +2078,13 @@
       const page1 = `
         <div class="print-sheet lap-sheet">
           <div>
+            <!-- QUICK TOOLBAR UPLOAD LOGO PEMDA (NO-PRINT) -->
+            <div class="no-print" style="margin-bottom:8px;display:flex;justify-content:flex-end;gap:8px;">
+              <button class="btn btn-sm btn-outline" style="background:#fff;border-color:#2563eb;color:#2563eb;font-weight:600;display:inline-flex;align-items:center;gap:6px;box-shadow:0 1px 2px rgba(0,0,0,0.05);" onclick="window.app.openLogoHeaderModal('${escapeHtml(vendor.id)}')">
+                🏛️ Upload / Ganti Logo Pemda (Provinsi &amp; Kabupaten)
+              </button>
+            </div>
+
             <!-- HEADER 4 LOGO -->
             <div class="lap-header-4logo">
               <div class="lap-logo-pair">
@@ -3077,6 +3090,7 @@
                       📤 Upload Logo Prov
                       <input type="file" accept="image/*" style="display:none;" onchange="window.app.handleVendorImageUpload(this, 'v_logoProvinsiUrl', 'prov')" />
                     </label>
+                    <button type="button" class="btn btn-outline btn-sm" title="Kembalikan ke Default" onclick="window.app.resetVendorLogoField('v_logoProvinsiUrl', '/assets/logo-provinsi.svg')">↺ Default</button>
                   </div>
                 </div>
 
@@ -3093,6 +3107,7 @@
                       📤 Upload Logo Kab
                       <input type="file" accept="image/*" style="display:none;" onchange="window.app.handleVendorImageUpload(this, 'v_logoKabupatenUrl', 'kab')" />
                     </label>
+                    <button type="button" class="btn btn-outline btn-sm" title="Kembalikan ke Default" onclick="window.app.resetVendorLogoField('v_logoKabupatenUrl', '/assets/logo-kabupaten.svg')">↺ Default</button>
                   </div>
                 </div>
               </div>
@@ -3167,6 +3182,213 @@
 
     closeModal();
     saveState('Profil perusahaan disimpan');
+    renderAll();
+  }
+
+  function resetVendorLogoField(hiddenId, defaultUrl) {
+    const hidden = document.getElementById(hiddenId);
+    if (hidden) hidden.value = defaultUrl;
+    const previewBox = document.getElementById('preview_' + hiddenId);
+    if (previewBox) {
+      previewBox.innerHTML = `<img src="${escapeHtml(defaultUrl)}" alt="Logo" style="height:110px;object-fit:contain;" />`;
+    }
+  }
+
+  /* ========================================================================
+     MODAL KHUSUS UPLOAD LOGO PEMDA (PROVINSI & KABUPATEN)
+     ======================================================================== */
+  function openLogoHeaderModal(vendorId) {
+    const v = (vendorId ? getVendorById(vendorId) : null) || (state.selectedVendorId !== 'ALL' ? getVendorById(state.selectedVendorId) : state.vendors[0]);
+    if (!v) return;
+
+    const currentProvLogo = v.logoProvinsiUrl || '/assets/logo-provinsi.svg';
+    const currentKabLogo = v.logoKabupatenUrl || '/assets/logo-kabupaten.svg';
+    const provNama = v.provinsi || 'NUSA TENGGARA TIMUR';
+    const kabNama = v.kabupaten || 'NAGEKEO';
+
+    const modalEl = document.getElementById('modal-container');
+    if (!modalEl) return;
+
+    modalEl.innerHTML = `
+      <div class="modal-backdrop" onclick="if(event.target===this) window.app.closeModal()">
+        <div class="modal-card" style="max-width:820px;width:95%;">
+          <div class="modal-header">
+            <div>
+              <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
+                <span>🏛️</span> Upload &amp; Ganti Logo Pemda (Provinsi &amp; Kabupaten)
+              </h3>
+              <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0 0;">
+                Atur Logo Resmi Pemerintah Provinsi &amp; Kabupaten yang tampil pada Kop Laporan 4 Logo (${escapeHtml(v.nama)})
+              </p>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="window.app.closeModal()">✕</button>
+          </div>
+
+          <div class="modal-body" style="padding:16px;">
+            <!-- PREVIEW KOP 4 LOGO REAL-TIME -->
+            <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:12px;margin-bottom:18px;">
+              <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+                👁️ Live Preview Kop 4 Logo Pada Dokumen Laporan:
+              </div>
+              <div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                <!-- LOGO KIRI (BNPB + PROV) -->
+                <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+                  <div style="width:48px;height:48px;border:1px dashed #cbd5e1;padding:2px;display:flex;align-items:center;justify-content:center;background:#fff;">
+                    <img src="/assets/logo-bnpb.png" alt="BNPB" style="max-height:42px;max-width:42px;object-fit:contain;" />
+                  </div>
+                  <div id="live_prev_prov_box" style="width:48px;height:48px;border:2px solid #2563eb;border-radius:4px;padding:2px;display:flex;align-items:center;justify-content:center;background:#eff6ff;" title="Slot 2: Logo Pemerintah Provinsi">
+                    <img id="live_prev_prov_img" src="${escapeHtml(currentProvLogo)}" alt="Logo Prov" style="max-height:42px;max-width:42px;object-fit:contain;" />
+                  </div>
+                </div>
+
+                <!-- TEKS TENGAH KOP -->
+                <div style="text-align:center;flex:1;font-family:'Arial',sans-serif;">
+                  <div style="font-weight:800;font-size:11px;color:#0f172a;letter-spacing:0.3px;">BADAN NASIONAL PENANGGULANGAN BENCANA (BNPB)</div>
+                  <div style="font-weight:700;font-size:10px;color:#1e293b;line-height:1.2;margin:2px 0;">
+                    PEMERINTAH PROVINSI <span id="live_prev_prov_text">${escapeHtml(provNama.toUpperCase())}</span> — PEMERINTAH KABUPATEN <span id="live_prev_kab_text">${escapeHtml(kabNama.toUpperCase())}</span>
+                  </div>
+                  <div style="font-weight:800;font-size:10px;color:#b45309;">PELAKSANA: ${escapeHtml(v.nama)}</div>
+                </div>
+
+                <!-- LOGO KANAN (KAB + VENDOR) -->
+                <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+                  <div id="live_prev_kab_box" style="width:48px;height:48px;border:2px solid #16a34a;border-radius:4px;padding:2px;display:flex;align-items:center;justify-content:center;background:#f0fdf4;" title="Slot 3: Logo Pemerintah Kabupaten">
+                    <img id="live_prev_kab_img" src="${escapeHtml(currentKabLogo)}" alt="Logo Kab" style="max-height:42px;max-width:42px;object-fit:contain;" />
+                  </div>
+                  <div style="width:48px;height:48px;border:1px dashed #cbd5e1;padding:2px;display:flex;align-items:center;justify-content:center;background:#fff;">
+                    <img src="${escapeHtml(v.logoUrl || '/assets/logo-emka-real_0.png')}" alt="Logo Vendor" style="max-height:42px;max-width:42px;object-fit:contain;" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DUA KOLOM PENGATURAN LOGO -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              
+              <!-- 1. LOGO PROVINSI -->
+              <div style="border:1px solid #bfdbfe;background:#f8fafc;border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <strong style="font-size:13px;color:#1e40af;display:flex;align-items:center;gap:6px;">
+                    <span>📍</span> 1. Logo Pemerintah Provinsi
+                  </strong>
+                  <span style="font-size:10px;background:#dbeafe;color:#1e40af;padding:2px 6px;border-radius:4px;font-weight:600;">Kop Kiri #2</span>
+                </div>
+
+                <div style="background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:12px;text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center;">
+                  <img id="modal_prov_img_preview" src="${escapeHtml(currentProvLogo)}" alt="Logo Provinsi" style="max-height:100px;max-width:100%;object-fit:contain;" />
+                </div>
+                <input type="hidden" id="modal_prov_logo_val" value="${escapeHtml(currentProvLogo)}" />
+
+                <div class="form-group" style="margin-bottom:0;">
+                  <label style="font-size:11px;font-weight:600;color:#475569;">Nama Provinsi di KOP</label>
+                  <input type="text" id="modal_prov_name" class="form-control" style="font-size:12px;font-weight:700;" value="${escapeHtml(provNama)}" oninput="document.getElementById('live_prev_prov_text').innerText = this.value.toUpperCase()" />
+                </div>
+
+                <div style="display:flex;gap:8px;">
+                  <label class="btn btn-primary btn-sm" style="flex:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
+                    📤 Upload Logo Baru
+                    <input type="file" accept="image/*" style="display:none;" onchange="window.app.handleQuickLogoUpload(this, 'modal_prov_logo_val', 'modal_prov_img_preview', 'live_prev_prov_img')" />
+                  </label>
+                  <button type="button" class="btn btn-outline btn-sm" title="Kembalikan ke Logo Default NTT" onclick="window.app.resetQuickLogo('modal_prov_logo_val', '/assets/logo-provinsi.svg', 'modal_prov_img_preview', 'live_prev_prov_img')">
+                    ↺ Default
+                  </button>
+                </div>
+                <span style="font-size:11px;color:#64748b;">Format disarankan: PNG transparan atau JPG.</span>
+              </div>
+
+              <!-- 2. LOGO KABUPATEN -->
+              <div style="border:1px solid #bbf7d0;background:#f8fafc;border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <strong style="font-size:13px;color:#15803d;display:flex;align-items:center;gap:6px;">
+                    <span>🏛️</span> 2. Logo Pemerintah Kabupaten
+                  </strong>
+                  <span style="font-size:10px;background:#dcfce7;color:#15803d;padding:2px 6px;border-radius:4px;font-weight:600;">Kop Kanan #1</span>
+                </div>
+
+                <div style="background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:12px;text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center;">
+                  <img id="modal_kab_img_preview" src="${escapeHtml(currentKabLogo)}" alt="Logo Kabupaten" style="max-height:100px;max-width:100%;object-fit:contain;" />
+                </div>
+                <input type="hidden" id="modal_kab_logo_val" value="${escapeHtml(currentKabLogo)}" />
+
+                <div class="form-group" style="margin-bottom:0;">
+                  <label style="font-size:11px;font-weight:600;color:#475569;">Nama Kabupaten di KOP</label>
+                  <input type="text" id="modal_kab_name" class="form-control" style="font-size:12px;font-weight:700;" value="${escapeHtml(kabNama)}" oninput="document.getElementById('live_prev_kab_text').innerText = this.value.toUpperCase()" />
+                </div>
+
+                <div style="display:flex;gap:8px;">
+                  <label class="btn btn-success btn-sm" style="flex:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#16a34a;border-color:#16a34a;color:#fff;">
+                    📤 Upload Logo Baru
+                    <input type="file" accept="image/*" style="display:none;" onchange="window.app.handleQuickLogoUpload(this, 'modal_kab_logo_val', 'modal_kab_img_preview', 'live_prev_kab_img')" />
+                  </label>
+                  <button type="button" class="btn btn-outline btn-sm" title="Kembalikan ke Logo Default Nagekeo" onclick="window.app.resetQuickLogo('modal_kab_logo_val', '/assets/logo-kabupaten.svg', 'modal_kab_img_preview', 'live_prev_kab_img')">
+                    ↺ Default
+                  </button>
+                </div>
+                <span style="font-size:11px;color:#64748b;">Format disarankan: PNG transparan atau JPG.</span>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;color:#64748b;">💡 Perubahan logo akan langsung diperbarui pada seluruh lembar cetak berkas &amp; laporan fisik.</span>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-outline" onclick="window.app.closeModal()">Batal</button>
+              <button class="btn btn-primary" onclick="window.app.saveLogoHeaderModal('${escapeHtml(v.id)}')">
+                💾 Simpan Logo &amp; Terapkan
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  async function handleQuickLogoUpload(inputEl, hiddenId, previewImgId, livePrevImgId) {
+    if (!inputEl.files || !inputEl.files[0]) return;
+    try {
+      const url = await uploadImageFile(inputEl.files[0], 'pemda_logo');
+      const hidden = document.getElementById(hiddenId);
+      if (hidden) hidden.value = url;
+      const prevImg = document.getElementById(previewImgId);
+      if (prevImg) prevImg.src = url;
+      const liveImg = document.getElementById(livePrevImgId);
+      if (liveImg) liveImg.src = url;
+    } catch (err) {
+      alert('Gagal mengupload logo: ' + (err.message || err));
+    }
+  }
+
+  function resetQuickLogo(hiddenId, defaultUrl, previewImgId, livePrevImgId) {
+    const hidden = document.getElementById(hiddenId);
+    if (hidden) hidden.value = defaultUrl;
+    const prevImg = document.getElementById(previewImgId);
+    if (prevImg) prevImg.src = defaultUrl;
+    const liveImg = document.getElementById(livePrevImgId);
+    if (liveImg) liveImg.src = defaultUrl;
+  }
+
+  function saveLogoHeaderModal(vendorId) {
+    const v = getVendorById(vendorId);
+    if (!v) return;
+
+    const provLogo = document.getElementById('modal_prov_logo_val')?.value || '/assets/logo-provinsi.svg';
+    const kabLogo = document.getElementById('modal_kab_logo_val')?.value || '/assets/logo-kabupaten.svg';
+    const provName = document.getElementById('modal_prov_name')?.value?.trim();
+    const kabName = document.getElementById('modal_kab_name')?.value?.trim();
+
+    v.logoProvinsiUrl = provLogo;
+    v.logoKabupatenUrl = kabLogo;
+    if (provName) v.provinsi = provName;
+    if (kabName) v.kabupaten = kabName;
+
+    const idx = state.vendors.findIndex(item => item.id === v.id);
+    if (idx >= 0) {
+      state.vendors[idx] = v;
+    }
+
+    closeModal();
+    saveState('Logo Pemda Provinsi & Kabupaten berhasil diperbarui');
     renderAll();
   }
 
@@ -4123,6 +4345,11 @@
     openVendorModal,
     handleVendorImageUpload,
     clearVendorImageField,
+    resetVendorLogoField,
+    openLogoHeaderModal,
+    handleQuickLogoUpload,
+    resetQuickLogo,
+    saveLogoHeaderModal,
     saveVendorModal,
     deleteVendor,
     openUnitModal,
