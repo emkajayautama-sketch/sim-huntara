@@ -2423,13 +2423,28 @@
             </div>
             <div class="grid-2" style="gap:10px;">
               <div class="form-group">
-                <label>2. Simpan ke Slot Tahap Progres</label>
+                <label>2. Simpan ke Slot Tahap Progres (12 Slot Matriks)</label>
                 <select id="wmSlotSelect" class="form-control">
-                  <option value="foto0">Foto Progres 0% (Benchmarking)</option>
-                  <option value="foto50">Foto Progres 50% (Rangka/Atap/GRC)</option>
-                  <option value="foto100_1">Foto Progres 100% #1 (Tampak Depan)</option>
-                  <option value="foto100_2">Foto Progres 100% #2 (Tampak Dalam)</option>
-                  <option value="foto100_3">Foto Progres 100% #3 (Toilet/Closet)</option>
+                  <optgroup label="A. Tampak Depan">
+                    <option value="foto0">A1. Progres 0% — Tampak Depan (Lahan Awal)</option>
+                    <option value="foto50">A2. Progres 50% — Tampak Depan (Pondasi/Rangka)</option>
+                    <option value="foto100_1">A3. Progres 100% — Tampak Depan (Selesai)</option>
+                  </optgroup>
+                  <optgroup label="B. Tampak Samping / Belakang">
+                    <option value="foto0_samping">B1. Progres 0% — Tampak Samping</option>
+                    <option value="foto50_samping">B2. Progres 50% — Tampak Samping</option>
+                    <option value="foto100_samping">B3. Progres 100% — Tampak Samping</option>
+                  </optgroup>
+                  <optgroup label="C. Bagian Dalam (Interior)">
+                    <option value="foto0_dalam">C1. Progres 0% — Bagian Dalam</option>
+                    <option value="foto50_dalam">C2. Progres 50% — Bagian Dalam</option>
+                    <option value="foto100_2">C3. Progres 100% — Bagian Dalam (Pintu/Listrik)</option>
+                  </optgroup>
+                  <optgroup label="D. MCK / Sanitasi">
+                    <option value="foto0_mck">D1. Progres 0% — MCK / Lokasi Septictank</option>
+                    <option value="foto50_mck">D2. Progres 50% — MCK (Instalasi/Struktur)</option>
+                    <option value="foto100_3">D3. Progres 100% — MCK Terpasang</option>
+                  </optgroup>
                 </select>
               </div>
               <div class="form-group">
@@ -3585,25 +3600,90 @@
               </div>
             </div>
 
-            <!-- BAGIAN 3: UPLOAD FOTO DOKUMENTASI 0%, 50%, 100% (SESUAI LAPORAN.PDF) -->
+            <!-- BAGIAN 3: UPLOAD FOTO DOKUMENTASI LENGKAP 12 FOTO (MATRIKS 4x3 SESUAI LAPORAN DOKUMENTASI FISIK) -->
             <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
               <div>
-                <h4 style="margin:0;color:var(--primary);">3. Foto Dokumentasi Progres Fisik (0% — 50% — 100%)</h4>
+                <h4 style="margin:0;color:var(--primary);">3. Foto Dokumentasi Progres Fisik Lengkap (12 Foto Sesuai Lembar Laporan)</h4>
                 <p style="font-size:12px;color:var(--text-muted);margin:2px 0 0 0;">
-                  Upload foto progres utama (Tampak Depan 0%, 50%, 100%, Interior, MCK/Sanitasi, serta Tampak Samping/Belakang).
+                  Terdiri dari 4 sudut (Depan, Samping, Dalam, MCK) pada 3 tahapan progres (0%, 50%, 100%).
                 </p>
               </div>
-              <button type="button" class="btn btn-outline btn-sm" style="color:#dc2626;border-color:#fca5a5;background:#fef2f2;font-size:11px;font-weight:600;" onclick="window.app.clearAllUnitPhotos()">
-                🗑️ Kosongkan Semua Foto Rumah Ini
-              </button>
+              <div style="display:flex;gap:6px;">
+                <button type="button" class="btn btn-outline btn-sm" style="color:#0284c7;border-color:#bae6fd;background:#f0f9ff;font-size:11px;font-weight:600;" onclick="window.app.copyAllAnglesFromFront()">
+                  📋 Salin Foto Depan ke Samping, Dalam &amp; MCK
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" style="color:#dc2626;border-color:#fca5a5;background:#fef2f2;font-size:11px;font-weight:600;" onclick="window.app.clearAllUnitPhotos()">
+                  🗑️ Kosongkan Semua Foto
+                </button>
+              </div>
             </div>
-            <div class="photo-slot-grid" style="margin-bottom:20px;">
-              ${renderPhotoSlotHtml(u, 'foto0', 'A1. Foto 0% — Tampak Depan (Lahan Awal)')}
-              ${renderPhotoSlotHtml(u, 'foto50', 'A2. Foto 50% — Tampak Depan (Pondasi & Rangka)')}
-              ${renderPhotoSlotHtml(u, 'foto100_1', 'A3. Foto 100% — Tampak Depan (Selesai)')}
-              ${renderPhotoSlotHtml(u, 'foto100_samping', 'B. Foto 100% — Tampak Samping / Belakang')}
-              ${renderPhotoSlotHtml(u, 'foto100_2', 'C. Foto 100% — Bagian Dalam (Interior/Listrik)')}
-              ${renderPhotoSlotHtml(u, 'foto100_3', 'D. Foto 100% — MCK / Sanitasi Terpasang')}
+
+            <!-- MATRIKS 12 FOTO: 4 BARIS (A, B, C, D) x 3 KOLOM (0%, 50%, 100%) -->
+            <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:12px;margin-bottom:20px;display:flex;flex-direction:column;gap:14px;">
+              
+              <!-- BARIS A: TAMPAK DEPAN -->
+              <div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px;">
+                <div style="display:flex;align-items:center;gap:6px;font-weight:700;font-size:13px;color:#1e40af;margin-bottom:8px;border-bottom:1px solid #f1f5f9;padding-bottom:4px;">
+                  <span>🏠</span> A. Tampak Depan (3 Foto: 0%, 50%, 100%)
+                </div>
+                <div class="photo-slot-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));gap:10px;">
+                  ${renderPhotoSlotHtml(u, 'foto0', 'A1. 0% — Tampak Depan (Lahan Awal)')}
+                  ${renderPhotoSlotHtml(u, 'foto50', 'A2. 50% — Tampak Depan (Pondasi & Rangka)')}
+                  ${renderPhotoSlotHtml(u, 'foto100_1', 'A3. 100% — Tampak Depan (Selesai)')}
+                </div>
+              </div>
+
+              <!-- BARIS B: TAMPAK SAMPING / BELAKANG -->
+              <div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;border-bottom:1px solid #f1f5f9;padding-bottom:4px;">
+                  <span style="font-weight:700;font-size:13px;color:#0f766e;display:flex;align-items:center;gap:6px;">
+                    <span>📐</span> B. Tampak Samping / Belakang (3 Foto: 0%, 50%, 100%)
+                  </span>
+                  <button type="button" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px;" onclick="window.app.copyAngleFallback('samping')">
+                    📋 Samakan dgn Tampak Depan
+                  </button>
+                </div>
+                <div class="photo-slot-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));gap:10px;">
+                  ${renderPhotoSlotHtml(u, 'foto0_samping', 'B1. 0% — Tampak Samping')}
+                  ${renderPhotoSlotHtml(u, 'foto50_samping', 'B2. 50% — Tampak Samping')}
+                  ${renderPhotoSlotHtml(u, 'foto100_samping', 'B3. 100% — Tampak Samping')}
+                </div>
+              </div>
+
+              <!-- BARIS C: BAGIAN DALAM (INTERIOR) -->
+              <div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;border-bottom:1px solid #f1f5f9;padding-bottom:4px;">
+                  <span style="font-weight:700;font-size:13px;color:#7c2d12;display:flex;align-items:center;gap:6px;">
+                    <span>🚪</span> C. Bagian Dalam (Interior / Listrik) (3 Foto: 0%, 50%, 100%)
+                  </span>
+                  <button type="button" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px;" onclick="window.app.copyAngleFallback('dalam')">
+                    📋 Samakan dgn Tampak Depan
+                  </button>
+                </div>
+                <div class="photo-slot-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));gap:10px;">
+                  ${renderPhotoSlotHtml(u, 'foto0_dalam', 'C1. 0% — Bagian Dalam (Titik Pondasi)')}
+                  ${renderPhotoSlotHtml(u, 'foto50_dalam', 'C2. 50% — Bagian Dalam (Rangka/Lantai)')}
+                  ${renderPhotoSlotHtml(u, 'foto100_2', 'C3. 100% — Bagian Dalam (Pintu & Listrik)')}
+                </div>
+              </div>
+
+              <!-- BARIS D: MCK / SANITASI -->
+              <div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;border-bottom:1px solid #f1f5f9;padding-bottom:4px;">
+                  <span style="font-weight:700;font-size:13px;color:#15803d;display:flex;align-items:center;gap:6px;">
+                    <span>🚿</span> D. MCK / Sanitasi (3 Foto: 0%, 50%, 100%)
+                  </span>
+                  <button type="button" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px;" onclick="window.app.copyAngleFallback('mck')">
+                    📋 Samakan dgn Tampak Depan
+                  </button>
+                </div>
+                <div class="photo-slot-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));gap:10px;">
+                  ${renderPhotoSlotHtml(u, 'foto0_mck', 'D1. 0% — MCK / Lokasi Septictank')}
+                  ${renderPhotoSlotHtml(u, 'foto50_mck', 'D2. 50% — MCK (Instalasi & Struktur)')}
+                  ${renderPhotoSlotHtml(u, 'foto100_3', 'D3. 100% — MCK Terpasang')}
+                </div>
+              </div>
+
             </div>
 
             <!-- BAGIAN 4: SURAT PERNYATAAN PERUBAHAN DENAH -->
@@ -3687,21 +3767,63 @@
 
   function clearAllUnitPhotos() {
     if (!window._editingUnit) return;
-    if (confirm('Yakin ingin menghapus / mengosongkan semua foto pada rumah penerima ini?')) {
+    if (confirm('Yakin ingin menghapus / mengosongkan semua 12 foto pada rumah penerima ini?')) {
       const u = window._editingUnit;
       u.foto0 = '';
       u.foto50 = '';
       u.foto100_1 = '';
-      u.foto100_samping = '';
-      u.foto100_2 = '';
-      u.foto100_3 = '';
       u.foto0_samping = '';
       u.foto50_samping = '';
+      u.foto100_samping = '';
       u.foto0_dalam = '';
       u.foto50_dalam = '';
+      u.foto100_2 = '';
+      u.foto0_mck = '';
+      u.foto50_mck = '';
+      u.foto100_3 = '';
       u.fotoSuratPernyataan = '';
       renderUnitModalContent();
     }
+  }
+
+  function copyAngleFallback(angle) {
+    if (!window._editingUnit) return;
+    const u = window._editingUnit;
+    if (angle === 'samping') {
+      if (u.foto0 && !u.foto0_samping) u.foto0_samping = u.foto0;
+      if (u.foto50 && !u.foto50_samping) u.foto50_samping = u.foto50;
+      if (u.foto100_1 && !u.foto100_samping) u.foto100_samping = u.foto100_1;
+    } else if (angle === 'dalam') {
+      if (u.foto0 && !u.foto0_dalam) u.foto0_dalam = u.foto0;
+      if (u.foto50 && !u.foto50_dalam) u.foto50_dalam = u.foto50;
+      if (u.foto100_1 && !u.foto100_2) u.foto100_2 = u.foto100_1;
+    } else if (angle === 'mck') {
+      if (u.foto0 && !u.foto0_mck) u.foto0_mck = u.foto0;
+      if (u.foto50 && !u.foto50_mck) u.foto50_mck = u.foto50;
+      if (u.foto100_1 && !u.foto100_3) u.foto100_3 = u.foto100_1;
+    }
+    renderUnitModalContent();
+  }
+
+  function copyAllAnglesFromFront() {
+    if (!window._editingUnit) return;
+    const u = window._editingUnit;
+    if (u.foto0) {
+      if (!u.foto0_samping) u.foto0_samping = u.foto0;
+      if (!u.foto0_dalam) u.foto0_dalam = u.foto0;
+      if (!u.foto0_mck) u.foto0_mck = u.foto0;
+    }
+    if (u.foto50) {
+      if (!u.foto50_samping) u.foto50_samping = u.foto50;
+      if (!u.foto50_dalam) u.foto50_dalam = u.foto50;
+      if (!u.foto50_mck) u.foto50_mck = u.foto50;
+    }
+    if (u.foto100_1) {
+      if (!u.foto100_samping) u.foto100_samping = u.foto100_1;
+      if (!u.foto100_2) u.foto100_2 = u.foto100_1;
+      if (!u.foto100_3) u.foto100_3 = u.foto100_1;
+    }
+    renderUnitModalContent();
   }
 
   async function handleUnitPhotoUpload(inputEl, field) {
@@ -4449,6 +4571,8 @@
     handleUnitPhotoUpload,
     deleteUnitPhoto,
     clearAllUnitPhotos,
+    copyAngleFallback,
+    copyAllAnglesFromFront,
     setModalUnitProgress,
     saveUnitModal,
     deleteUnit,
