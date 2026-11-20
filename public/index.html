@@ -13,33 +13,36 @@
   <!-- SIDEBAR NAVIGATION -->
   <aside class="sidebar no-print">
     <div class="sidebar-brand">
-      <img src="/assets/logo-bnpb.png" alt="Logo BNPB" />
+      <div class="sidebar-brand-logo-wrap">
+        <img src="/assets/logo-bnpb.png" alt="Logo BNPB" />
+      </div>
       <div class="sidebar-brand-text">
-        <h1>SIM-HUNTARA</h1>
-        <p>Monitoring & Pencairan BNPB</p>
+        <div class="sidebar-brand-header">
+          <h1>SIM-HUNTARA</h1>
+          <span class="brand-pill">v2.5 Pro</span>
+        </div>
+        <p>Monitoring &amp; Pencairan BNPB</p>
       </div>
     </div>
 
     <div class="sidebar-vendor-box">
-      <label for="globalVendorSelect">Perusahaan / Vendor Aktif:</label>
+      <label for="globalVendorSelect"><span class="icon">🏢</span> Perusahaan / Vendor Aktif:</label>
       <select id="globalVendorSelect" class="sidebar-vendor-select"></select>
     </div>
 
     <nav class="nav-menu" id="sidebarNav">
+      <div class="nav-section-label">MONITORING FISIK</div>
       <button class="nav-item active" data-tab="dashboard">
         <span class="nav-icon">📊</span>
-        <span>Dashboard & Progres Desa</span>
-      </button>
-      <button class="nav-item" data-tab="vendors">
-        <span class="nav-icon">🏢</span>
-        <span>Data Perusahaan (Vendor)</span>
-        <span class="nav-badge" id="badgeVendorCount">2</span>
+        <span>Dashboard &amp; Progres Desa</span>
       </button>
       <button class="nav-item" data-tab="units">
         <span class="nav-icon">🏠</span>
-        <span>Data BNBA & Progres Fisik</span>
+        <span>Data BNBA &amp; Progres Fisik</span>
         <span class="nav-badge" id="badgeUnitCount">59</span>
       </button>
+
+      <div class="nav-section-label">KEUANGAN &amp; PENCAIRAN</div>
       <button class="nav-item" data-tab="batches">
         <span class="nav-icon">💰</span>
         <span>Pencairan Gelondongan</span>
@@ -47,33 +50,47 @@
       </button>
       <button class="nav-item" data-tab="print">
         <span class="nav-icon">🖨️</span>
-        <span>Pusat Cetak Berkas & Foto</span>
+        <span>Pusat Cetak Berkas &amp; Foto</span>
+      </button>
+
+      <div class="nav-section-label">SISTEM &amp; ALAT</div>
+      <button class="nav-item" data-tab="vendors">
+        <span class="nav-icon">🏢</span>
+        <span>Data Perusahaan (Vendor)</span>
+        <span class="nav-badge" id="badgeVendorCount">2</span>
       </button>
       <button class="nav-item" data-tab="tools">
         <span class="nav-icon">📷</span>
-        <span>Studio Watermark & Blanko</span>
+        <span>Studio Watermark &amp; Blanko</span>
       </button>
       <button class="nav-item" data-tab="sharing">
         <span class="nav-icon">🔗</span>
-        <span>Sharing Tim & Backup Data</span>
+        <span>Sharing Tim &amp; Backup Data</span>
       </button>
     </nav>
 
     <div class="sidebar-footer">
       <div class="lan-chip" id="lanInfoBox">
-        <strong>Mode Jaringan Aktif</strong><br />
-        Memuat info IP...
+        <div class="lan-chip-title"><span class="pulse-dot"></span> Server Jaringan Online</div>
+        <div class="lan-chip-body">Memuat info IP...</div>
       </div>
-      <div id="saveStatusText">✅ Tersimpan Otomatis</div>
+      <div id="saveStatusText"><span class="save-icon">💾</span> Tersimpan Otomatis</div>
     </div>
   </aside>
 
   <!-- MAIN CONTENT WRAPPER -->
   <div class="main-wrapper">
     <header class="topbar no-print">
-      <div class="topbar-title">
-        <h2 id="pageTitle">Dashboard Pemantauan Progres & Pencairan Huntara</h2>
-        <p id="pageSubtitle">Pantau progres 0%, 50%, 100% per Desa/Kecamatan dan kelola pencairan gelondongan (Min. 10 Unit)</p>
+      <div class="topbar-left">
+        <div class="topbar-breadcrumb">
+          <span class="topbar-badge">🏛️ KONTRAKTOR BNPB • PROV. NTT</span>
+          <span class="topbar-dot">•</span>
+          <span class="topbar-subtitle-mini">Sistem Pencairan Resmi Huntara</span>
+        </div>
+        <div class="topbar-title">
+          <h2 id="pageTitle">Dashboard Pemantauan Progres &amp; Pencairan Huntara</h2>
+          <p id="pageSubtitle">Pantau progres 0%, 50%, 100% per Desa/Kecamatan dan kelola pencairan gelondongan (Min. 10 Unit)</p>
+        </div>
       </div>
       <div class="topbar-actions">
         <button class="btn btn-outline btn-sm" onclick="window.app.quickDemo100()">

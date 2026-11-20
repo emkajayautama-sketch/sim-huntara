@@ -423,10 +423,11 @@
     const lanBox = document.getElementById('lanInfoBox');
     if (lanBox) {
       const urls = state.serverInfo?.lanUrls || [];
+      const titleHtml = `<div class="lan-chip-title"><span class="pulse-dot"></span> Server Jaringan Online</div>`;
       if (urls.length > 0) {
-        lanBox.innerHTML = `<strong>📡 Link Sharing WiFi/Tim:</strong><br/>${urls.map(u => `<span>${escapeHtml(u)}</span>`).join('<br/>')}`;
+        lanBox.innerHTML = `${titleHtml}<div class="lan-chip-body"><strong>📡 Link WiFi/Tim:</strong><br/>${urls.map(u => `<span>${escapeHtml(u)}</span>`).join('<br/>')}</div>`;
       } else {
-        lanBox.innerHTML = `<strong>💻 Mode Lokal Aktif:</strong><br/>${escapeHtml(window.location.origin)}`;
+        lanBox.innerHTML = `${titleHtml}<div class="lan-chip-body"><strong>💻 Mode Lokal:</strong><br/>${escapeHtml(window.location.origin)}</div>`;
       }
     }
   }
@@ -556,17 +557,30 @@
       <!-- KPI CARDS -->
       <div class="kpi-grid">
         <div class="kpi-card">
-          <span class="kpi-label">Total Kuota Unit (BNBA)</span>
+          <div class="kpi-card-header">
+            <span class="kpi-label">Total Kuota Unit (BNBA)</span>
+            <div class="kpi-icon-pill blue">🏠</div>
+          </div>
           <div class="kpi-value">${totalUnits} <small style="font-size:14px;font-weight:600">Unit</small></div>
-          <span class="kpi-sub">Nilai Kontrak: Rp ${formatNumberDot(finTotal.totalBruto)}</span>
+          <span class="kpi-sub">Nilai Kontrak: <strong>Rp ${formatNumberDot(finTotal.totalBruto)}</strong></span>
         </div>
         <div class="kpi-card orange">
-          <span class="kpi-label">Progres Fisik Keseluruhan</span>
+          <div class="kpi-card-header">
+            <span class="kpi-label">Progres Fisik Keseluruhan</span>
+            <div class="kpi-icon-pill orange">📊</div>
+          </div>
           <div class="kpi-value">${weightedProgress}%</div>
+          <div class="progress-track" style="height:6px;margin:8px 0 6px;">
+            <div class="progress-fill-100" style="width:${totalUnits > 0 ? (count100 / totalUnits * 100) : 0}%"></div>
+            <div class="progress-fill-50" style="width:${totalUnits > 0 ? (count50 / totalUnits * 100) : 0}%"></div>
+          </div>
           <span class="kpi-sub">0%: <b>${count0}</b> | 50%: <b>${count50}</b> | 100%: <b>${count100}</b></span>
         </div>
         <div class="kpi-card green">
-          <span class="kpi-label">Siap Tagih Gelondongan (100%)</span>
+          <div class="kpi-card-header">
+            <span class="kpi-label">Siap Tagih Gelondongan (100%)</span>
+            <div class="kpi-icon-pill green">⚡</div>
+          </div>
           <div class="kpi-value">${countReady} <small style="font-size:14px;font-weight:600">Unit</small></div>
           <span class="kpi-sub">${
             countReady >= minUnit
@@ -575,7 +589,10 @@
           }</span>
         </div>
         <div class="kpi-card sky">
-          <span class="kpi-label">Sudah Ditagihkan / Masuk Batch</span>
+          <div class="kpi-card-header">
+            <span class="kpi-label">Sudah Ditagihkan / Masuk Batch</span>
+            <div class="kpi-icon-pill sky">💼</div>
+          </div>
           <div class="kpi-value">${countBilled} <small style="font-size:14px;font-weight:600">Unit</small></div>
           <span class="kpi-sub">Tergabung dalam ${batches.length} Batch Pencairan | ${countDenah} Perubahan Denah</span>
         </div>
