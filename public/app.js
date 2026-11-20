@@ -229,18 +229,22 @@
     `;
   }
 
-  function renderVendorTtdHtml(vendor, align = 'left') {
+  function renderVendorTtdHtml(vendor, align = 'left', isCompact = false) {
     const hasTtd = Boolean(vendor.ttdStempelUrl);
     const hasSpesimen = Boolean(vendor.spesimenUrl);
+    const height = isCompact ? 46 : 62;
     if (!hasTtd && !hasSpesimen) {
-      return `<div style="height:62px;"></div>`;
+      return `<div style="height:${height}px;"></div>`;
     }
     const justify = align === 'center' ? 'center' : 'flex-start';
+    const boxH = isCompact ? 'min-height:50px;min-width:160px;' : 'min-height:70px;min-width:185px;';
+    const stempelH = isCompact ? 'max-height:48px;max-width:145px;' : 'max-height:66px;max-width:180px;';
+    const ttdH = isCompact ? 'max-height:50px;max-width:155px;' : 'max-height:68px;max-width:195px;';
     return `
-      <div style="display:flex;align-items:center;justify-content:${justify};margin:4px 0 6px;">
-        <div style="position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:70px;min-width:185px;">
-          ${hasTtd ? `<img src="${escapeHtml(vendor.ttdStempelUrl)}" alt="Cap / Stempel" style="max-height:66px;max-width:180px;object-fit:contain;display:block;" />` : ''}
-          ${hasSpesimen ? `<img src="${escapeHtml(vendor.spesimenUrl)}" alt="Tanda Tangan" style="${hasTtd ? 'position:absolute;left:52%;top:54%;transform:translate(-50%, -50%);z-index:2;' : ''}max-height:68px;max-width:195px;object-fit:contain;display:block;" />` : ''}
+      <div style="display:flex;align-items:center;justify-content:${justify};margin:${isCompact ? '2px 0 3px' : '4px 0 6px'};">
+        <div style="position:relative;display:inline-flex;align-items:center;justify-content:center;${boxH}">
+          ${hasTtd ? `<img src="${escapeHtml(vendor.ttdStempelUrl)}" alt="Cap / Stempel" style="${stempelH}object-fit:contain;display:block;" />` : ''}
+          ${hasSpesimen ? `<img src="${escapeHtml(vendor.spesimenUrl)}" alt="Tanda Tangan" style="${hasTtd ? 'position:absolute;left:52%;top:54%;transform:translate(-50%, -50%);z-index:2;' : ''}${ttdH}object-fit:contain;display:block;" />` : ''}
         </div>
       </div>
     `;
@@ -1843,9 +1847,9 @@
         </div>
 
         <!-- TANDA TANGAN DIREKTUR -->
-        <div style="margin-top:24px;margin-left:55%;font-family:Calibri, Arial, sans-serif;font-size:10.5pt;line-height:1.35;">
+        <div style="margin-top:10px;margin-left:55%;font-family:Calibri, Arial, sans-serif;font-size:10pt;line-height:1.28;page-break-inside:avoid;break-inside:avoid;">
           <div style="font-weight:bold;">${escapeHtml(vendor.nama)}</div>
-          ${renderVendorTtdHtml(vendor, 'left')}
+          ${renderVendorTtdHtml(vendor, 'left', true)}
           ${renderDirectorNameAndRoleHtml(vendor)}
         </div>
       </div>
@@ -1937,11 +1941,11 @@
           Demikian permohonan ini kami sampaikan, atas perhatian dan kerja samanya kami ucapkan terimakasih.
         </div>
 
-        <div style="margin-top:28px;display:flex;justify-content:flex-end;">
+        <div style="margin-top:16px;display:flex;justify-content:flex-end;page-break-inside:avoid;break-inside:avoid;">
           <div style="width:260px;text-align:center;font-size:11pt;">
             <div>Hormat Kami</div>
             <div style="font-weight:bold;">${escapeHtml(vendor.nama)}</div>
-            ${renderVendorTtdHtml(vendor, 'center')}
+            ${renderVendorTtdHtml(vendor, 'center', true)}
             ${renderDirectorNameAndRoleHtml(vendor)}
           </div>
         </div>
@@ -2008,15 +2012,15 @@
           Sehubungan Dengan pekerjaan Pembangunan Hunian Sementara sebanyak ${fin.qty} (${escapeHtml(fin.terbilangQty)}) unit di ${escapeHtml(toTitleCase(fullLokasiStr))} Kami ${escapeHtml(vendor.nama)} selaku Pelaksana Pekerjaan tersebut memberitahukan bahwasanya pekerjaan tersebut sudah selesai kami kerjakan 100%.
         </div>
 
-        <div style="text-align:justify;line-height:1.55;margin-bottom:32px;">
+        <div style="text-align:justify;line-height:1.55;margin-bottom:18px;">
           Demikian surat pernyataan ini dibuat dengan sebenarnya dan penuh rasa tanggung jawab dan untuk dapat dipergunakan sebagaimana mestinya.
         </div>
 
-        <div style="display:flex;justify-content:flex-end;">
+        <div style="display:flex;justify-content:flex-end;page-break-inside:avoid;break-inside:avoid;">
           <div style="width:270px;font-size:11pt;">
             <div>${escapeHtml(vendor.kotaTtd)}, ${escapeHtml(meta.tglSps)}</div>
             <div style="font-weight:bold;">${escapeHtml(vendor.nama)}</div>
-            ${renderVendorTtdHtml(vendor, 'left')}
+            ${renderVendorTtdHtml(vendor, 'left', true)}
             ${renderDirectorNameAndRoleHtml(vendor)}
           </div>
         </div>
@@ -2026,22 +2030,59 @@
 
   /* ========================================================================
      TEMPLATE LEMBAR A4 #4: LAMPIRAN REKAP DAFTAR BNBA PENCAIRAN
+     PAGINASI OTOMATIS: 16 UNIT PER HALAMAN (PAS DENGAN TTD & KOP RESMI)
      ======================================================================== */
   function renderSheetBnbaList(vendor, units, meta, fullLokasiStr) {
     const provClean = String(vendor.provinsi || 'PROVINSI NUSA TENGGARA TIMUR').replace(/^PROVINSI\s+/i, '');
     const kabClean = String(vendor.kabupaten || 'KABUPATEN NAGEKEO').replace(/^KABUPATEN\s+/i, '');
+    const maxUnitsPerPage = 16;
+    const totalUnitCount = units ? units.length : 0;
 
+    if (!units || units.length === 0) {
+      return renderSingleBnbaSheet(vendor, [], meta, fullLokasiStr, provClean, kabClean, 1, 1, 0, 0, true);
+    }
+
+    const chunks = [];
+    for (let i = 0; i < units.length; i += maxUnitsPerPage) {
+      chunks.push({
+        units: units.slice(i, i + maxUnitsPerPage),
+        startIndex: i
+      });
+    }
+
+    const totalPages = chunks.length;
+    return chunks.map((chunk, idx) => {
+      const pageNum = idx + 1;
+      const isLastPage = pageNum === totalPages;
+      return renderSingleBnbaSheet(
+        vendor,
+        chunk.units,
+        meta,
+        fullLokasiStr,
+        provClean,
+        kabClean,
+        pageNum,
+        totalPages,
+        chunk.startIndex,
+        totalUnitCount,
+        isLastPage
+      );
+    }).join('\n');
+  }
+
+  function renderSingleBnbaSheet(vendor, chunkUnits, meta, fullLokasiStr, provClean, kabClean, pageNum, totalPages, startIndex = 0, totalUnitCount = 0, isLastPage = true) {
+    const isMultiPage = totalPages > 1;
     return `
-      <div class="print-sheet font-arial">
+      <div class="print-sheet bnba-sheet">
         <!-- QUICK TOOLBAR UPLOAD LOGO PEMDA (NO-PRINT) -->
-        <div class="no-print" style="margin-bottom:8px;display:flex;justify-content:flex-end;gap:8px;">
+        <div class="no-print" style="margin-bottom:6px;display:flex;justify-content:flex-end;gap:8px;">
           <button class="btn btn-sm btn-outline" style="background:#fff;border-color:#2563eb;color:#2563eb;font-weight:600;display:inline-flex;align-items:center;gap:6px;box-shadow:0 1px 2px rgba(0,0,0,0.05);" onclick="window.app.openLogoHeaderModal('${escapeHtml(vendor.id)}')">
             🏛️ Upload / Ganti Logo Pemda (Provinsi &amp; Kabupaten)
           </button>
         </div>
 
         <!-- HEADER 4 LOGO SESUAI GAMBAR 2 -->
-        <div class="lap-header-4logo">
+        <div class="lap-header-4logo" style="padding-bottom:6px;">
           <div class="lap-logo-pair">
             <div class="lap-logo-box"><img src="/assets/logo-bnpb.png" alt="Logo BNPB" /></div>
             <div class="lap-logo-box"><img src="${escapeHtml(vendor.logoProvinsiUrl || '/assets/logo-provinsi.svg')}" alt="Logo Provinsi" /></div>
@@ -2059,30 +2100,30 @@
         </div>
         <div class="lap-double-rule"></div>
 
-        <div style="text-align:center;margin:10px 0 14px;">
-          <div style="font-size:12pt;font-weight:bold;text-transform:uppercase;">LAMPIRAN DAFTAR PENERIMA HUNIAN SEMENTARA (BNBA)</div>
-          <div style="font-size:10pt;">PELAKSANA : <strong>${escapeHtml(vendor.nama)}</strong> — LOKASI : <strong>${escapeHtml(toTitleCase(fullLokasiStr))}</strong></div>
-          <div style="font-size:9.5pt;">Jumlah Unit : <strong>${units.length} Unit</strong> | Lampiran Invoice No: ${escapeHtml(meta.noInvoice)}</div>
+        <div style="text-align:center;margin:8px 0 10px;">
+          <div style="font-size:11.5pt;font-weight:bold;text-transform:uppercase;">LAMPIRAN DAFTAR PENERIMA HUNIAN SEMENTARA (BNBA)</div>
+          <div style="font-size:9.5pt;">PELAKSANA : <strong>${escapeHtml(vendor.nama)}</strong> — LOKASI : <strong>${escapeHtml(toTitleCase(fullLokasiStr))}</strong></div>
+          <div style="font-size:9pt;color:#334155;">Jumlah Unit : <strong>${totalUnitCount} Unit</strong> | Lampiran Invoice No: ${escapeHtml(meta.noInvoice)}${isMultiPage ? ` (Halaman ${pageNum} dari ${totalPages})` : ''}</div>
         </div>
 
-        <table class="spp-table" style="font-size:9pt;">
+        <table class="bnba-table">
           <thead>
-            <tr style="background:#f1f5f9;">
+            <tr>
               <th style="width:34px;">NO</th>
               <th style="width:65px;">NO BNBA</th>
               <th>NAMA LENGKAP PENERIMA</th>
               <th style="width:60px;">NO. RT</th>
               <th>DESA / KELURAHAN</th>
               <th>KECAMATAN</th>
-              <th style="width:75px;">PROGRES</th>
+              <th style="width:70px;">PROGRES</th>
             </tr>
           </thead>
           <tbody>
-            ${units.length === 0 ? `
-              <tr><td colspan="7" style="text-align:center;padding:18px;">Belum ada unit yang dipilih.</td></tr>
-            ` : units.map((u, idx) => `
+            ${chunkUnits.length === 0 ? `
+              <tr><td colspan="7" style="text-align:center;padding:14px;">Belum ada unit yang dipilih.</td></tr>
+            ` : chunkUnits.map((u, idx) => `
               <tr>
-                <td style="text-align:center;">${idx + 1}</td>
+                <td style="text-align:center;">${startIndex + idx + 1}</td>
                 <td style="text-align:center;">${u.noBnba}</td>
                 <td><strong>${escapeHtml(u.nama)}</strong></td>
                 <td style="text-align:center;">${escapeHtml(u.rt)}</td>
@@ -2094,14 +2135,20 @@
           </tbody>
         </table>
 
-        <div style="margin-top:20px;display:flex;justify-content:flex-end;">
-          <div style="width:240px;text-align:center;font-size:10pt;">
-            <div>${escapeHtml(vendor.kotaTtd)}, ${escapeHtml(meta.tglInvoice)}</div>
-            <div style="font-weight:bold;">${escapeHtml(vendor.nama)}</div>
-            ${renderVendorTtdHtml(vendor, 'center')}
-            ${renderDirectorNameAndRoleHtml(vendor)}
+        ${isLastPage ? `
+          <div class="bnba-sig-box">
+            <div style="width:230px;text-align:center;font-size:9.5pt;line-height:1.3;">
+              <div>${escapeHtml(vendor.kotaTtd)}, ${escapeHtml(meta.tglInvoice)}</div>
+              <div style="font-weight:bold;">${escapeHtml(vendor.nama)}</div>
+              ${renderVendorTtdHtml(vendor, 'center', true)}
+              ${renderDirectorNameAndRoleHtml(vendor)}
+            </div>
           </div>
-        </div>
+        ` : `
+          <div style="text-align:right;font-size:8.5pt;font-style:italic;color:#64748b;margin-top:6px;">
+            Bersambung ke Halaman ${pageNum + 1}...
+          </div>
+        `}
       </div>
     `;
   }
