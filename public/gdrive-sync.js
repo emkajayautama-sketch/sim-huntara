@@ -3,6 +3,7 @@
  * Sinkronisasi data aplikasi & foto progres ke Google Drive pengguna masing-masing.
  */
 (function() {
+  const DEFAULT_CLIENT_ID = '643355374210-fquo8bi36sb6lhiohsv42tfhof6jtk22.apps.googleusercontent.com';
   const STORAGE_KEY_CLIENT_ID = 'huntara_gdrive_client_id';
   const STORAGE_KEY_USER = 'huntara_gdrive_user';
   const FOLDER_NAME = 'SIM-HUNTARA-DATA';
@@ -18,7 +19,7 @@
 
   const gdriveSync = {
     getClientId() {
-      return localStorage.getItem(STORAGE_KEY_CLIENT_ID) || '';
+      return localStorage.getItem(STORAGE_KEY_CLIENT_ID) || DEFAULT_CLIENT_ID;
     },
 
     setClientId(id) {
@@ -70,15 +71,30 @@
                 await this.fetchUserInfo();
                 await this.initDriveStructure();
                 this.updateUI();
+
+                // Cek apakah di Google Drive pengguna sudah ada file database sebelumnya
+                if (cachedDbFileId) {
+                  const userName = this.getUser()?.name || 'Bapak/Ibu';
+                  const pull = confirm(`Halo ${userName}!\n\nDitemukan cadangan data SIM-HUNTARA di Google Drive Anda.\n\nApakah Anda ingin MEMUAT data dari Google Drive sekarang?`);
+                  if (pull) {
+                    await this.restoreFromDrive();
+                  }
+                } else {
+                  // Jika pengguna baru pertama kali login, langsung cadangkan data awal ke folder Drive mereka
+                  if (window.app && window.app.getState) {
+                    await this.manualSync();
+                  }
+                }
+
                 if (window.app && window.app.showToast) {
-                  window.app.showToast('✅ Berhasil terhubung ke Google Drive!', 'success');
+                  window.app.showToast('✅ Berhasil login & terhubung ke Google Drive Anda!', 'success');
                 }
               }
             },
             error_callback: (err) => {
               console.error('Google Auth Error:', err);
               if (window.app && window.app.showToast) {
-                window.app.showToast('Gagal login Google: ' + (err.message || 'Periksa Client ID'), 'error');
+                window.app.showToast('Gagal login Google: ' + (err.message || 'Periksa koneksi'), 'error');
               }
             }
           });
@@ -99,7 +115,7 @@
         this.init();
       }
       if (tokenClient) {
-        tokenClient.requestAccessToken({ prompt: 'consent' });
+        tokenClient.requestAccessToken({ prompt: '' });
       } else {
         alert('Google Identity Services sedang dimuat. Mohon tunggu beberapa detik lalu coba lagi.');
       }
