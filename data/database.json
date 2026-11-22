@@ -174,21 +174,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -221,21 +221,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -268,21 +268,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -315,21 +315,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -362,21 +362,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -409,21 +409,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -456,21 +456,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -503,21 +503,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -550,21 +550,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -597,21 +597,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -644,21 +644,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -691,21 +691,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -738,21 +738,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -785,21 +785,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -832,21 +832,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -879,21 +879,21 @@
       "tambahan": false,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -926,21 +926,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -973,21 +973,21 @@
       "tambahan": false,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1020,21 +1020,21 @@
       "tambahan": false,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1067,21 +1067,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1114,21 +1114,21 @@
       "tambahan": false,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1161,21 +1161,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1208,21 +1208,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1255,21 +1255,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1302,21 +1302,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1349,21 +1349,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1396,21 +1396,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1443,21 +1443,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1490,21 +1490,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1537,21 +1537,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1584,21 +1584,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1631,21 +1631,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1678,21 +1678,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1725,21 +1725,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1772,21 +1772,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1819,21 +1819,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1866,21 +1866,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1913,21 +1913,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -1960,21 +1960,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -2007,21 +2007,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 100,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -2054,17 +2054,17 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
+        false,
+        false,
         false,
         false,
         false,
@@ -2101,17 +2101,17 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
+        false,
+        false,
         false,
         false,
         false,
@@ -2148,21 +2148,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -2195,17 +2195,17 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
+        false,
+        false,
         false,
         false,
         false,
@@ -2242,21 +2242,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -2289,21 +2289,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -2336,17 +2336,17 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
+        false,
+        false,
         false,
         false,
         false,
@@ -2383,17 +2383,17 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
+        false,
+        false,
         false,
         false,
         false,
@@ -2430,21 +2430,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -2477,21 +2477,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -2524,21 +2524,21 @@
       "tambahan": false,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -2571,17 +2571,17 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
+        false,
+        false,
         false,
         false,
         false,
@@ -2618,21 +2618,21 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
       "foto0": "",
       "foto50": "",
@@ -2665,17 +2665,17 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
+        false,
+        false,
         false,
         false,
         false,
@@ -2712,17 +2712,17 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
+        false,
+        false,
         false,
         false,
         false,
@@ -2759,17 +2759,17 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
+        false,
+        false,
         false,
         false,
         false,
@@ -2806,17 +2806,17 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
+        false,
+        false,
         false,
         false,
         false,
@@ -2853,17 +2853,17 @@
       "tambahan": true,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
+        false,
+        false,
         false,
         false,
         false,
@@ -2900,17 +2900,17 @@
       "tambahan": false,
       "ttl": "",
       "noHp": "",
-      "progres": 50,
+      "progres": 0,
       "check0": true,
       "check50": [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
+        false,
+        false,
+        false,
+        false
       ],
       "check100": [
+        false,
+        false,
         false,
         false,
         false,
@@ -2929,7 +2929,10 @@
       "jabatanKepalaDesa": "Kepala Desa / Lurah",
       "fotoSuratPernyataan": "",
       "batchId": null,
-      "statusTagihan": "BELUM_DITAGIHKAN"
+      "statusTagihan": "BELUM_DITAGIHKAN",
+      "statusBatal": true,
+      "alasanBatal": "Ada pendobelan nama penerima bantuan dari sumber uang yang berbeda, yang bersangkutan menolak bantuan Huntara, dan memilih bantuan yang lannya",
+      "tglBatal": "20 November 2026"
     }
   ],
   "batches": []
