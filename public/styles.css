@@ -2034,3 +2034,113 @@ table.lap-matrix-table td.photo-cell {
   }
 }
 
+/* ==========================================================================
+   GOOGLE DRIVE SYNC & OAUTH STYLES
+   ========================================================================== */
+.btn-gdrive {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.btn-gdrive:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.google-auth-topbar {
+  display: flex;
+  align-items: center;
+}
+
+.gdrive-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 20px;
+  padding: 3px 10px 3px 4px;
+}
+
+.gdrive-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #22c55e;
+}
+
+.gdrive-avatar-placeholder {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #22c55e;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.gdrive-user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  text-align: left;
+}
+
+.gdrive-user-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #166534;
+  max-width: 110px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gdrive-user-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.gdrive-btn-mini {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px 5px;
+  font-size: 11px;
+  line-height: 1;
+  color: #166534;
+  transition: all 0.15s;
+}
+
+.gdrive-btn-mini:hover {
+  background: #bbf7d0;
+}
+
+.gdrive-btn-mini.danger {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.gdrive-btn-mini.danger:hover {
+  background: #fecaca;
+}
+
+
