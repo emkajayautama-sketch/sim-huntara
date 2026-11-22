@@ -278,10 +278,42 @@
      API & PERSISTENCE
      ======================================================================== */
   async function loadState() {
+    let data = null;
+
+    // 1. Coba ambil dari server API (jika berjalan di localhost / server Node.js)
     try {
       const res = await fetch('/api/state');
-      if (!res.ok) throw new Error('Gagal memuat state dari server');
-      const data = await res.json();
+      if (res.ok) {
+        data = await res.json();
+      }
+    } catch (_) {}
+
+    // 2. Jika API tidak tersedia (misal Cloudflare Pages), cek simpanan terbaru di localStorage browser
+    if (!data) {
+      try {
+        const cached = localStorage.getItem('sim_huntara_backup');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.units && parsed.units.length > 0) {
+            data = parsed;
+          }
+        }
+      } catch (_) {}
+    }
+
+    // 3. Jika localStorage masih kosong (kunjungan pertama di Cloudflare Pages), muat file JSON statis
+    if (!data) {
+      try {
+        const staticRes = await fetch('/data/database.json');
+        if (staticRes.ok) {
+          data = await staticRes.json();
+        }
+      } catch (err) {
+        console.warn('Gagal memuat /data/database.json:', err);
+      }
+    }
+
+    if (data) {
       state.settings = data.settings || {};
       state.vendors = data.vendors || [];
       state.units = data.units || [];
@@ -295,17 +327,9 @@
         state.printConfig.batchId = state.batches[0].id;
       }
       renderAll();
-    } catch (err) {
-      console.error('Error loading state:', err);
-      const cached = localStorage.getItem('sim_huntara_backup');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        state.settings = parsed.settings || {};
-        state.vendors = parsed.vendors || [];
-        state.units = parsed.units || [];
-        state.batches = parsed.batches || [];
-        renderAll();
-      }
+    } else {
+      console.warn('Tidak ada data state yang dapat dimuat');
+      renderAll();
     }
   }
 
@@ -323,12 +347,16 @@
         localStorage.setItem('sim_huntara_backup', JSON.stringify(payload));
       } catch (_) {}
 
-      const res = await fetch('/api/save-state', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error('Server save error');
+      try {
+        await fetch('/api/save-state', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (_) {
+        // Mode Cloudflare Pages statis: tersimpan aman di localStorage browser
+      }
+
       if (statusEl) {
         statusEl.innerHTML = '<span class="save-icon">✅</span> Tersimpan Otomatis';
         clearTimeout(window._saveStatusTimer);
@@ -338,7 +366,7 @@
       }
     } catch (err) {
       console.error('Save error:', err);
-      if (statusEl) statusEl.innerHTML = '<span class="save-icon">⚠️</span> Tersimpan di Browser Lokal';
+      if (statusEl) statusEl.innerHTML = '<span class="save-icon">💾</span> Tersimpan di Browser';
     }
     updateSidebarBadges();
   }
