@@ -5471,6 +5471,14 @@
       vendorSelect.addEventListener('change', (e) => selectVendor(e.target.value));
     }
 
+    // Portal Login Gateway
+    const isGuest = sessionStorage.getItem('huntara_guest_mode') === 'true';
+    const isGoogle = window.gdriveSync && typeof window.gdriveSync.isConnected === 'function' && window.gdriveSync.isConnected();
+    const loginScreen = document.getElementById('loginScreen');
+    if (loginScreen) {
+      loginScreen.style.display = (isGuest || isGoogle) ? 'none' : 'flex';
+    }
+
     loadState();
   });
 
@@ -5567,6 +5575,12 @@
       if (statusEl) {
         statusEl.innerHTML = `<span class="save-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span> ${escapeHtml(msg)}`;
       }
+    },
+    enterAsGuest: () => {
+      sessionStorage.setItem('huntara_guest_mode', 'true');
+      const screen = document.getElementById('loginScreen');
+      if (screen) screen.style.display = 'none';
+      renderAll();
     }
   };
 })();

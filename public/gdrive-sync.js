@@ -131,10 +131,13 @@
       cachedFolderId = null;
       cachedDbFileId = null;
       cachedPhotosFolderId = null;
+      sessionStorage.removeItem('huntara_guest_mode');
       this.setUser(null);
       this.updateUI();
+      const loginScreen = document.getElementById('loginScreen');
+      if (loginScreen) loginScreen.style.display = 'flex';
       if (window.app && window.app.showToast) {
-        window.app.showToast('Telah keluar dari Google Drive', 'info');
+        window.app.showToast('Telah keluar dari akun Google', 'info');
       }
     },
 
@@ -367,6 +370,17 @@
       const clientId = this.getClientId();
       const topbarEl = document.getElementById('googleAuthTopbar');
       const cardEl = document.getElementById('googleDriveSyncCard');
+      const loginScreen = document.getElementById('loginScreen');
+      const isGuest = sessionStorage.getItem('huntara_guest_mode') === 'true';
+
+      // 0. LOGIN PORTAL OVERLAY
+      if (loginScreen) {
+        if ((user && accessToken) || isGuest) {
+          loginScreen.style.display = 'none';
+        } else {
+          loginScreen.style.display = 'flex';
+        }
+      }
 
       // 1. TOPBAR WIDGET
       if (topbarEl) {
