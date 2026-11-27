@@ -2935,5 +2935,19 @@
       "tglBatal": "20 November 2026"
     }
   ],
-  "batches": []
+  "batches": [],
+  "users": [
+    {
+      "id": "usr_admin",
+      "username": "admin",
+      "email": "emka.utama@gmail.com",
+      "password": "admin",
+      "nama": "Ir. M. Kasim",
+      "perusahaan": "PT. EM KA JAYA UTAMA",
+      "jabatan": "Direktur Utama",
+      "vendorId": "vendor-emka-utama",
+      "role": "admin",
+      "createdAt": "2026-11-20"
+    }
+  ]
 }

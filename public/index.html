@@ -11,9 +11,10 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-  <!-- PORTAL LOGIN SCREEN -->
+  <!-- PORTAL LOGIN & REGISTRASI VENDOR -->
   <div id="loginScreen" class="login-screen-overlay" style="display:none;">
     <div class="login-card-box">
+      <!-- HEADER LOGO -->
       <div class="login-header-logo">
         <img src="/assets/logo-bnpb.png" alt="Logo BNPB" />
         <div class="login-header-title">
@@ -21,26 +22,143 @@
           <p>Sistem Informasi Manajemen Huntara BNPB</p>
         </div>
       </div>
-      <h3 class="login-welcome-title">Masuk ke Portal Pencairan Multi-Vendor</h3>
-      <p class="login-welcome-desc">
-        Kelola progres fisik 58 unit BNBA di 10 desa, pengajuan termin gelondongan (SPP/SPS/Invoice), dan dokumentasi foto lapangan.
-      </p>
 
-      <button type="button" class="btn-google-login-huge" onclick="window.gdriveSync.signIn()">
-        <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-        <span>Masuk dengan Akun Google</span>
-      </button>
-
-      <div class="login-divider-text">
-        <span>ATAU</span>
+      <!-- TABS NAVIGASI MASUK / DAFTAR -->
+      <div class="login-tabs-nav">
+        <button type="button" class="login-tab-btn active" id="tabBtnLogin" onclick="window.app.switchAuthTab('login')">
+          🔑 Masuk (Login)
+        </button>
+        <button type="button" class="login-tab-btn" id="tabBtnRegister" onclick="window.app.switchAuthTab('register')">
+          📝 Pendaftaran Vendor Baru
+        </button>
       </div>
 
-      <button type="button" class="btn-guest-mode" onclick="window.app.enterAsGuest()">
-        💻 Lanjut Tanpa Login (Mode Demo / Offline Lokal)
-      </button>
+      <!-- PANEL 1: FORM LOGIN (USER & PASSWORD) -->
+      <div id="authPanelLogin" class="auth-panel">
+        <h3 class="login-welcome-title">Masuk ke Portal Pencairan</h3>
+        <p class="login-welcome-desc">
+          Masukkan <strong>Username</strong> atau <strong>Email</strong> dan <strong>Password</strong> akun Anda.
+        </p>
 
-      <div class="login-secure-notice">
-        🔒 <strong>Multi-Tenant Storage Otomatis:</strong> Setiap vendor/kontraktor yang login menggunakan email masing-masing akan menyimpan dokumen dan foto langsung ke Google Drive mereka sendiri (kuota 15 GB gratis).
+        <form id="formLogin" onsubmit="window.app.submitLogin(event)">
+          <div style="text-align:left;margin-bottom:14px;">
+            <label class="login-label">👤 Username atau Email Resmi: <span class="required">*</span></label>
+            <input type="text" id="loginUsername" class="login-input" placeholder="Contoh: admin atau email@perusahaan.com" required autocomplete="username" />
+          </div>
+
+          <div style="text-align:left;margin-bottom:16px;">
+            <label class="login-label">🔒 Password: <span class="required">*</span></label>
+            <div class="password-wrap">
+              <input type="password" id="loginPassword" class="login-input" placeholder="Masukkan password Anda" required autocomplete="current-password" />
+              <button type="button" class="btn-toggle-eye" onclick="window.app.togglePasswordView('loginPassword', this)" title="Lihat/Sembunyikan Password">👁️</button>
+            </div>
+          </div>
+
+          <div id="loginErrorMsg" class="login-alert-error" style="display:none;"></div>
+
+          <button type="submit" class="btn-login-submit">
+            🚀 Masuk ke Aplikasi SIM-HUNTARA
+          </button>
+        </form>
+
+        <div class="login-account-hint">
+          <div class="hint-title">💡 Akun Bawaan Siap Pakai:</div>
+          <div>Username: <strong>admin</strong> &nbsp;|&nbsp; Password: <strong>admin</strong></div>
+        </div>
+
+        <div class="login-footer-switch">
+          Belum punya akun vendor? <a href="javascript:void(0)" onclick="window.app.switchAuthTab('register')">Daftar Vendor Baru di sini &raquo;</a>
+        </div>
+      </div>
+
+      <!-- PANEL 2: FORM PENDAFTARAN VENDOR BARU -->
+      <div id="authPanelRegister" class="auth-panel" style="display:none;">
+        <h3 class="login-welcome-title">Form Pendaftaran Vendor Baru</h3>
+        <p class="login-welcome-desc">
+          Daftarkan email dan perusahaan Anda. Sistem akan memproses dan menerbitkan Username &amp; Password akun Anda.
+        </p>
+
+        <form id="formRegister" onsubmit="window.app.submitRegister(event)">
+          <div class="login-reg-grid">
+            <div style="text-align:left;margin-bottom:12px;">
+              <label class="login-label">✉️ Email Perusahaan: <span class="required">*</span></label>
+              <input type="email" id="regEmail" class="login-input" placeholder="nama@perusahaan.com" required />
+            </div>
+            <div style="text-align:left;margin-bottom:12px;">
+              <label class="login-label">📱 No. WhatsApp / HP: <span class="required">*</span></label>
+              <input type="tel" id="regHp" class="login-input" placeholder="0812xxxxxxxx" required />
+            </div>
+          </div>
+
+          <div style="text-align:left;margin-bottom:12px;">
+            <label class="login-label">🏢 Nama Perusahaan / Vendor: <span class="required">*</span></label>
+            <input type="text" id="regPerusahaan" class="login-input" placeholder="Contoh: PT. FLORES RAYA JAYA / CV. SINAR BARU" required />
+          </div>
+
+          <div class="login-reg-grid">
+            <div style="text-align:left;margin-bottom:12px;">
+              <label class="login-label">👤 Nama Direktur: <span class="required">*</span></label>
+              <input type="text" id="regDirektur" class="login-input" placeholder="Nama Lengkap Direktur" required />
+            </div>
+            <div style="text-align:left;margin-bottom:12px;">
+              <label class="login-label">📍 Alamat Kantor Perusahaan:</label>
+              <input type="text" id="regAlamat" class="login-input" placeholder="Kota / Kabupaten kantor" />
+            </div>
+          </div>
+
+          <div class="login-reg-grid">
+            <div style="text-align:left;margin-bottom:14px;">
+              <label class="login-label">🔑 Buat Username: <span class="required">*</span></label>
+              <input type="text" id="regUsername" class="login-input" placeholder="Contoh: floresjaya" required />
+            </div>
+            <div style="text-align:left;margin-bottom:14px;">
+              <label class="login-label">🔒 Buat Password: <span class="required">*</span></label>
+              <div class="password-wrap">
+                <input type="password" id="regPassword" class="login-input" placeholder="Minimal 4 karakter" required minlength="4" />
+                <button type="button" class="btn-toggle-eye" onclick="window.app.togglePasswordView('regPassword', this)" title="Lihat/Sembunyikan">👁️</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="regErrorMsg" class="login-alert-error" style="display:none;"></div>
+
+          <button type="submit" class="btn-login-submit" style="background:#16a34a;">
+            📩 Daftarkan Akun &amp; Terbitkan Kredensial
+          </button>
+        </form>
+
+        <div class="login-footer-switch">
+          Sudah terdaftar? <a href="javascript:void(0)" onclick="window.app.switchAuthTab('login')">&laquo; Kembali ke Menu Masuk</a>
+        </div>
+      </div>
+
+      <!-- PANEL 3: NOTIFIKASI PENGIRIMAN AKUN SUKSES -->
+      <div id="authRegSuccessModal" class="auth-success-card" style="display:none;">
+        <div class="success-icon-badge">✅</div>
+        <h3 style="color:#166534;margin:8px 0 4px;font-size:17px;">Pendaftaran Berhasil!</h3>
+        <p style="font-size:12.5px;color:#15803d;margin-bottom:12px;">
+          Data perusahaan telah diverifikasi dan akun resmi SIM-HUNTARA telah diterbitkan.
+        </p>
+
+        <div class="email-mock-box">
+          <div class="email-mock-header">
+            <strong>📧 NOTIFIKASI AKTIVASI AKUN RESMI:</strong><br/>
+            Kepada: <span id="mockEmailDest" style="color:#2563eb;font-weight:700;"></span>
+          </div>
+          <div class="email-mock-body">
+            Yth. Direktur <strong id="mockCompName"></strong>,<br/>
+            Pendaftaran perusahaan Anda telah disetujui. Gunakan kredensial resmi di bawah ini untuk mengakses aplikasi:
+            <div class="credential-box">
+              <div>👤 Username : <strong id="mockUser" style="color:#0f172a;"></strong></div>
+              <div>🔒 Password : <strong id="mockPass" style="color:#2563eb;"></strong></div>
+            </div>
+            <span style="font-size:11.5px;color:#64748b;">Simpan kredensial Anda dengan aman untuk pencairan dan foto progres fisik.</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-login-submit" onclick="window.app.loginWithNewAccount()" style="margin-top:12px;background:#2563eb;">
+          🚀 Masuk Sekarang dengan Akun Ini
+        </button>
       </div>
     </div>
   </div>
@@ -58,6 +176,16 @@
         </div>
         <p>Monitoring &amp; Pencairan BNPB</p>
       </div>
+    </div>
+
+    <!-- KARTU PROFIL USER LOGIN DI SIDEBAR -->
+    <div id="sidebarUserBox" class="sidebar-user-box" style="display:none;">
+      <div class="sidebar-user-avatar" id="sidebarUserAvatar">A</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sidebarUserName">Admin</div>
+        <div class="sidebar-user-comp" id="sidebarUserComp">PT. EM KA JAYA UTAMA</div>
+      </div>
+      <button type="button" class="sidebar-user-logout" onclick="window.app.logout()" title="Keluar / Ganti Akun">Keluar</button>
     </div>
 
     <div class="sidebar-vendor-box">
@@ -164,7 +292,7 @@
         </div>
       </div>
       <div class="topbar-actions">
-        <div id="googleAuthTopbar" class="google-auth-topbar"></div>
+        <div id="userAuthTopbar" class="user-auth-topbar"></div>
         <button class="btn btn-outline btn-sm" onclick="window.app.quickDemo100()">
           ⚡ Quick Demo (100%)
         </button>

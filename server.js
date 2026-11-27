@@ -128,6 +128,7 @@ const server = http.createServer(async (req, res) => {
       if (Array.isArray(body.vendors)) db.vendors = body.vendors;
       if (Array.isArray(body.units)) db.units = body.units;
       if (Array.isArray(body.batches)) db.batches = body.batches;
+      if (Array.isArray(body.users)) db.users = body.users;
       writeDb(db);
       return sendJson(res, 200, { ok: true, message: 'Data berhasil disimpan ke server.' });
     } catch (err) {

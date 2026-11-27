@@ -3,6 +3,21 @@
    ========================================================================== */
 
 (function () {
+  const DEFAULT_USERS = [
+    {
+      id: 'usr_admin',
+      username: 'admin',
+      email: 'emka.utama@gmail.com',
+      password: 'admin',
+      nama: 'Ir. M. Kasim',
+      perusahaan: 'PT. EM KA JAYA UTAMA',
+      jabatan: 'Direktur Utama',
+      vendorId: 'vendor-emka-utama',
+      role: 'admin',
+      createdAt: '2026-11-20'
+    }
+  ];
+
   const state = {
     activeTab: 'dashboard',
     selectedVendorId: 'vendor-emka-utama', // 'ALL' or vendorId
@@ -10,6 +25,8 @@
     vendors: [],
     units: [],
     batches: [],
+    users: [],
+    currentUser: null,
     serverInfo: {
       localUrl: window.location.origin,
       lanUrls: []
@@ -266,6 +283,248 @@
     `;
   }
 
+  /* ========================================================================
+     AUTHENTICATION & MULTI-VENDOR USER MANAGEMENT
+     ======================================================================== */
+  function switchAuthTab(tab) {
+    const isLogin = tab === 'login';
+    const btnLogin = document.getElementById('tabBtnLogin');
+    const btnReg = document.getElementById('tabBtnRegister');
+    const panelLogin = document.getElementById('authPanelLogin');
+    const panelReg = document.getElementById('authPanelRegister');
+    const successModal = document.getElementById('authRegSuccessModal');
+
+    if (btnLogin) btnLogin.classList.toggle('active', isLogin);
+    if (btnReg) btnReg.classList.toggle('active', !isLogin);
+    if (panelLogin) panelLogin.style.display = isLogin ? 'block' : 'none';
+    if (panelReg) panelReg.style.display = isLogin ? 'none' : 'block';
+    if (successModal) successModal.style.display = 'none';
+
+    const loginErr = document.getElementById('loginErrorMsg');
+    const regErr = document.getElementById('regErrorMsg');
+    if (loginErr) loginErr.style.display = 'none';
+    if (regErr) regErr.style.display = 'none';
+  }
+
+  function togglePasswordView(inputId, btnEl) {
+    const inp = document.getElementById(inputId);
+    if (!inp) return;
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      btnEl.textContent = '🙈';
+    } else {
+      inp.type = 'password';
+      btnEl.textContent = '👁️';
+    }
+  }
+
+  function submitLogin(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const userInput = (document.getElementById('loginUsername')?.value || '').trim();
+    const passInput = (document.getElementById('loginPassword')?.value || '').trim();
+    const errEl = document.getElementById('loginErrorMsg');
+
+    if (!userInput || !passInput) {
+      if (errEl) {
+        errEl.textContent = 'Mohon isi Username dan Password Anda.';
+        errEl.style.display = 'block';
+      }
+      return;
+    }
+
+    const users = (state.users && state.users.length > 0) ? state.users : DEFAULT_USERS;
+    const found = users.find(u =>
+      (u.username.toLowerCase() === userInput.toLowerCase() || (u.email && u.email.toLowerCase() === userInput.toLowerCase())) &&
+      u.password === passInput
+    );
+
+    if (found) {
+      state.currentUser = found;
+      localStorage.setItem('sim_huntara_current_user', JSON.stringify(found));
+      if (found.vendorId && state.vendors.some(v => v.id === found.vendorId)) {
+        state.selectedVendorId = found.vendorId;
+      }
+      if (errEl) errEl.style.display = 'none';
+      updateAuthUI();
+      renderAll();
+      showToast(`Selamat datang, ${found.nama || found.username}!`, 'success');
+    } else {
+      if (errEl) {
+        errEl.textContent = 'Username atau Password salah. Silakan periksa kembali.';
+        errEl.style.display = 'block';
+      }
+    }
+  }
+
+  function submitRegister(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const email = (document.getElementById('regEmail')?.value || '').trim();
+    const hp = (document.getElementById('regHp')?.value || '').trim();
+    const perusahaan = (document.getElementById('regPerusahaan')?.value || '').trim();
+    const direktur = (document.getElementById('regDirektur')?.value || '').trim();
+    const alamat = (document.getElementById('regAlamat')?.value || '').trim();
+    let username = (document.getElementById('regUsername')?.value || '').trim();
+    const password = (document.getElementById('regPassword')?.value || '').trim();
+    const errEl = document.getElementById('regErrorMsg');
+
+    if (!email || !perusahaan || !direktur || !password) {
+      if (errEl) {
+        errEl.textContent = 'Mohon lengkapi seluruh kolom wajib yang bertanda bintang (*).';
+        errEl.style.display = 'block';
+      }
+      return;
+    }
+
+    if (!username) {
+      username = perusahaan.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 15);
+    }
+
+    if (!state.users || state.users.length === 0) {
+      state.users = [...DEFAULT_USERS];
+    }
+
+    const exists = state.users.some(u =>
+      u.username.toLowerCase() === username.toLowerCase() ||
+      (u.email && u.email.toLowerCase() === email.toLowerCase())
+    );
+
+    if (exists) {
+      if (errEl) {
+        errEl.textContent = 'Email atau Username tersebut sudah terdaftar di sistem.';
+        errEl.style.display = 'block';
+      }
+      return;
+    }
+
+    // 1. Buat Vendor baru di sistem
+    const newVendorId = 'vendor-' + Date.now().toString(36);
+    const newVendor = {
+      id: newVendorId,
+      nama: perusahaan,
+      subJudul: 'KONTRAKTOR - LEVERANSIR',
+      direktur: direktur,
+      jabatan: 'Direktur',
+      alamat: alamat || 'Nagekeo - Flores, NTT',
+      kotaTtd: 'Mbay',
+      kabupaten: 'Nagekeo',
+      provinsi: 'Nusa Tenggara Timur',
+      namaBank: 'Bank NTT',
+      noRekening: '-',
+      atasNamaRekening: perusahaan,
+      hargaSatuan: 33998000,
+      ppnPersen: 11,
+      pphPersen: 1.5,
+      logoUrl: '/assets/logo-emka.svg',
+      kopSuratUrl: '',
+      ttdStempelUrl: '',
+      spesimenUrl: '',
+      email: email,
+      hp: hp
+    };
+    state.vendors.push(newVendor);
+
+    // 2. Buat User baru
+    const newUser = {
+      id: 'usr_' + Date.now(),
+      username: username,
+      email: email,
+      password: password,
+      nama: direktur,
+      perusahaan: perusahaan,
+      jabatan: 'Direktur',
+      vendorId: newVendorId,
+      hp: hp,
+      role: 'vendor',
+      createdAt: new Date().toISOString()
+    };
+    state.users.push(newUser);
+
+    saveState('Pendaftaran vendor baru: ' + perusahaan);
+
+    // 3. Tampilkan Notifikasi Email Resmi
+    window._newlyRegisteredUser = newUser;
+    const panelReg = document.getElementById('authPanelRegister');
+    const successCard = document.getElementById('authRegSuccessModal');
+    if (panelReg) panelReg.style.display = 'none';
+    if (successCard) {
+      const emailEl = document.getElementById('mockEmailDest');
+      const compEl = document.getElementById('mockCompName');
+      const userEl = document.getElementById('mockUser');
+      const passEl = document.getElementById('mockPass');
+      if (emailEl) emailEl.textContent = email;
+      if (compEl) compEl.textContent = perusahaan;
+      if (userEl) userEl.textContent = username;
+      if (passEl) passEl.textContent = password;
+      successCard.style.display = 'block';
+    }
+  }
+
+  function loginWithNewAccount() {
+    if (!window._newlyRegisteredUser) {
+      switchAuthTab('login');
+      return;
+    }
+    const user = window._newlyRegisteredUser;
+    state.currentUser = user;
+    localStorage.setItem('sim_huntara_current_user', JSON.stringify(user));
+    if (user.vendorId) {
+      state.selectedVendorId = user.vendorId;
+    }
+    updateAuthUI();
+    renderAll();
+    showToast(`Akun aktif! Selamat datang, ${user.perusahaan}!`, 'success');
+  }
+
+  function logout() {
+    state.currentUser = null;
+    localStorage.removeItem('sim_huntara_current_user');
+    updateAuthUI();
+    switchAuthTab('login');
+    const uInp = document.getElementById('loginUsername');
+    const pInp = document.getElementById('loginPassword');
+    if (uInp) uInp.value = '';
+    if (pInp) pInp.value = '';
+    showToast('Anda telah keluar dari aplikasi', 'info');
+  }
+
+  function updateAuthUI() {
+    const user = state.currentUser;
+    const loginScreen = document.getElementById('loginScreen');
+    const sidebarBox = document.getElementById('sidebarUserBox');
+    const topbarPill = document.getElementById('userAuthTopbar');
+
+    if (loginScreen) {
+      loginScreen.style.display = user ? 'none' : 'flex';
+    }
+
+    if (sidebarBox) {
+      if (user) {
+        sidebarBox.style.display = 'flex';
+        const avatarEl = document.getElementById('sidebarUserAvatar');
+        const nameEl = document.getElementById('sidebarUserName');
+        const compEl = document.getElementById('sidebarUserComp');
+        if (avatarEl) avatarEl.textContent = (user.nama || user.username || 'U').charAt(0).toUpperCase();
+        if (nameEl) nameEl.textContent = user.nama || user.username;
+        if (compEl) compEl.textContent = user.perusahaan || 'Vendor Huntara';
+      } else {
+        sidebarBox.style.display = 'none';
+      }
+    }
+
+    if (topbarPill) {
+      if (user) {
+        topbarPill.innerHTML = `
+          <div class="user-topbar-pill">
+            <span>👤 <strong>${escapeHtml(user.nama || user.username)}</strong> (${escapeHtml(user.perusahaan || 'Vendor')})</span>
+            <button type="button" class="btn-topbar-logout" onclick="window.app.logout()">Keluar</button>
+          </div>
+        `;
+      } else {
+        topbarPill.innerHTML = '';
+      }
+    }
+  }
+
   function escapeHtml(str) {
     return String(str ?? '')
       .replace(/&/g, '&amp;')
@@ -318,17 +577,33 @@
       state.vendors = data.vendors || [];
       state.units = data.units || [];
       state.batches = data.batches || [];
+      state.users = (data.users && Array.isArray(data.users) && data.users.length > 0)
+        ? data.users
+        : (JSON.parse(localStorage.getItem('sim_huntara_users') || 'null') || [...DEFAULT_USERS]);
       if (data.serverInfo) state.serverInfo = data.serverInfo;
 
-      if (state.vendors.length > 0 && !state.vendors.some(v => v.id === state.selectedVendorId) && state.selectedVendorId !== 'ALL') {
+      // Periksa sesi login yang tersimpan
+      try {
+        const stored = localStorage.getItem('sim_huntara_current_user');
+        if (stored) {
+          state.currentUser = JSON.parse(stored);
+        }
+      } catch (_) {}
+
+      if (state.currentUser && state.currentUser.vendorId && state.vendors.some(v => v.id === state.currentUser.vendorId)) {
+        state.selectedVendorId = state.currentUser.vendorId;
+      } else if (state.vendors.length > 0 && !state.vendors.some(v => v.id === state.selectedVendorId) && state.selectedVendorId !== 'ALL') {
         state.selectedVendorId = state.vendors[0].id;
       }
       if (state.batches.length > 0 && !state.printConfig.batchId) {
         state.printConfig.batchId = state.batches[0].id;
       }
+      updateAuthUI();
       renderAll();
     } else {
       console.warn('Tidak ada data state yang dapat dimuat');
+      state.users = [...DEFAULT_USERS];
+      updateAuthUI();
       renderAll();
     }
   }
@@ -341,10 +616,12 @@
         settings: state.settings,
         vendors: state.vendors,
         units: state.units,
-        batches: state.batches
+        batches: state.batches,
+        users: state.users
       };
       try {
         localStorage.setItem('sim_huntara_backup', JSON.stringify(payload));
+        localStorage.setItem('sim_huntara_users', JSON.stringify(state.users));
       } catch (_) {}
 
       try {
@@ -5471,14 +5748,8 @@
       vendorSelect.addEventListener('change', (e) => selectVendor(e.target.value));
     }
 
-    // Portal Login Gateway
-    const isGuest = sessionStorage.getItem('huntara_guest_mode') === 'true';
-    const isGoogle = window.gdriveSync && typeof window.gdriveSync.isConnected === 'function' && window.gdriveSync.isConnected();
-    const loginScreen = document.getElementById('loginScreen');
-    if (loginScreen) {
-      loginScreen.style.display = (isGuest || isGoogle) ? 'none' : 'flex';
-    }
-
+    // Inisialisasi status sesi autentikasi
+    updateAuthUI();
     loadState();
   });
 
@@ -5576,12 +5847,13 @@
         statusEl.innerHTML = `<span class="save-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span> ${escapeHtml(msg)}`;
       }
     },
-    enterAsGuest: () => {
-      sessionStorage.setItem('huntara_guest_mode', 'true');
-      const screen = document.getElementById('loginScreen');
-      if (screen) screen.style.display = 'none';
-      renderAll();
-    }
+    switchAuthTab,
+    togglePasswordView,
+    submitLogin,
+    submitRegister,
+    loginWithNewAccount,
+    logout,
+    updateAuthUI
   };
 })();
 
