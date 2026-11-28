@@ -29,6 +29,10 @@
 
   const gdriveSync = {
     getWebhookUrl() {
+      const stored = localStorage.getItem(STORAGE_KEY_WEBHOOK);
+      if (stored && stored.includes('AKfycbxDYf')) {
+        localStorage.removeItem(STORAGE_KEY_WEBHOOK);
+      }
       return localStorage.getItem(STORAGE_KEY_WEBHOOK) || (window.app && window.app.state && window.app.state.settings && window.app.state.settings.webhookUrl) || DEFAULT_WEBHOOK_URL;
     },
 
