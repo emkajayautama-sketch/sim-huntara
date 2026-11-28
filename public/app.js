@@ -3250,6 +3250,41 @@
     }).join('');
   }
 
+  function formatAlasanDenahHtml(rawText) {
+    const text = (rawText && rawText.trim()) ? rawText.trim() : DEFAULT_ALASAN_DENAH;
+    const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+    const items = [];
+    lines.forEach(line => {
+      const match = line.match(/^(\d+[\.\)])\s*(.*)$/);
+      if (match) {
+        items.push({ num: match[1], content: match[2] });
+      } else if (items.length > 0) {
+        items[items.length - 1].content += ' ' + line.trim();
+      } else {
+        items.push({ num: '•', content: line.trim() });
+      }
+    });
+
+    if (items.length === 0) {
+      return `<div style="margin-bottom:18px;line-height:1.7;text-align:justify;">${escapeHtml(text)}</div>`;
+    }
+
+    const rowsHtml = items.map(it => `
+      <tr>
+        <td style="width:26px;vertical-align:top;padding:4px 0;border:none;line-height:1.7;font-weight:normal;">${escapeHtml(it.num)}</td>
+        <td style="vertical-align:top;padding:4px 0 4px 6px;border:none;text-align:justify;line-height:1.7;">${escapeHtml(it.content)}</td>
+      </tr>
+    `).join('');
+
+    return `
+      <table style="width:100%;border-collapse:collapse;margin:8px 0 20px 0;border:none;background:transparent;">
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+    `;
+  }
+
   function renderSheetSuratPernyataanDenah(u, vendor) {
     if (u.fotoSuratPernyataan) {
       return `
@@ -3300,7 +3335,7 @@
           Sehubungan dengan pembangunan Hunian Sementara (Huntara) oleh Pemerintah, bersama ini saya menyatakan alasan perubahan pada denah rumah:
         </div>
 
-        <div style="margin-bottom:20px;padding:0;line-height:1.75;white-space:pre-wrap;text-align:justify;font-size:10.5pt;background:transparent;border:none;">${escapeHtml(u.alasanPerubahan || DEFAULT_ALASAN_DENAH)}</div>
+        ${formatAlasanDenahHtml(u.alasanPerubahan)}
 
         <div style="line-height:1.6;margin-bottom:36px;text-align:justify;">
           Pernyataan ini saya buat dengan sebenar-benarnya, tanpa adanya paksaan dari pihak mana pun, untuk dipergunakan sebagaimana mestinya.
