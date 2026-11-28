@@ -2599,6 +2599,189 @@ table.lap-matrix-table td.photo-cell {
   accent-color: #ea580c;
 }
 
+/* ==========================================================================
+   FITUR KAMERA LAPANGAN & KANTUNG FOTO PINTAR PER PENERIMA (MOBILE FRIENDLY)
+   ========================================================================== */
+.quick-photo-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1.5px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.quick-photo-card .card-head {
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quick-photo-card.stage-0 .card-head {
+  background: #fee2e2;
+  color: #991b1b;
+  border-bottom: 2px solid #f87171;
+}
+
+.quick-photo-card.stage-50 .card-head {
+  background: #fef3c7;
+  color: #92400e;
+  border-bottom: 2px solid #fbbf24;
+}
+
+.quick-photo-card.stage-100 .card-head {
+  background: #dbeafe;
+  color: #1e40af;
+  border-bottom: 2px solid #60a5fa;
+}
+
+.quick-photo-card .card-img-wrap {
+  width: 100%;
+  height: 180px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-photo-card .card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.quick-photo-card .card-actions {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #fff;
+}
+
+.touch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+  user-select: none;
+  text-align: center;
+}
+
+.touch-btn:active {
+  transform: scale(0.97);
+}
+
+.touch-btn-primary {
+  background: #0284c7;
+  color: #ffffff;
+}
+.touch-btn-primary:hover {
+  background: #0369a1;
+}
+
+.touch-btn-success {
+  background: #16a34a;
+  color: #ffffff;
+}
+.touch-btn-success:hover {
+  background: #15803d;
+}
+
+.touch-btn-warning {
+  background: #d97706;
+  color: #ffffff;
+}
+.touch-btn-warning:hover {
+  background: #b45309;
+}
+
+.touch-btn-outline {
+  background: #f8fafc;
+  color: #334155;
+  border: 1.5px solid #cbd5e1;
+}
+.touch-btn-outline:hover {
+  background: #e2e8f0;
+}
+
+.locker-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.locker-item-card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.locker-item-card .img-box {
+  width: 100%;
+  height: 140px;
+  background: #0f172a;
+  position: relative;
+}
+
+.locker-item-card .img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.locker-item-card .info-box {
+  padding: 6px 10px;
+  font-size: 11px;
+  color: #64748b;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafafa;
+}
+
+.locker-item-card .action-box {
+  padding: 8px;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.btn-tag-stage {
+  flex: 1;
+  padding: 4px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  text-align: center;
+}
+.btn-tag-0 { background: #dc2626; }
+.btn-tag-0:hover { background: #b91c1c; }
+.btn-tag-50 { background: #d97706; }
+.btn-tag-50:hover { background: #b45309; }
+.btn-tag-100 { background: #2563eb; }
+.btn-tag-100:hover { background: #1d4ed8; }
+
+
 
 
 

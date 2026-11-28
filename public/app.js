@@ -1654,7 +1654,9 @@
                         `}
                       </td>
                       <td>
-                        <span class="badge ${photoCount >= 5 ? 'badge-100' : photoCount > 0 ? 'badge-50' : 'badge-0'}">📷 ${photoCount}/5 Foto</span>
+                        <button type="button" class="btn btn-sm" style="background:#0284c7;color:#fff;font-weight:700;display:inline-flex;align-items:center;gap:5px;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.15);" onclick="window.app.openQuickPhotoModal('${escapeHtml(u.id)}')">
+                          📸 Foto (${photoCount}/5)
+                        </button>
                       </td>
                       <td style="text-align:center;">
                         <label class="denah-check-row" title="Centang jika penerima #${u.noBnba} ${escapeHtml(u.nama)} memiliki Perubahan Denah">
@@ -5499,9 +5501,14 @@
         <div style="font-size:10px;color:#64748b;font-weight:normal;margin-top:1px;">RT ${escapeHtml(u.rt)} — ${escapeHtml(u.desa)}</div>
       </div>
 
+      <button type="button" class="action-menu-item" style="background:#e0f2fe;color:#0369a1;font-weight:700;" onclick="window.app.closeActionDropdown(); window.app.openQuickPhotoModal('${escapeHtml(u.id)}')">
+        <span class="item-icon">📸</span>
+        <span>Kamera &amp; Kantung Foto Lapangan</span>
+      </button>
+
       <button type="button" class="action-menu-item" onclick="window.app.closeActionDropdown(); window.app.openUnitModal('${escapeHtml(u.id)}')">
-        <span class="item-icon">📷</span>
-        <span>${isBatal ? 'Detail & Alasan Batal' : 'Detail & Foto Dokumentasi'}</span>
+        <span class="item-icon">📋</span>
+        <span>${isBatal ? 'Detail & Alasan Batal' : 'Detail Lengkap & Form Rumah'}</span>
       </button>
 
       <button type="button" class="action-menu-item" onclick="window.app.closeActionDropdown(); window.app.printSingleUnit('${escapeHtml(u.id)}')">
@@ -6145,6 +6152,517 @@
   }
 
   /* ========================================================================
+     FITUR KAMERA LAPANGAN & KANTUNG FOTO PINTAR PER PENERIMA (ANDROID & PC)
+     ======================================================================== */
+  window._quickPhotoUnitId = null;
+
+  function applyBnpbWatermark(imgSource, unit, stageLabel, gpsOverride, dateOverride) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let w = img.naturalWidth || img.width;
+        let h = img.naturalHeight || img.height;
+        const maxDim = 1280;
+        if (w > maxDim || h > maxDim) {
+          if (w >= h) {
+            h = Math.round((h * maxDim) / w);
+            w = maxDim;
+          } else {
+            w = Math.round((w * maxDim) / h);
+            h = maxDim;
+          }
+        }
+        canvas.width = w;
+        canvas.height = h;
+
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const now = new Date();
+        const dateStr = dateOverride || `${now.getDate()} ${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][now.getMonth()]} ${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')} WITA`;
+        const gpsStr = gpsOverride || unit.koordinatGps || '8°40\'12,45"S 121°19\'38,12"E';
+
+        const finishCanvas = () => {
+          const barHeight = Math.max(76, Math.round(h * 0.16));
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.68)';
+          ctx.fillRect(0, h - barHeight, w, barHeight);
+
+          const boxH = Math.max(50, Math.round(barHeight * 0.74));
+          const boxW = Math.max(76, Math.round(boxH * 1.35));
+          const boxY = h - barHeight + Math.round((barHeight - boxH) / 2);
+          ctx.fillStyle = '#0284c7';
+          ctx.fillRect(16, boxY, boxW, boxH);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 11px Arial';
+          ctx.fillText('📍 GPS MAP', 22, boxY + 20);
+          ctx.font = '10px Arial';
+          ctx.fillText((unit.desa || 'Desa').slice(0, 11), 22, boxY + 38);
+
+          const fontSize = Math.max(12, Math.min(18, Math.round(barHeight * 0.17)));
+          ctx.textAlign = 'right';
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold ${fontSize + 1}px Arial`;
+          ctx.fillText(dateStr, w - 16, h - barHeight + (barHeight * 0.25));
+
+          ctx.font = `${fontSize}px Arial`;
+          ctx.fillText(`GPS: ${gpsStr}`, w - 16, h - barHeight + (barHeight * 0.46));
+          ctx.fillText(`KEGIATAN : Pembangunan Huntara Insitu — PROGRES ${stageLabel || '100%'}`, w - 16, h - barHeight + (barHeight * 0.68));
+
+          ctx.fillStyle = '#fde047';
+          ctx.font = `bold ${fontSize + 2}px Arial`;
+          ctx.fillText(`Penerima : ${unit.nama || '-'} (RT ${unit.rt || '-'}, Desa ${unit.desa || '-'})`, w - 16, h - barHeight + (barHeight * 0.90));
+          ctx.textAlign = 'left';
+
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          resolve(dataUrl);
+        };
+
+        const logo = new Image();
+        logo.crossOrigin = 'anonymous';
+        logo.onload = () => {
+          const logoSize = Math.max(54, Math.round(Math.min(w, h) * 0.12));
+          const pad = Math.max(14, Math.round(logoSize * 0.18));
+          ctx.drawImage(logo, w - logoSize - pad, pad, logoSize, logoSize);
+          finishCanvas();
+        };
+        logo.onerror = () => {
+          finishCanvas();
+        };
+        logo.src = '/assets/logo-bnpb.png';
+      };
+      img.onerror = () => {
+        resolve(imgSource);
+      };
+      img.src = imgSource;
+    });
+  }
+
+  function detectDeviceGpsForUnit(unitId) {
+    const u = state.units.find(x => x.id === unitId);
+    if (!u) return;
+    if (!navigator.geolocation) {
+      alert('Browser perangkat ini tidak mendukung GPS Geolocation.');
+      return;
+    }
+    const statusEl = document.getElementById('quickGpsStatusText');
+    if (statusEl) statusEl.innerHTML = '⏳ Mengunci satelit GPS HP... Mohon tunggu...';
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const acc = Math.round(pos.coords.accuracy || 0);
+
+        const latDeg = Math.abs(lat);
+        const latD = Math.floor(latDeg);
+        const latM = Math.floor((latDeg - latD) * 60);
+        const latS = (((latDeg - latD) * 60 - latM) * 60).toFixed(2);
+        const latDir = lat < 0 ? 'S' : 'N';
+
+        const lngDeg = Math.abs(lng);
+        const lngD = Math.floor(lngDeg);
+        const lngM = Math.floor((lngDeg - lngD) * 60);
+        const lngS = (((lngDeg - lngD) * 60 - lngM) * 60).toFixed(2);
+        const lngDir = lng < 0 ? 'W' : 'E';
+
+        const formattedGps = `${latD}°${latM}'${latS}"${latDir}, ${lngD}°${lngM}'${lngS}"${lngDir}`;
+        u.koordinatGps = formattedGps;
+
+        saveState(`GPS unit #${u.noBnba} diperbarui`);
+        showToast(`📍 GPS terkunci: ${formattedGps} (Akurasi: ±${acc}m)`, 'success');
+        renderQuickPhotoModalContent();
+      },
+      (err) => {
+        console.warn('Geolocation error:', err);
+        let msg = 'Pastikan GPS/Lokasi HP aktif dan klik "Izinkan / Allow" pada pop-up izin lokasi browser.';
+        if (err.code === 1) msg = 'Izin lokasi ditolak browser. Silakan aktifkan izin lokasi di setelan Chrome HP.';
+        alert(msg);
+        if (statusEl) statusEl.innerHTML = `⚠️ ${msg}`;
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  }
+
+  function openQuickPhotoModal(unitId) {
+    const u = state.units.find(x => x.id === unitId);
+    if (!u) return;
+    window._quickPhotoUnitId = unitId;
+    if (!Array.isArray(u.kantungFoto)) {
+      u.kantungFoto = [];
+    }
+    renderQuickPhotoModalContent();
+  }
+
+  function renderQuickPhotoModalContent() {
+    const modalRoot = document.getElementById('modalRoot');
+    if (!modalRoot) return;
+    const u = state.units.find(x => x.id === window._quickPhotoUnitId);
+    if (!u) {
+      modalRoot.innerHTML = '';
+      return;
+    }
+    const vendor = getVendorById(u.vendorId);
+    const photoCount = [u.foto0, u.foto50, u.foto100_1].filter(Boolean).length;
+    const lockerCount = (u.kantungFoto || []).length;
+    const gpsText = u.koordinatGps || 'Belum Terdeteksi';
+
+    modalRoot.innerHTML = `
+      <div class="modal-backdrop" onclick="if(event.target===this) window.app.closeModal()">
+        <div class="modal-content" style="max-width:980px;width:96%;max-height:92vh;display:flex;flex-direction:column;">
+          
+          <!-- MODAL HEADER -->
+          <div class="modal-header" style="background:#0f172a;color:#fff;padding:14px 20px;border-top-left-radius:16px;border-top-right-radius:16px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:20px;">📸</span>
+                <h3 style="margin:0;font-size:17px;color:#fff;">Kamera Lapangan &amp; Kantung Foto</h3>
+                <span class="badge" style="background:#0284c7;color:#fff;font-weight:700;">BNBA #${u.noBnba}</span>
+              </div>
+              <div style="font-size:12.5px;color:#94a3b8;margin-top:2px;">
+                <strong>${escapeHtml(u.nama)}</strong> • Desa ${escapeHtml(u.desa)} RT ${escapeHtml(u.rt)}, Kec. ${escapeHtml(u.kecamatan)} (${escapeHtml(vendor.nama)})
+              </div>
+            </div>
+            <button class="btn btn-sm btn-danger" style="font-size:14px;padding:4px 10px;" onclick="window.app.closeModal()">✕</button>
+          </div>
+
+          <!-- MODAL BODY -->
+          <div class="modal-body" style="padding:16px 20px;overflow-y:auto;flex:1;background:#f8fafc;">
+
+            <!-- BAR KOORDINAT GPS REALTIME & PETUNJUK -->
+            <div style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+              <div>
+                <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;">Status Titik Koordinat GPS:</div>
+                <div id="quickGpsStatusText" style="font-size:13.5px;font-weight:700;color:#0f172a;margin-top:2px;">
+                  📍 ${escapeHtml(gpsText)}
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button type="button" class="touch-btn touch-btn-primary" style="padding:7px 12px;font-size:12px;" onclick="window.app.detectDeviceGpsForUnit('${escapeHtml(u.id)}')">
+                  📡 Kunci GPS HP Sekarang
+                </button>
+                ${u.koordinatGps ? `
+                  <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(u.koordinatGps)}" target="_blank" class="touch-btn touch-btn-outline" style="padding:7px 12px;font-size:12px;text-decoration:none;">
+                    🗺️ Cek Google Maps
+                  </a>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- BAGIAN 1: 3 KOTAK SLOT UTAMA (0%, 50%, 100%) -->
+            <div style="margin-bottom:24px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <h4 style="margin:0;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:6px;">
+                  <span>🎯</span> 1. Slot Foto Progres Fisik Utama (Masuk Langsung ke Berkas BNPB)
+                </h4>
+                <span class="badge ${photoCount >= 3 ? 'badge-100' : photoCount > 0 ? 'badge-50' : 'badge-0'}">
+                  ${photoCount}/3 Tahap Terisi
+                </span>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px;">
+                
+                <!-- SLOT 0% -->
+                <div class="quick-photo-card stage-0">
+                  <div class="card-head">
+                    <span>🟢 Progres 0% (Titik Nol / Lahan Awal)</span>
+                    ${u.foto0 ? '<span style="font-size:11px;font-weight:bold;">✅ Terpasang</span>' : '<span style="font-size:11px;color:#dc2626;">Kosong</span>'}
+                  </div>
+                  <div class="card-img-wrap">
+                    ${u.foto0 ? `<img src="${escapeHtml(u.foto0)}" alt="Foto 0%" />` : `<div style="text-align:center;color:#94a3b8;font-size:13px;">📷 Belum Ada Foto 0%</div>`}
+                  </div>
+                  <div class="card-actions">
+                    <label class="touch-btn touch-btn-success" style="width:100%;">
+                      📸 Buka Kamera HP 0%
+                      <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', 'foto0', this)" />
+                    </label>
+                    <div style="display:flex;gap:6px;">
+                      <label class="touch-btn touch-btn-outline" style="flex:1;">
+                        📁 Galeri HP / File
+                        <input type="file" accept="image/*" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', 'foto0', this)" />
+                      </label>
+                      ${u.foto0 ? `
+                        <button type="button" class="touch-btn touch-btn-outline" style="color:#dc2626;border-color:#fca5a5;" onclick="window.app.deleteQuickSlotPhoto('${escapeHtml(u.id)}', 'foto0')">
+                          🗑️
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SLOT 50% -->
+                <div class="quick-photo-card stage-50">
+                  <div class="card-head">
+                    <span>🟡 Progres 50% (Pondasi &amp; Rangka)</span>
+                    ${u.foto50 ? '<span style="font-size:11px;font-weight:bold;">✅ Terpasang</span>' : '<span style="font-size:11px;color:#d97706;">Kosong</span>'}
+                  </div>
+                  <div class="card-img-wrap">
+                    ${u.foto50 ? `<img src="${escapeHtml(u.foto50)}" alt="Foto 50%" />` : `<div style="text-align:center;color:#94a3b8;font-size:13px;">📷 Belum Ada Foto 50%</div>`}
+                  </div>
+                  <div class="card-actions">
+                    <label class="touch-btn touch-btn-warning" style="width:100%;">
+                      📸 Buka Kamera HP 50%
+                      <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', 'foto50', this)" />
+                    </label>
+                    <div style="display:flex;gap:6px;">
+                      <label class="touch-btn touch-btn-outline" style="flex:1;">
+                        📁 Galeri HP / File
+                        <input type="file" accept="image/*" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', 'foto50', this)" />
+                      </label>
+                      ${u.foto50 ? `
+                        <button type="button" class="touch-btn touch-btn-outline" style="color:#dc2626;border-color:#fca5a5;" onclick="window.app.deleteQuickSlotPhoto('${escapeHtml(u.id)}', 'foto50')">
+                          🗑️
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SLOT 100% -->
+                <div class="quick-photo-card stage-100">
+                  <div class="card-head">
+                    <span>🔵 Progres 100% (Selesai Fisik)</span>
+                    ${u.foto100_1 ? '<span style="font-size:11px;font-weight:bold;">✅ Terpasang</span>' : '<span style="font-size:11px;color:#2563eb;">Kosong</span>'}
+                  </div>
+                  <div class="card-img-wrap">
+                    ${u.foto100_1 ? `<img src="${escapeHtml(u.foto100_1)}" alt="Foto 100%" />` : `<div style="text-align:center;color:#94a3b8;font-size:13px;">📷 Belum Ada Foto 100%</div>`}
+                  </div>
+                  <div class="card-actions">
+                    <label class="touch-btn touch-btn-primary" style="width:100%;">
+                      📸 Buka Kamera HP 100%
+                      <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', 'foto100_1', this)" />
+                    </label>
+                    <div style="display:flex;gap:6px;">
+                      <label class="touch-btn touch-btn-outline" style="flex:1;">
+                        📁 Galeri HP / File
+                        <input type="file" accept="image/*" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', 'foto100_1', this)" />
+                      </label>
+                      ${u.foto100_1 ? `
+                        <button type="button" class="touch-btn touch-btn-outline" style="color:#dc2626;border-color:#fca5a5;" onclick="window.app.deleteQuickSlotPhoto('${escapeHtml(u.id)}', 'foto100_1')">
+                          🗑️
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- BAGIAN 2: KANTUNG FOTO PINTAR / CADANGAN LAPANGAN -->
+            <div style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:14px;padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+                <div>
+                  <h4 style="margin:0 0 4px;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:6px;">
+                    <span>🗂️</span> 2. Kantung Foto Lapangan Warga Ini (${lockerCount} Foto)
+                  </h4>
+                  <p style="margin:0;font-size:12.5px;color:#64748b;">
+                    Lagi buru-buru di lapangan? Jepret foto sebanyak-banyaknya di sini dulu. Nanti santai di kantor tinggal klik tombol <strong>"Jadikan 0%"</strong>, <strong>"Jadikan 50%"</strong>, atau <strong>"Jadikan 100%"</strong>!
+                  </p>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <label class="touch-btn touch-btn-primary">
+                    📸 Jepret Cepat ke Kantung
+                    <input type="file" accept="image/*" capture="environment" multiple style="display:none;" onchange="window.app.snapOrUploadToLocker('${escapeHtml(u.id)}', this)" />
+                  </label>
+                  <label class="touch-btn touch-btn-outline">
+                    📁 Ambil Banyak dari Galeri HP
+                    <input type="file" accept="image/*" multiple style="display:none;" onchange="window.app.snapOrUploadToLocker('${escapeHtml(u.id)}', this)" />
+                  </label>
+                </div>
+              </div>
+
+              ${lockerCount === 0 ? `
+                <div style="text-align:center;padding:28px 16px;border:2px dashed #e2e8f0;border-radius:10px;color:#94a3b8;font-size:13px;">
+                  <div style="font-size:32px;margin-bottom:8px;">📁</div>
+                  Kantung foto warga ini masih kosong.<br/>
+                  Gunakan tombol di atas untuk mengambil foto lapangan tanpa pusing memikirkan tahapannya terlebih dahulu.
+                </div>
+              ` : `
+                <div class="locker-photo-grid">
+                  ${(u.kantungFoto || []).map(p => `
+                    <div class="locker-item-card">
+                      <div class="img-box">
+                        <img src="${escapeHtml(p.url)}" alt="Foto Lapangan" />
+                      </div>
+                      <div class="info-box">
+                        <div>📅 ${escapeHtml(p.dateStr || 'Foto Lapangan')}</div>
+                        ${p.gps ? `<div style="font-size:10px;color:#0369a1;">📍 ${escapeHtml(p.gps)}</div>` : ''}
+                      </div>
+                      <div class="action-box">
+                        <button type="button" class="btn-tag-stage btn-tag-0" title="Jadikan foto ini sebagai Progres 0%" onclick="window.app.assignLockerPhotoToStage('${escapeHtml(u.id)}', '${escapeHtml(p.id)}', '0%')">
+                          🟢 0%
+                        </button>
+                        <button type="button" class="btn-tag-stage btn-tag-50" title="Jadikan foto ini sebagai Progres 50%" onclick="window.app.assignLockerPhotoToStage('${escapeHtml(u.id)}', '${escapeHtml(p.id)}', '50%')">
+                          🟡 50%
+                        </button>
+                        <button type="button" class="btn-tag-stage btn-tag-100" title="Jadikan foto ini sebagai Progres 100%" onclick="window.app.assignLockerPhotoToStage('${escapeHtml(u.id)}', '${escapeHtml(p.id)}', '100%')">
+                          🔵 100%
+                        </button>
+                        <button type="button" class="btn-tag-stage" style="background:#64748b;max-width:32px;" title="Hapus foto dari kantung" onclick="window.app.deleteLockerPhoto('${escapeHtml(u.id)}', '${escapeHtml(p.id)}')">
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              `}
+            </div>
+
+          </div>
+
+          <!-- MODAL FOOTER -->
+          <div class="modal-footer" style="padding:12px 20px;border-top:1px solid #e2e8f0;background:#fff;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:12px;color:#64748b;">
+              ✨ Foto yang dipasang otomatis dibubuhi Watermark BNPB, GPS Satelit, Tanggal &amp; Nama Penerima.
+            </div>
+            <button type="button" class="btn btn-primary" onclick="window.app.closeModal()">
+              ✓ Selesai &amp; Tutup
+            </button>
+          </div>
+
+        </div>
+      </div>
+    `;
+  }
+
+  async function snapOrUploadToSlot(unitId, slot, inputEl) {
+    const u = state.units.find(x => x.id === unitId);
+    if (!u || !inputEl.files || !inputEl.files[0]) return;
+    const file = inputEl.files[0];
+
+    const stageMap = {
+      foto0: '0%',
+      foto50: '50%',
+      foto100_1: '100%'
+    };
+    const stageLabel = stageMap[slot] || '100%';
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const rawUrl = e.target.result;
+      const watermarked = await applyBnpbWatermark(rawUrl, u, stageLabel, u.koordinatGps);
+
+      u[slot] = watermarked;
+
+      if (slot === 'foto100_1') {
+        if (!u.foto100_samping) u.foto100_samping = watermarked;
+        if (!u.foto100_2) u.foto100_2 = watermarked;
+        if (!u.foto100_3) u.foto100_3 = watermarked;
+        u.progres = 100;
+      } else if (slot === 'foto50') {
+        if (!u.foto50_samping) u.foto50_samping = watermarked;
+        if (!u.foto50_dalam) u.foto50_dalam = watermarked;
+        if (!u.foto50_mck) u.foto50_mck = watermarked;
+        if (Number(u.progres) < 50) u.progres = 50;
+      } else if (slot === 'foto0') {
+        if (!u.foto0_samping) u.foto0_samping = watermarked;
+        if (!u.foto0_dalam) u.foto0_dalam = watermarked;
+        if (!u.foto0_mck) u.foto0_mck = watermarked;
+      }
+
+      await saveState(`Foto ${stageLabel} dipasang pada #${u.noBnba} ${u.nama}`);
+      showToast(`✅ Foto ${stageLabel} berhasil dipasang dengan watermark BNPB & GPS!`, 'success');
+      renderQuickPhotoModalContent();
+      renderAll();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function snapOrUploadToLocker(unitId, inputEl) {
+    const u = state.units.find(x => x.id === unitId);
+    if (!u || !inputEl.files || inputEl.files.length === 0) return;
+    if (!Array.isArray(u.kantungFoto)) u.kantungFoto = [];
+
+    const files = Array.from(inputEl.files);
+    let countAdded = 0;
+
+    for (const file of files) {
+      const rawUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+
+      const photoItem = {
+        id: 'pic_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        url: rawUrl,
+        timestamp: new Date().toISOString(),
+        dateStr: getTodayIndonesian() + ' ' + new Date().toLocaleTimeString('id-ID'),
+        gps: u.koordinatGps || ''
+      };
+      u.kantungFoto.unshift(photoItem);
+      countAdded++;
+    }
+
+    await saveState(`Menambahkan ${countAdded} foto ke kantung #${u.noBnba} ${u.nama}`);
+    showToast(`📸 ${countAdded} foto berhasil masuk ke kantung ${u.nama}!`, 'success');
+    renderQuickPhotoModalContent();
+  }
+
+  async function assignLockerPhotoToStage(unitId, photoId, targetStage) {
+    const u = state.units.find(x => x.id === unitId);
+    if (!u || !u.kantungFoto) return;
+    const item = u.kantungFoto.find(p => p.id === photoId);
+    if (!item) return;
+
+    const watermarked = await applyBnpbWatermark(item.url, u, targetStage, item.gps || u.koordinatGps, item.dateStr);
+
+    if (targetStage === '0%') {
+      u.foto0 = watermarked;
+      if (!u.foto0_samping) u.foto0_samping = watermarked;
+      if (!u.foto0_dalam) u.foto0_dalam = watermarked;
+      if (!u.foto0_mck) u.foto0_mck = watermarked;
+    } else if (targetStage === '50%') {
+      u.foto50 = watermarked;
+      if (!u.foto50_samping) u.foto50_samping = watermarked;
+      if (!u.foto50_dalam) u.foto50_dalam = watermarked;
+      if (!u.foto50_mck) u.foto50_mck = watermarked;
+      if (Number(u.progres) < 50) u.progres = 50;
+    } else if (targetStage === '100%') {
+      u.foto100_1 = watermarked;
+      if (!u.foto100_samping) u.foto100_samping = watermarked;
+      if (!u.foto100_2) u.foto100_2 = watermarked;
+      if (!u.foto100_3) u.foto100_3 = watermarked;
+      u.progres = 100;
+    }
+
+    await saveState(`Foto kantung dijadikan ${targetStage} untuk #${u.noBnba} ${u.nama}`);
+    showToast(`🎯 Berhasil! Foto kini aktif sebagai Progres ${targetStage}!`, 'success');
+    renderQuickPhotoModalContent();
+    renderAll();
+  }
+
+  function deleteLockerPhoto(unitId, photoId) {
+    const u = state.units.find(x => x.id === unitId);
+    if (!u || !u.kantungFoto) return;
+    if (confirm('Hapus foto ini dari kantung?')) {
+      u.kantungFoto = u.kantungFoto.filter(p => p.id !== photoId);
+      saveState('Foto kantung dihapus');
+      renderQuickPhotoModalContent();
+    }
+  }
+
+  function deleteQuickSlotPhoto(unitId, slot) {
+    const u = state.units.find(x => x.id === unitId);
+    if (!u) return;
+    if (confirm('Hapus foto slot ini?')) {
+      u[slot] = '';
+      if (slot === 'foto100_1') {
+        u.foto100_samping = '';
+        u.foto100_2 = '';
+        u.foto100_3 = '';
+      }
+      saveState(`Hapus foto ${slot}`);
+      renderQuickPhotoModalContent();
+      renderAll();
+    }
+  }
+
+  /* ========================================================================
      SHARING, EXPORT / IMPORT & BULK BNBA
      ======================================================================== */
   function exportDataPackage() {
@@ -6401,7 +6919,15 @@
     logout,
     updateAuthUI,
     toggleSingleUnitDenah,
-    bulkSetPerubahanDenah
+    bulkSetPerubahanDenah,
+    openQuickPhotoModal,
+    renderQuickPhotoModalContent,
+    detectDeviceGpsForUnit,
+    snapOrUploadToSlot,
+    snapOrUploadToLocker,
+    assignLockerPhotoToStage,
+    deleteLockerPhoto,
+    deleteQuickSlotPhoto
   };
 })();
 
