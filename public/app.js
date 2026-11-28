@@ -3478,19 +3478,19 @@
             <td style="padding:4px 0;border:none;font-weight:bold;">${escapeHtml(u.nama)}</td>
           </tr>
           <tr>
-            <td style="padding:4px 0;border:none;">Tempat/Tanggal Lahir</td>
-            <td style="padding:4px 0;border:none;">:</td>
-            <td style="padding:4px 0;border:none;">${escapeHtml(u.ttl || `${u.desa}, -`)}</td>
+            <td style="padding:5px 0;border:none;">Tempat/Tanggal Lahir</td>
+            <td style="padding:5px 0;border:none;">:</td>
+            <td style="padding:5px 0;border:none;">................................................................................................................................</td>
           </tr>
           <tr>
-            <td style="padding:4px 0;border:none;">NIK</td>
-            <td style="padding:4px 0;border:none;">:</td>
-            <td style="padding:4px 0;border:none;">${escapeHtml(u.nik || u.noKk || '')}</td>
+            <td style="padding:5px 0;border:none;">NIK</td>
+            <td style="padding:5px 0;border:none;">:</td>
+            <td style="padding:5px 0;border:none;">${escapeHtml(u.nik || u.noKk || '................................................................................................................................')}</td>
           </tr>
           <tr>
-            <td style="padding:4px 0;border:none;">Alamat</td>
-            <td style="padding:4px 0;border:none;">:</td>
-            <td style="padding:4px 0;border:none;">RT ${escapeHtml(u.rt)}, Desa/Kel. ${escapeHtml(u.desa)}, Kec. ${escapeHtml(u.kecamatan)}</td>
+            <td style="padding:5px 0;border:none;">Alamat</td>
+            <td style="padding:5px 0;border:none;">:</td>
+            <td style="padding:5px 0;border:none;">................................................................................................................................</td>
           </tr>
           <tr>
             <td style="padding:4px 0;border:none;">No. HP</td>
