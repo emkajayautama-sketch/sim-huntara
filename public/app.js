@@ -6471,12 +6471,7 @@
                             <button type="button" class="touch-btn touch-btn-outline" style="color:#0284c7;border-color:#38bdf8;padding:6px 10px;" title="Simpan ke Galeri HP" onclick="window.app.downloadPhotoToDevice('${escapeHtml(u[s.key])}', 'HUNTARA_${u.nama.replace(/\s+/g, '_')}_${s.key}.jpg')">
                               💾
                             </button>
-                            <button type="button" class="touch-btn touch-btn-outline" style="color:#dc2626;border-color:#fca5a5;padding:6px 10px;" title="Hapus foto slot ini" onclick="window.app.deleteQuickSlotPhoto,
-    downloadPhotoToDevice,
-    setQuickDocFilterTab,
-    assignLockerPhotoToSlot,
-    replicateAnglePhotos,
-    exportSingleUnitPhotos('${escapeHtml(u.id)}', '${s.key}')">
+                            <button type="button" class="touch-btn touch-btn-outline" style="color:#dc2626;border-color:#fca5a5;padding:6px 10px;" title="Hapus foto slot ini" onclick="window.app.deleteQuickSlotPhoto('${escapeHtml(u.id)}', '${s.key}')">
                               🗑️
                             </button>
                           ` : ''}
