@@ -107,7 +107,8 @@
         "p100": 4.91,
         "keterangan": "Kabel NYM, lampu LED, saklar & MCB"
       }
-    ]
+    ],
+    "webhookUrl": "https://script.google.com/macros/s/AKfycbxDYf__ntwkuMDVQXV2c723CU-jbyXXF_qAxnPpmBnH4EB07bNSoXyNBzrPNnD1qprd/exec"
   },
   "vendors": [
     {

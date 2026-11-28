@@ -6121,6 +6121,18 @@
     }
 
     await saveState(`Foto watermark disimpan ke BNBA #${u.noBnba} (${u.nama})`);
+    if (window.gdriveSync && typeof window.gdriveSync.sendPhotoToWebhook === 'function') {
+      window.gdriveSync.sendPhotoToWebhook({
+        action: 'upload_photo',
+        unitId: u.id,
+        slotKey: slot,
+        dataUrl: dataUrl,
+        recipientName: u.nama,
+        desa: u.desa,
+        kecamatan: u.kecamatan,
+        progressPercent: u.progres
+      });
+    }
     alert(`Berhasil! Foto ber-watermark BNPB telah dipasang pada ${u.nama} (${slot}).`);
   }
 
@@ -6664,6 +6676,18 @@
     }
 
     await saveState(`Foto kantung dipasang ke ${slotObj.label} pada #${u.noBnba} ${u.nama}`);
+    if (window.gdriveSync && typeof window.gdriveSync.sendPhotoToWebhook === 'function') {
+      window.gdriveSync.sendPhotoToWebhook({
+        action: 'upload_photo',
+        unitId: u.id,
+        slotKey: slotKey,
+        dataUrl: watermarked,
+        recipientName: u.nama,
+        desa: u.desa,
+        kecamatan: u.kecamatan,
+        progressPercent: u.progres
+      });
+    }
     showToast(`🎯 Berhasil! Foto dipasang ke slot ${slotObj.label}!`, 'success');
     renderQuickPhotoModalContent();
     renderAll();
