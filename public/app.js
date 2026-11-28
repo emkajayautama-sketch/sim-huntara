@@ -6287,10 +6287,53 @@
     );
   }
 
+  const DOC_SLOTS = [
+    // Progres 0%
+    { key: 'foto0', stage: '0%', angle: 'A. Tampak Depan', label: '0% — Tampak Depan', desc: 'Lahan Awal / Titik Nol', color: 'stage-0', btnClass: 'touch-btn-success' },
+    { key: 'foto0_samping', stage: '0%', angle: 'B. Tampak Samping', label: '0% — Tampak Samping', desc: 'Batas Samping / Belakang', color: 'stage-0', btnClass: 'touch-btn-success' },
+    { key: 'foto0_dalam', stage: '0%', angle: 'C. Bagian Dalam', label: '0% — Bagian Dalam', desc: 'Area Dalam / Titik Pondasi', color: 'stage-0', btnClass: 'touch-btn-success' },
+    { key: 'foto0_mck', stage: '0%', angle: 'D. MCK / Sanitasi', label: '0% — MCK / Sanitasi', desc: 'Lokasi MCK / Septictank', color: 'stage-0', btnClass: 'touch-btn-success' },
+
+    // Progres 50%
+    { key: 'foto50', stage: '50%', angle: 'A. Tampak Depan', label: '50% — Tampak Depan', desc: 'Pondasi & Rangka Berdiri', color: 'stage-50', btnClass: 'touch-btn-warning' },
+    { key: 'foto50_samping', stage: '50%', angle: 'B. Tampak Samping', label: '50% — Tampak Samping', desc: 'Rangka Samping & Atap', color: 'stage-50', btnClass: 'touch-btn-warning' },
+    { key: 'foto50_dalam', stage: '50%', angle: 'C. Bagian Dalam', label: '50% — Bagian Dalam', desc: 'Rangka Ruangan & Lantai', color: 'stage-50', btnClass: 'touch-btn-warning' },
+    { key: 'foto50_mck', stage: '50%', angle: 'D. MCK / Sanitasi', label: '50% — MCK / Sanitasi', desc: 'Instalasi & Struktur MCK', color: 'stage-50', btnClass: 'touch-btn-warning' },
+
+    // Progres 100%
+    { key: 'foto100_1', stage: '100%', angle: 'A. Tampak Depan', label: '100% — Tampak Depan', desc: 'Selesai Fisik Tampak Muka', color: 'stage-100', btnClass: 'touch-btn-primary' },
+    { key: 'foto100_samping', stage: '100%', angle: 'B. Tampak Samping', label: '100% — Tampak Samping', desc: 'Dinding Samping & Belakang', color: 'stage-100', btnClass: 'touch-btn-primary' },
+    { key: 'foto100_2', stage: '100%', angle: 'C. Bagian Dalam', label: '100% — Bagian Dalam', desc: 'Pintu, Sekat & Listrik', color: 'stage-100', btnClass: 'touch-btn-primary' },
+    { key: 'foto100_3', stage: '100%', angle: 'D. MCK / Sanitasi', label: '100% — MCK / Sanitasi', desc: 'Closet & Sanitasi Selesai', color: 'stage-100', btnClass: 'touch-btn-primary' }
+  ];
+
+  function downloadPhotoToDevice(dataUrl, filename) {
+    if (!dataUrl) return;
+    try {
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = filename || `HUNTARA_FOTO_${Date.now()}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        if (a.parentNode) a.parentNode.removeChild(a);
+      }, 300);
+      showToast('💾 Foto berhasil tersimpan di Galeri/Download HP!', 'success');
+    } catch (e) {
+      console.warn('Download error:', e);
+    }
+  }
+
+  function setQuickDocFilterTab(tab) {
+    window._quickDocFilterTab = tab;
+    renderQuickPhotoModalContent();
+  }
+
   function openQuickPhotoModal(unitId) {
     const u = state.units.find(x => x.id === unitId);
     if (!u) return;
     window._quickPhotoUnitId = unitId;
+    window._quickDocFilterTab = window._quickDocFilterTab || 'ALL';
     if (!Array.isArray(u.kantungFoto)) {
       u.kantungFoto = [];
     }
@@ -6306,20 +6349,25 @@
       return;
     }
     const vendor = getVendorById(u.vendorId);
-    const photoCount = [u.foto0, u.foto50, u.foto100_1].filter(Boolean).length;
+    const activeTab = window._quickDocFilterTab || 'ALL';
+    const totalFilled = DOC_SLOTS.filter(s => Boolean(u[s.key])).length;
     const lockerCount = (u.kantungFoto || []).length;
     const gpsText = u.koordinatGps || 'Belum Terdeteksi';
 
+    const visibleSlots = activeTab === 'ALL'
+      ? DOC_SLOTS
+      : DOC_SLOTS.filter(s => s.stage === activeTab);
+
     modalRoot.innerHTML = `
       <div class="modal-backdrop" onclick="if(event.target===this) window.app.closeModal()">
-        <div class="modal-content" style="max-width:980px;width:96%;max-height:92vh;display:flex;flex-direction:column;">
+        <div class="modal-content" style="max-width:1050px;width:96%;max-height:92vh;display:flex;flex-direction:column;">
           
           <!-- MODAL HEADER -->
           <div class="modal-header" style="background:#0f172a;color:#fff;padding:14px 20px;border-top-left-radius:16px;border-top-right-radius:16px;display:flex;justify-content:space-between;align-items:center;">
             <div>
               <div style="display:flex;align-items:center;gap:8px;">
                 <span style="font-size:20px;">📸</span>
-                <h3 style="margin:0;font-size:17px;color:#fff;">Kamera Lapangan &amp; Kantung Foto</h3>
+                <h3 style="margin:0;font-size:17px;color:#fff;">Kamera Lapangan &amp; 12 Foto Dokumentasi BNPB</h3>
                 <span class="badge" style="background:#0284c7;color:#fff;font-weight:700;">BNBA #${u.noBnba}</span>
               </div>
               <div style="font-size:12.5px;color:#94a3b8;margin-top:2px;">
@@ -6332,10 +6380,10 @@
           <!-- MODAL BODY -->
           <div class="modal-body" style="padding:16px 20px;overflow-y:auto;flex:1;background:#f8fafc;">
 
-            <!-- BAR KOORDINAT GPS REALTIME & PETUNJUK -->
+            <!-- BAR GPS & TOOLBAR SINKRONISASI HP KE LAPTOP -->
             <div style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
               <div>
-                <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;">Status Titik Koordinat GPS:</div>
+                <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;">Titik Koordinat Satelit GPS:</div>
                 <div id="quickGpsStatusText" style="font-size:13.5px;font-weight:700;color:#0f172a;margin-top:2px;">
                   📍 ${escapeHtml(gpsText)}
                 </div>
@@ -6344,123 +6392,111 @@
                 <button type="button" class="touch-btn touch-btn-primary" style="padding:7px 12px;font-size:12px;" onclick="window.app.detectDeviceGpsForUnit('${escapeHtml(u.id)}')">
                   📡 Kunci GPS HP Sekarang
                 </button>
-                ${u.koordinatGps ? `
-                  <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(u.koordinatGps)}" target="_blank" class="touch-btn touch-btn-outline" style="padding:7px 12px;font-size:12px;text-decoration:none;">
-                    🗺️ Cek Google Maps
-                  </a>
-                ` : ''}
+                <button type="button" class="touch-btn" style="background:#059669;color:#fff;padding:7px 12px;font-size:12px;" onclick="window.app.exportSingleUnitPhotos('${escapeHtml(u.id)}')">
+                  📤 Kirim Foto ke Laptop (WhatsApp)
+                </button>
+                <label class="touch-btn" style="background:#2563eb;color:#fff;padding:7px 12px;font-size:12px;cursor:pointer;">
+                  📥 Masukkan Foto dari HP
+                  <input type="file" accept=".json" style="display:none;" onchange="window.app.importDataPackage(this.files[0]); this.value='';" />
+                </label>
               </div>
             </div>
 
-            <!-- BAGIAN 1: 3 KOTAK SLOT UTAMA (0%, 50%, 100%) -->
+            <!-- BAGIAN 1: SLOT FOTO LENGKAP DOKUMENTASI (12 SUDUT) -->
             <div style="margin-bottom:24px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
                 <h4 style="margin:0;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:6px;">
-                  <span>🎯</span> 1. Slot Foto Progres Fisik Utama (Masuk Langsung ke Berkas BNPB)
+                  <span>🎯</span> 1. Slot Foto Dokumentasi (Laporan 102 Rumah BNPB)
                 </h4>
-                <span class="badge ${photoCount >= 3 ? 'badge-100' : photoCount > 0 ? 'badge-50' : 'badge-0'}">
-                  ${photoCount}/3 Tahap Terisi
-                </span>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="badge ${totalFilled >= 12 ? 'badge-100' : totalFilled > 0 ? 'badge-50' : 'badge-0'}" style="font-size:12px;">
+                    ${totalFilled}/12 Foto Terisi
+                  </span>
+                  <button type="button" class="btn btn-sm btn-outline" style="font-size:11px;padding:3px 8px;" title="Isi otomatis sudut yang masih kosong dari foto tampak depan" onclick="window.app.replicateAnglePhotos('${escapeHtml(u.id)}', '100%')">
+                    ⚡ Salin Depan ke Sudut Lain
+                  </button>
+                </div>
               </div>
 
-              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px;">
-                
-                <!-- SLOT 0% -->
-                <div class="quick-photo-card stage-0">
-                  <div class="card-head">
-                    <span>🟢 Progres 0% (Titik Nol / Lahan Awal)</span>
-                    ${u.foto0 ? '<span style="font-size:11px;font-weight:bold;">✅ Terpasang</span>' : '<span style="font-size:11px;color:#dc2626;">Kosong</span>'}
-                  </div>
-                  <div class="card-img-wrap">
-                    ${u.foto0 ? `<img src="${escapeHtml(u.foto0)}" alt="Foto 0%" />` : `<div style="text-align:center;color:#94a3b8;font-size:13px;">📷 Belum Ada Foto 0%</div>`}
-                  </div>
-                  <div class="card-actions">
-                    <label class="touch-btn touch-btn-success" style="width:100%;">
-                      📸 Buka Kamera HP 0%
-                      <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', 'foto0', this)" />
-                    </label>
-                    <div style="display:flex;gap:6px;">
-                      <label class="touch-btn touch-btn-outline" style="flex:1;">
-                        📁 Galeri HP / File
-                        <input type="file" accept="image/*" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', 'foto0', this)" />
-                      </label>
-                      ${u.foto0 ? `
-                        <button type="button" class="touch-btn touch-btn-outline" style="color:#dc2626;border-color:#fca5a5;" onclick="window.app.deleteQuickSlotPhoto('${escapeHtml(u.id)}', 'foto0')">
-                          🗑️
-                        </button>
-                      ` : ''}
-                    </div>
-                  </div>
-                </div>
+              <!-- TABS FILTER TAHAP PROGRES -->
+              <div class="doc-filter-tabs">
+                <button type="button" class="doc-tab-btn ${activeTab === 'ALL' ? 'active' : ''}" onclick="window.app.setQuickDocFilterTab('ALL')">
+                  <span>📋 Semua 12 Slot</span>
+                  <span class="doc-tab-badge">${totalFilled}/12</span>
+                </button>
+                <button type="button" class="doc-tab-btn ${activeTab === '0%' ? 'active' : ''}" onclick="window.app.setQuickDocFilterTab('0%')">
+                  <span>🟢 Progres 0% (4 Sudut)</span>
+                  <span class="doc-tab-badge">${DOC_SLOTS.filter(s => s.stage === '0%' && u[s.key]).length}/4</span>
+                </button>
+                <button type="button" class="doc-tab-btn ${activeTab === '50%' ? 'active' : ''}" onclick="window.app.setQuickDocFilterTab('50%')">
+                  <span>🟡 Progres 50% (4 Sudut)</span>
+                  <span class="doc-tab-badge">${DOC_SLOTS.filter(s => s.stage === '50%' && u[s.key]).length}/4</span>
+                </button>
+                <button type="button" class="doc-tab-btn ${activeTab === '100%' ? 'active' : ''}" onclick="window.app.setQuickDocFilterTab('100%')">
+                  <span>🔵 Progres 100% (4 Sudut)</span>
+                  <span class="doc-tab-badge">${DOC_SLOTS.filter(s => s.stage === '100%' && u[s.key]).length}/4</span>
+                </button>
+              </div>
 
-                <!-- SLOT 50% -->
-                <div class="quick-photo-card stage-50">
-                  <div class="card-head">
-                    <span>🟡 Progres 50% (Pondasi &amp; Rangka)</span>
-                    ${u.foto50 ? '<span style="font-size:11px;font-weight:bold;">✅ Terpasang</span>' : '<span style="font-size:11px;color:#d97706;">Kosong</span>'}
-                  </div>
-                  <div class="card-img-wrap">
-                    ${u.foto50 ? `<img src="${escapeHtml(u.foto50)}" alt="Foto 50%" />` : `<div style="text-align:center;color:#94a3b8;font-size:13px;">📷 Belum Ada Foto 50%</div>`}
-                  </div>
-                  <div class="card-actions">
-                    <label class="touch-btn touch-btn-warning" style="width:100%;">
-                      📸 Buka Kamera HP 50%
-                      <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', 'foto50', this)" />
-                    </label>
-                    <div style="display:flex;gap:6px;">
-                      <label class="touch-btn touch-btn-outline" style="flex:1;">
-                        📁 Galeri HP / File
-                        <input type="file" accept="image/*" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', 'foto50', this)" />
-                      </label>
-                      ${u.foto50 ? `
-                        <button type="button" class="touch-btn touch-btn-outline" style="color:#dc2626;border-color:#fca5a5;" onclick="window.app.deleteQuickSlotPhoto('${escapeHtml(u.id)}', 'foto50')">
-                          🗑️
-                        </button>
-                      ` : ''}
+              <!-- GRID SLOT FOTO -->
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));gap:14px;">
+                ${visibleSlots.map(s => {
+                  const hasPhoto = Boolean(u[s.key]);
+                  return `
+                    <div class="quick-photo-card ${s.color}">
+                      <div class="card-head">
+                        <div>
+                          <div style="font-size:12.5px;font-weight:700;">${escapeHtml(s.label)}</div>
+                          <div style="font-size:10.5px;opacity:0.85;font-weight:normal;">${escapeHtml(s.angle)}</div>
+                        </div>
+                        ${hasPhoto ? '<span style="font-size:11px;font-weight:bold;color:#16a34a;">✅ Terpasang</span>' : '<span style="font-size:11px;color:#dc2626;font-weight:bold;">Kosong</span>'}
+                      </div>
+                      <div class="card-img-wrap">
+                        ${hasPhoto
+                          ? `<img src="${escapeHtml(u[s.key])}" alt="${escapeHtml(s.label)}" />`
+                          : `<div style="text-align:center;color:#94a3b8;font-size:12.5px;padding:12px;">📷 Belum Ada Foto<br/><span style="font-size:10.5px;color:#cbd5e1;">(${escapeHtml(s.desc)})</span></div>`
+                        }
+                      </div>
+                      <div class="card-actions">
+                        <label class="touch-btn ${s.btnClass}" style="width:100%;">
+                          📸 Buka Kamera HP
+                          <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', '${s.key}', this)" />
+                        </label>
+                        <div style="display:flex;gap:6px;">
+                          <label class="touch-btn touch-btn-outline" style="flex:1;">
+                            📁 Galeri HP
+                            <input type="file" accept="image/*" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', '${s.key}', this)" />
+                          </label>
+                          ${hasPhoto ? `
+                            <button type="button" class="touch-btn touch-btn-outline" style="color:#0284c7;border-color:#38bdf8;padding:6px 10px;" title="Simpan ke Galeri HP" onclick="window.app.downloadPhotoToDevice('${escapeHtml(u[s.key])}', 'HUNTARA_${u.nama.replace(/\s+/g, '_')}_${s.key}.jpg')">
+                              💾
+                            </button>
+                            <button type="button" class="touch-btn touch-btn-outline" style="color:#dc2626;border-color:#fca5a5;padding:6px 10px;" title="Hapus foto slot ini" onclick="window.app.deleteQuickSlotPhoto,
+    downloadPhotoToDevice,
+    setQuickDocFilterTab,
+    assignLockerPhotoToSlot,
+    replicateAnglePhotos,
+    exportSingleUnitPhotos('${escapeHtml(u.id)}', '${s.key}')">
+                              🗑️
+                            </button>
+                          ` : ''}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-
-                <!-- SLOT 100% -->
-                <div class="quick-photo-card stage-100">
-                  <div class="card-head">
-                    <span>🔵 Progres 100% (Selesai Fisik)</span>
-                    ${u.foto100_1 ? '<span style="font-size:11px;font-weight:bold;">✅ Terpasang</span>' : '<span style="font-size:11px;color:#2563eb;">Kosong</span>'}
-                  </div>
-                  <div class="card-img-wrap">
-                    ${u.foto100_1 ? `<img src="${escapeHtml(u.foto100_1)}" alt="Foto 100%" />` : `<div style="text-align:center;color:#94a3b8;font-size:13px;">📷 Belum Ada Foto 100%</div>`}
-                  </div>
-                  <div class="card-actions">
-                    <label class="touch-btn touch-btn-primary" style="width:100%;">
-                      📸 Buka Kamera HP 100%
-                      <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', 'foto100_1', this)" />
-                    </label>
-                    <div style="display:flex;gap:6px;">
-                      <label class="touch-btn touch-btn-outline" style="flex:1;">
-                        📁 Galeri HP / File
-                        <input type="file" accept="image/*" style="display:none;" onchange="window.app.snapOrUploadToSlot('${escapeHtml(u.id)}', 'foto100_1', this)" />
-                      </label>
-                      ${u.foto100_1 ? `
-                        <button type="button" class="touch-btn touch-btn-outline" style="color:#dc2626;border-color:#fca5a5;" onclick="window.app.deleteQuickSlotPhoto('${escapeHtml(u.id)}', 'foto100_1')">
-                          🗑️
-                        </button>
-                      ` : ''}
-                    </div>
-                  </div>
-                </div>
-
+                  `;
+                }).join('')}
               </div>
             </div>
 
-            <!-- BAGIAN 2: KANTUNG FOTO PINTAR / CADANGAN LAPANGAN -->
+            <!-- BAGIAN 2: KANTUNG FOTO LAPANGAN -->
             <div style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:14px;padding:16px;">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
                 <div>
                   <h4 style="margin:0 0 4px;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:6px;">
-                    <span>🗂️</span> 2. Kantung Foto Lapangan Warga Ini (${lockerCount} Foto)
+                    <span>📁</span> 2. Kantung Foto Lapangan (${lockerCount} Foto Tersimpan)
                   </h4>
                   <p style="margin:0;font-size:12.5px;color:#64748b;">
-                    Lagi buru-buru di lapangan? Jepret foto sebanyak-banyaknya di sini dulu. Nanti santai di kantor tinggal klik tombol <strong>"Jadikan 0%"</strong>, <strong>"Jadikan 50%"</strong>, atau <strong>"Jadikan 100%"</strong>!
+                    Jepret beberapa foto di lapangan tanpa pusing. Foto otomatis disimpan ke Galeri HP &amp; Kantung ini. Tinggal pilih mau dipasang ke slot mana:
                   </p>
                 </div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -6477,9 +6513,9 @@
 
               ${lockerCount === 0 ? `
                 <div style="text-align:center;padding:28px 16px;border:2px dashed #e2e8f0;border-radius:10px;color:#94a3b8;font-size:13px;">
-                  <div style="font-size:32px;margin-bottom:8px;">📁</div>
+                  <div style="font-size:32px;margin-bottom:8px;">📸</div>
                   Kantung foto warga ini masih kosong.<br/>
-                  Gunakan tombol di atas untuk mengambil foto lapangan tanpa pusing memikirkan tahapannya terlebih dahulu.
+                  Gunakan tombol di atas untuk menjepret foto langsung ke kantung.
                 </div>
               ` : `
                 <div class="locker-photo-grid">
@@ -6492,19 +6528,37 @@
                         <div>📅 ${escapeHtml(p.dateStr || 'Foto Lapangan')}</div>
                         ${p.gps ? `<div style="font-size:10px;color:#0369a1;">📍 ${escapeHtml(p.gps)}</div>` : ''}
                       </div>
-                      <div class="action-box">
-                        <button type="button" class="btn-tag-stage btn-tag-0" title="Jadikan foto ini sebagai Progres 0%" onclick="window.app.assignLockerPhotoToStage('${escapeHtml(u.id)}', '${escapeHtml(p.id)}', '0%')">
-                          🟢 0%
-                        </button>
-                        <button type="button" class="btn-tag-stage btn-tag-50" title="Jadikan foto ini sebagai Progres 50%" onclick="window.app.assignLockerPhotoToStage('${escapeHtml(u.id)}', '${escapeHtml(p.id)}', '50%')">
-                          🟡 50%
-                        </button>
-                        <button type="button" class="btn-tag-stage btn-tag-100" title="Jadikan foto ini sebagai Progres 100%" onclick="window.app.assignLockerPhotoToStage('${escapeHtml(u.id)}', '${escapeHtml(p.id)}', '100%')">
-                          🔵 100%
-                        </button>
-                        <button type="button" class="btn-tag-stage" style="background:#64748b;max-width:32px;" title="Hapus foto dari kantung" onclick="window.app.deleteLockerPhoto('${escapeHtml(u.id)}', '${escapeHtml(p.id)}')">
-                          🗑️
-                        </button>
+                      <div class="action-box" style="flex-direction:column;gap:6px;">
+                        <div style="font-size:10.5px;font-weight:700;color:#475569;">Pasang ke Slot:</div>
+                        <select class="form-control" style="font-size:11px;padding:4px 6px;height:auto;" onchange="if(this.value){ window.app.assignLockerPhotoToSlot('${escapeHtml(u.id)}', '${escapeHtml(p.id)}', this.value); }">
+                          <option value="">-- Pilih Slot Dokumentasi --</option>
+                          <optgroup label="Progres 0% (Kondisi Awal)">
+                            <option value="foto0">0% — Tampak Depan</option>
+                            <option value="foto0_samping">0% — Tampak Samping</option>
+                            <option value="foto0_dalam">0% — Bagian Dalam</option>
+                            <option value="foto0_mck">0% — MCK / Sanitasi</option>
+                          </optgroup>
+                          <optgroup label="Progres 50% (Struktur)">
+                            <option value="foto50">50% — Tampak Depan</option>
+                            <option value="foto50_samping">50% — Tampak Samping</option>
+                            <option value="foto50_dalam">50% — Bagian Dalam</option>
+                            <option value="foto50_mck">50% — MCK / Sanitasi</option>
+                          </optgroup>
+                          <optgroup label="Progres 100% (Selesai)">
+                            <option value="foto100_1">100% — Tampak Depan</option>
+                            <option value="foto100_samping">100% — Tampak Samping</option>
+                            <option value="foto100_2">100% — Bagian Dalam</option>
+                            <option value="foto100_3">100% — MCK / Sanitasi</option>
+                          </optgroup>
+                        </select>
+                        <div style="display:flex;gap:4px;margin-top:2px;">
+                          <button type="button" class="touch-btn touch-btn-outline" style="flex:1;font-size:11px;padding:3px;" onclick="window.app.downloadPhotoToDevice('${escapeHtml(p.url)}', 'HUNTARA_${u.nama.replace(/\s+/g, '_')}_Kantung_${p.id}.jpg')">
+                            💾 Simpan HP
+                          </button>
+                          <button type="button" class="touch-btn touch-btn-outline" style="color:#dc2626;border-color:#fca5a5;padding:3px 8px;font-size:11px;" title="Hapus foto dari kantung" onclick="window.app.deleteLockerPhoto('${escapeHtml(u.id)}', '${escapeHtml(p.id)}')">
+                            🗑️
+                          </button>
+                        </div>
                       </div>
                     </div>
                   `).join('')}
@@ -6515,13 +6569,18 @@
           </div>
 
           <!-- MODAL FOOTER -->
-          <div class="modal-footer" style="padding:12px 20px;border-top:1px solid #e2e8f0;background:#fff;display:flex;justify-content:space-between;align-items:center;">
+          <div class="modal-footer" style="padding:12px 20px;border-top:1px solid #e2e8f0;background:#fff;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
             <div style="font-size:12px;color:#64748b;">
-              ✨ Foto yang dipasang otomatis dibubuhi Watermark BNPB, GPS Satelit, Tanggal &amp; Nama Penerima.
+              ✨ Foto otomatis dibubuhi Watermark BNPB, GPS Satelit, Tanggal &amp; tersimpan di Galeri HP &amp; Sistem.
             </div>
-            <button type="button" class="btn btn-primary" onclick="window.app.closeModal()">
-              ✓ Selesai &amp; Tutup
-            </button>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="window.app.exportSingleUnitPhotos('${escapeHtml(u.id)}')">
+                📤 Kirim Foto ke Laptop
+              </button>
+              <button type="button" class="btn btn-primary" onclick="window.app.closeModal()">
+                ✓ Selesai &amp; Tutup
+              </button>
+            </div>
           </div>
 
         </div>
@@ -6534,12 +6593,8 @@
     if (!u || !inputEl.files || !inputEl.files[0]) return;
     const file = inputEl.files[0];
 
-    const stageMap = {
-      foto0: '0%',
-      foto50: '50%',
-      foto100_1: '100%'
-    };
-    const stageLabel = stageMap[slot] || '100%';
+    const slotObj = DOC_SLOTS.find(s => s.key === slot) || { stage: '100%', label: slot };
+    const stageLabel = slotObj.label;
 
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -6548,24 +6603,17 @@
 
       u[slot] = watermarked;
 
-      if (slot === 'foto100_1') {
-        if (!u.foto100_samping) u.foto100_samping = watermarked;
-        if (!u.foto100_2) u.foto100_2 = watermarked;
-        if (!u.foto100_3) u.foto100_3 = watermarked;
+      if (slotObj.stage === '100%') {
         u.progres = 100;
-      } else if (slot === 'foto50') {
-        if (!u.foto50_samping) u.foto50_samping = watermarked;
-        if (!u.foto50_dalam) u.foto50_dalam = watermarked;
-        if (!u.foto50_mck) u.foto50_mck = watermarked;
-        if (Number(u.progres) < 50) u.progres = 50;
-      } else if (slot === 'foto0') {
-        if (!u.foto0_samping) u.foto0_samping = watermarked;
-        if (!u.foto0_dalam) u.foto0_dalam = watermarked;
-        if (!u.foto0_mck) u.foto0_mck = watermarked;
+      } else if (slotObj.stage === '50%' && Number(u.progres) < 50) {
+        u.progres = 50;
       }
 
+      // Simpan otomatis ke galeri / unduhan HP
+      downloadPhotoToDevice(watermarked, `HUNTARA_${String(u.nama || '').replace(/\s+/g, '_')}_${slot}.jpg`);
+
       await saveState(`Foto ${stageLabel} dipasang pada #${u.noBnba} ${u.nama}`);
-      showToast(`✅ Foto ${stageLabel} berhasil dipasang dengan watermark BNPB & GPS!`, 'success');
+      showToast(`✅ Foto ${stageLabel} berhasil dipasang & tersimpan di Galeri HP!`, 'success');
       renderQuickPhotoModalContent();
       renderAll();
     };
@@ -6587,9 +6635,15 @@
         reader.readAsDataURL(file);
       });
 
+      const watermarked = await applyBnpbWatermark(rawUrl, u, 'LAPANGAN', u.koordinatGps);
+      const photoId = 'pic_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+
+      // Simpan otomatis ke galeri HP
+      downloadPhotoToDevice(watermarked, `HUNTARA_${String(u.nama || '').replace(/\s+/g, '_')}_Kantung_${photoId}.jpg`);
+
       const photoItem = {
-        id: 'pic_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-        url: rawUrl,
+        id: photoId,
+        url: watermarked,
         timestamp: new Date().toISOString(),
         dateStr: getTodayIndonesian() + ' ' + new Date().toLocaleTimeString('id-ID'),
         gps: u.koordinatGps || ''
@@ -6599,39 +6653,62 @@
     }
 
     await saveState(`Menambahkan ${countAdded} foto ke kantung #${u.noBnba} ${u.nama}`);
-    showToast(`📸 ${countAdded} foto berhasil masuk ke kantung ${u.nama}!`, 'success');
+    showToast(`📸 ${countAdded} foto tersimpan di Kantung Foto & Galeri HP!`, 'success');
     renderQuickPhotoModalContent();
   }
 
-  async function assignLockerPhotoToStage(unitId, photoId, targetStage) {
+  async function assignLockerPhotoToSlot(unitId, photoId, slotKey) {
     const u = state.units.find(x => x.id === unitId);
     if (!u || !u.kantungFoto) return;
     const item = u.kantungFoto.find(p => p.id === photoId);
     if (!item) return;
 
-    const watermarked = await applyBnpbWatermark(item.url, u, targetStage, item.gps || u.koordinatGps, item.dateStr);
+    const slotObj = DOC_SLOTS.find(s => s.key === slotKey) || { stage: '100%', label: slotKey };
+    const watermarked = await applyBnpbWatermark(item.url, u, slotObj.label, item.gps || u.koordinatGps, item.dateStr);
 
-    if (targetStage === '0%') {
-      u.foto0 = watermarked;
-      if (!u.foto0_samping) u.foto0_samping = watermarked;
-      if (!u.foto0_dalam) u.foto0_dalam = watermarked;
-      if (!u.foto0_mck) u.foto0_mck = watermarked;
-    } else if (targetStage === '50%') {
-      u.foto50 = watermarked;
-      if (!u.foto50_samping) u.foto50_samping = watermarked;
-      if (!u.foto50_dalam) u.foto50_dalam = watermarked;
-      if (!u.foto50_mck) u.foto50_mck = watermarked;
-      if (Number(u.progres) < 50) u.progres = 50;
-    } else if (targetStage === '100%') {
-      u.foto100_1 = watermarked;
-      if (!u.foto100_samping) u.foto100_samping = watermarked;
-      if (!u.foto100_2) u.foto100_2 = watermarked;
-      if (!u.foto100_3) u.foto100_3 = watermarked;
+    u[slotKey] = watermarked;
+
+    if (slotObj.stage === '100%') {
       u.progres = 100;
+    } else if (slotObj.stage === '50%' && Number(u.progres) < 50) {
+      u.progres = 50;
     }
 
-    await saveState(`Foto kantung dijadikan ${targetStage} untuk #${u.noBnba} ${u.nama}`);
-    showToast(`🎯 Berhasil! Foto kini aktif sebagai Progres ${targetStage}!`, 'success');
+    await saveState(`Foto kantung dipasang ke ${slotObj.label} pada #${u.noBnba} ${u.nama}`);
+    showToast(`🎯 Berhasil! Foto dipasang ke slot ${slotObj.label}!`, 'success');
+    renderQuickPhotoModalContent();
+    renderAll();
+  }
+
+  function replicateAnglePhotos(unitId, stage) {
+    const u = state.units.find(x => x.id === unitId);
+    if (!u) return;
+    if (stage === '100%') {
+      const src = u.foto100_1 || u.foto100_samping || u.foto100_2 || u.foto100_3;
+      if (!src) return alert('Belum ada foto 100% untuk disalin ke sudut lain.');
+      if (!u.foto100_1) u.foto100_1 = src;
+      if (!u.foto100_samping) u.foto100_samping = src;
+      if (!u.foto100_2) u.foto100_2 = src;
+      if (!u.foto100_3) u.foto100_3 = src;
+      u.progres = 100;
+    } else if (stage === '50%') {
+      const src = u.foto50 || u.foto50_samping || u.foto50_dalam || u.foto50_mck;
+      if (!src) return alert('Belum ada foto 50% untuk disalin ke sudut lain.');
+      if (!u.foto50) u.foto50 = src;
+      if (!u.foto50_samping) u.foto50_samping = src;
+      if (!u.foto50_dalam) u.foto50_dalam = src;
+      if (!u.foto50_mck) u.foto50_mck = src;
+      if (Number(u.progres) < 50) u.progres = 50;
+    } else if (stage === '0%') {
+      const src = u.foto0 || u.foto0_samping || u.foto0_dalam || u.foto0_mck;
+      if (!src) return alert('Belum ada foto 0% untuk disalin ke sudut lain.');
+      if (!u.foto0) u.foto0 = src;
+      if (!u.foto0_samping) u.foto0_samping = src;
+      if (!u.foto0_dalam) u.foto0_dalam = src;
+      if (!u.foto0_mck) u.foto0_mck = src;
+    }
+    saveState(`Duplikasi sudut foto ${stage} untuk #${u.noBnba} ${u.nama}`);
+    showToast(`✅ Semua sudut ${stage} berhasil dilengkapi!`, 'success');
     renderQuickPhotoModalContent();
     renderAll();
   }
@@ -6651,14 +6728,40 @@
     if (!u) return;
     if (confirm('Hapus foto slot ini?')) {
       u[slot] = '';
-      if (slot === 'foto100_1') {
-        u.foto100_samping = '';
-        u.foto100_2 = '';
-        u.foto100_3 = '';
-      }
       saveState(`Hapus foto ${slot}`);
       renderQuickPhotoModalContent();
       renderAll();
+    }
+  }
+
+  function exportSingleUnitPhotos(unitId) {
+    const u = state.units.find(x => x.id === unitId);
+    if (!u) return;
+    const payload = {
+      type: 'SIM_HUNTARA_UNIT_PHOTOS',
+      exportedAt: new Date().toISOString(),
+      unitId: u.id,
+      units: [u]
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const filename = `FOTO_HUNTARA_BNBA_${u.noBnba}_${String(u.nama || '').replace(/[^a-zA-Z0-9_-]/g, '_')}.json`;
+
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { if (a.parentNode) a.parentNode.removeChild(a); }, 300);
+
+    const shareFile = new File([blob], filename, { type: 'application/json' });
+    if (navigator.canShare && navigator.canShare({ files: [shareFile] })) {
+      navigator.share({
+        title: `Foto Huntara - ${u.nama}`,
+        text: `Kirim berkas foto ${u.nama} ke Laptop via WhatsApp`,
+        files: [shareFile]
+      }).catch(() => {});
+    } else {
+      alert(`✅ Berkas foto "${filename}" berhasil diunduh ke HP!\n\nCara kirim ke Laptop:\n1. Kirim file ini via WhatsApp / Email ke Laptop.\n2. Buka aplikasi di Laptop, klik tombol hijau "📥 Masukkan Foto dari HP" di atas.\n3. Semua foto unit ini otomatis masuk ke Laptop!`);
     }
   }
 
@@ -6685,21 +6788,51 @@
     try {
       const text = await file.text();
       const incoming = JSON.parse(text);
-      const res = await fetch('/api/import-merge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(incoming)
-      });
-      const data = await res.json();
-      if (data.ok && data.db) {
-        state.vendors = data.db.vendors || state.vendors;
-        state.units = data.db.units || state.units;
-        state.batches = data.db.batches || state.batches;
-        renderAll();
-        alert('Paket data berhasil digabungkan!');
+
+      // 1. Coba kirim ke server lokal jika running
+      try {
+        await fetch('/api/import-merge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(incoming)
+        });
+      } catch (_) { }
+
+      let mergedCount = 0;
+      // 2. Client-side merge (mendukung single unit foto & paket lengkap)
+      if (incoming.units && Array.isArray(incoming.units)) {
+        incoming.units.forEach(inUnit => {
+          const idx = state.units.findIndex(u => u.id === inUnit.id || (u.noBnba === inUnit.noBnba && u.nama === inUnit.nama));
+          if (idx >= 0) {
+            state.units[idx] = { ...state.units[idx], ...inUnit };
+            mergedCount++;
+          } else {
+            state.units.push(inUnit);
+            mergedCount++;
+          }
+        });
       }
+      if (incoming.batches && Array.isArray(incoming.batches)) {
+        incoming.batches.forEach(inBatch => {
+          if (!state.batches.some(b => b.id === inBatch.id)) {
+            state.batches.push(inBatch);
+          }
+        });
+      }
+      if (incoming.vendors && Array.isArray(incoming.vendors)) {
+        incoming.vendors.forEach(inV => {
+          if (!state.vendors.some(v => v.id === inV.id)) {
+            state.vendors.push(inV);
+          }
+        });
+      }
+
+      await saveState(`Import ${mergedCount} data unit/foto`);
+      renderAll();
+      if (window._quickPhotoUnitId) renderQuickPhotoModalContent();
+      alert(`✅ BERHASIL!\n${mergedCount} data/foto penerima dari HP berhasil masuk dan digabungkan ke Laptop!`);
     } catch (err) {
-      alert('Gagal membaca file paket data: ' + err.message);
+      alert('Gagal membaca berkas: ' + err.message);
     }
   }
 
