@@ -2326,6 +2326,15 @@
           </div>
         </div>
         <div class="card-body">
+          ${(targetUnits.length > 25 && (pc.docType === 'DOKUMENTASI' || pc.docType === 'FULL_PACKAGE' || pc.docType === 'LAPORAN_PROGRES')) ? `
+            <div style="margin-bottom:12px;background:#fff1f2;border:1px solid #fecdd3;border-radius:6px;padding:10px 14px;font-size:12px;color:#9f1239;display:flex;align-items:center;gap:12px;">
+              <span style="font-size:24px;">⚡</span>
+              <div>
+                <strong>Tips Cetak Cepat:</strong> Saat ini terpilih <strong>${targetUnits.length} unit (${targetUnits.length * 4} Halaman PDF)</strong>. Browser butuh waktu jika merender 200+ halaman album foto sekaligus.<br/>
+                💡 <em>Agar muncul seketika (1-2 detik):</em> Pilih filter per-desa (misal: Desa Marapokot), atau jika ingin cetak surat pernyataan warga pilih opsi <strong>"📝 1. Khusus Surat Pernyataan Perubahan Denah Saja"</strong>!
+              </div>
+            </div>
+          ` : ''}
           ${pc.singleUnitId ? `
             <div style="margin-bottom:12px;background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#92400e;">
               <span>🔍 <strong>Mode Cetak Khusus 1 Unit:</strong> Menampilkan laporan progres fisik unit <strong>${escapeHtml(targetUnits[0]?.nama || '')}</strong> (Desa ${escapeHtml(targetUnits[0]?.desa || '')} RT ${escapeHtml(targetUnits[0]?.rt || '')})</span>
