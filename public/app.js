@@ -2278,6 +2278,7 @@
         renderSheetInvoice(vendor, fin, meta, fullLokasiStr, desaStr, kecStr) +
         renderSheetSPP(vendor, fin, meta, fullLokasiStr) +
         renderSheetSPS(vendor, fin, meta, fullLokasiStr) +
+        renderSheetPermohonanPemeriksaan(vendor, fin, meta, fullLokasiStr) +
         renderSheetBnbaList(vendor, targetUnits, meta, fullLokasiStr);
     } else if (pc.docType === 'INVOICE') {
       sheetsHtml = renderSheetInvoice(vendor, fin, meta, fullLokasiStr, desaStr, kecStr);
@@ -2285,6 +2286,8 @@
       sheetsHtml = renderSheetSPP(vendor, fin, meta, fullLokasiStr);
     } else if (pc.docType === 'SPS') {
       sheetsHtml = renderSheetSPS(vendor, fin, meta, fullLokasiStr);
+    } else if (pc.docType === 'PEMERIKSAAN' || pc.docType === 'PERMOHONAN_PEMERIKSAAN') {
+      sheetsHtml = renderSheetPermohonanPemeriksaan(vendor, fin, meta, fullLokasiStr);
     } else if (pc.docType === 'BNBA_LIST') {
       sheetsHtml = renderSheetBnbaList(vendor, targetUnits, meta, fullLokasiStr);
     } else if (pc.docType === 'SURAT_DENAH' || pc.docType === 'DENAH_ONLY') {
@@ -2387,12 +2390,13 @@
                   <option value="DOKUMENTASI_ONLY" ${pc.docType === 'DOKUMENTASI_ONLY' ? 'selected' : ''}>📷 2. Laporan Dokumentasi Fisik 0%, 50%, 100% Saja (3 Halaman / Unit, Tanpa Surat Denah)</option>
                   <option value="DOKUMENTASI" ${pc.docType === 'DOKUMENTASI' || pc.docType === 'LAPORAN_PROGRES' || pc.docType === 'DOKUMENTASI_ALL' ? 'selected' : ''}>📑 3. Lengkap Keduanya: Laporan Dokumentasi Fisik + Surat Perubahan Denah</option>
                 </optgroup>
-                <optgroup label="💼 Paket Berkas Penagihan Keuangan (Termin)">
-                  <option value="ALL_LETTERS" ${pc.docType === 'ALL_LETTERS' ? 'selected' : ''}>📑 Paket Surat Pencairan (Invoice + SPP + SPS + Rekap BNBA)</option>
-                  <option value="INVOICE" ${pc.docType === 'INVOICE' ? 'selected' : ''}>• Invoice Tagihan (Format CV. EM KA UTAMA)</option>
-                  <option value="SPP" ${pc.docType === 'SPP' ? 'selected' : ''}>• Surat Permohonan Pembayaran (SPP)</option>
-                  <option value="SPS" ${pc.docType === 'SPS' ? 'selected' : ''}>• Surat Pemberitahuan Selesai 100% (SPS)</option>
-                  <option value="BNBA_LIST" ${pc.docType === 'BNBA_LIST' ? 'selected' : ''}>• Lampiran Rekap Daftar BNBA</option>
+                <optgroup label="💼 Paket Berkas Penagihan Keuangan (Termin & Pemeriksaan)">
+                  <option value="ALL_LETTERS" ${pc.docType === 'ALL_LETTERS' ? 'selected' : ''}>📑 Paket Surat Pencairan Lengkap (Invoice + SPP + SPS + Permohonan Pemeriksaan + BNBA)</option>
+                  <option value="INVOICE" ${pc.docType === 'INVOICE' ? 'selected' : ''}>1. Invoice Tagihan / Kuitansi (Format CV. EM KA UTAMA)</option>
+                  <option value="SPP" ${pc.docType === 'SPP' ? 'selected' : ''}>2. Surat Permohonan Pembayaran (SPP)</option>
+                  <option value="SPS" ${pc.docType === 'SPS' ? 'selected' : ''}>3. Surat Pemberitahuan Selesai Pekerjaan 100% (SPS)</option>
+                  <option value="PEMERIKSAAN" ${pc.docType === 'PEMERIKSAAN' || pc.docType === 'PERMOHONAN_PEMERIKSAAN' ? 'selected' : ''}>4. Surat Permohonan Pemeriksaan Pekerjaan (Mutual Check 100%)</option>
+                  <option value="BNBA_LIST" ${pc.docType === 'BNBA_LIST' ? 'selected' : ''}>5. Lampiran Rekap Daftar BNBA</option>
                   <option value="FULL_PACKAGE" ${pc.docType === 'FULL_PACKAGE' ? 'selected' : ''}>📚 Bundel Super Lengkap (Semua Berkas Surat + Laporan + Denah)</option>
                 </optgroup>
               </select>
@@ -2773,7 +2777,7 @@
           </tr>
           <tr>
             <td style="padding:2px 0;">Perihal</td>
-            <td>: Surat Pemberitahuan Selesai 100%</td>
+            <td>: Surat Pemberitahuan Selesai Pekerjaan 100%</td>
           </tr>
         </table>
 
@@ -2815,6 +2819,88 @@
 
         <div style="text-align:justify;line-height:1.55;margin-bottom:18px;">
           Demikian surat pernyataan ini dibuat dengan sebenarnya dan penuh rasa tanggung jawab dan untuk dapat dipergunakan sebagaimana mestinya.
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;page-break-inside:avoid;break-inside:avoid;">
+          <div style="width:270px;font-size:11pt;">
+            <div>${escapeHtml(vendor.kotaTtd)}, ${escapeHtml(meta.tglSps)}</div>
+            <div style="font-weight:bold;">${escapeHtml(vendor.nama)}</div>
+            ${renderVendorTtdHtml(vendor, 'left', true)}
+            ${renderDirectorNameAndRoleHtml(vendor)}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /* ========================================================================
+     TEMPLATE LEMBAR A4 #3B: SURAT PERMOHONAN PEMERIKSAAN PEKERJAAN (100% / PHO)
+     ======================================================================== */
+  function renderSheetPermohonanPemeriksaan(vendor, fin, meta, fullLokasiStr) {
+    const noSurat = meta.noPemeriksaan || meta.noSps.replace('/SPS/', '/SPP-PMR/') || meta.noSps;
+    return `
+      <div class="print-sheet font-arial" style="font-size:11pt;">
+        ${renderVendorKopHtml(vendor)}
+
+        <table style="border-collapse:collapse;margin-bottom:18px;font-size:11pt;">
+          <tr>
+            <td style="width:90px;padding:2px 0;">Nomor</td>
+            <td>: ${escapeHtml(noSurat)}</td>
+          </tr>
+          <tr>
+            <td style="padding:2px 0;">Lampiran</td>
+            <td>: 1 (Satu) Berkas</td>
+          </tr>
+          <tr>
+            <td style="padding:2px 0;">Perihal</td>
+            <td>: <strong>Permohonan Pemeriksaan Pekerjaan Selesai 100%</strong></td>
+          </tr>
+        </table>
+
+        <div style="margin-bottom:18px;">
+          Kepada Yth,<br/>
+          <strong style="font-style:italic;">Pejabat Pembuat Komitmen (PPK) Pembangunan Huntara</strong><br/>
+          Badan Nasional Penanggulangan Bencana (BNPB)<br/>
+          <em>di-</em><br/>
+          &nbsp;&nbsp;&nbsp;${escapeHtml(state.settings.alamatTujuanSurat || 'Graha BNPB Jl. Pramuka Kav. 38 Matraman - Jakarta Timur')}
+        </div>
+
+        <div style="margin-bottom:12px;">Dengan hormat,</div>
+        <div style="margin-bottom:12px;">Yang bertanda tangan di bawah ini kami :</div>
+
+        <table style="border-collapse:collapse;margin-bottom:18px;margin-left:8px;width:95%;">
+          <tr>
+            <td style="width:170px;padding:4px 0;vertical-align:top;">Nama</td>
+            <td style="width:15px;padding:4px 0;vertical-align:top;">:</td>
+            <td style="padding:4px 0;vertical-align:top;font-weight:bold;">${escapeHtml(vendor.direktur)}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 0;vertical-align:top;">Jabatan</td>
+            <td style="padding:4px 0;vertical-align:top;">:</td>
+            <td style="padding:4px 0;vertical-align:top;">${escapeHtml(vendor.jabatan || 'Direktur')}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 0;vertical-align:top;">Nama Perusahaan</td>
+            <td style="padding:4px 0;vertical-align:top;">:</td>
+            <td style="padding:4px 0;vertical-align:top;font-weight:bold;">${escapeHtml(vendor.nama)}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 0;vertical-align:top;">Alamat Perusahaan</td>
+            <td style="padding:4px 0;vertical-align:top;">:</td>
+            <td style="padding:4px 0;vertical-align:top;">${escapeHtml(vendor.alamat)}</td>
+          </tr>
+        </table>
+
+        <div style="text-align:justify;line-height:1.65;margin-bottom:14px;">
+          Sehubungan dengan pelaksanaan pekerjaan Pembangunan Hunian Sementara (HUNTARA) sebanyak <strong>${fin.qty} (${escapeHtml(fin.terbilangQty)}) unit</strong> yang berlokasi di <strong>${escapeHtml(toTitleCase(fullLokasiStr))}</strong>, bersama ini kami memberitahukan bahwa seluruh pekerjaan fisik di lapangan telah selesai kami laksanakan <strong>100% (seratus persen)</strong> sesuai spesifikasi teknis SPK.
+        </div>
+
+        <div style="text-align:justify;line-height:1.65;margin-bottom:16px;">
+          Sehubungan dengan hal tersebut, kami mengajukan <strong>Permohonan Pemeriksaan Bersama (Mutual Check 100% / Uji Fisik Lapangan)</strong> kepada Bapak/Ibu Pejabat Pembuat Komitmen (PPK) beserta Tim Teknis/Pengawas Lapangan terhadap fisik bangunan Huntara yang telah selesai, sebagai dasar penerbitan Berita Acara Pemeriksaan Pekerjaan (BAPP) dan Berita Acara Serah Terima (BAST).
+        </div>
+
+        <div style="text-align:justify;line-height:1.55;margin-bottom:24px;">
+          Demikian surat permohonan pemeriksaan ini kami sampaikan, atas perhatian dan kerjasamanya kami ucapkan terima kasih.
         </div>
 
         <div style="display:flex;justify-content:flex-end;page-break-inside:avoid;break-inside:avoid;">
