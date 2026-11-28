@@ -15,6 +15,124 @@
       vendorId: 'vendor-emka-utama',
       role: 'admin',
       createdAt: '2026-11-20'
+    },
+    {
+      id: 'usr_mbay_indah',
+      username: 'MIHUNTARA',
+      email: 'mbay.indah@gmail.com',
+      password: '1234',
+      nama: 'SAMSUDIN ISMAIL',
+      perusahaan: 'CV. MBAY INDAH',
+      jabatan: 'Direktur',
+      vendorId: 'vendor-mbay-indah',
+      role: 'vendor',
+      createdAt: '2026-11-28'
+    },
+    {
+      id: 'usr_mbay_indah_alias',
+      username: 'mbayindah',
+      email: 'mbay.indah@gmail.com',
+      password: '1234',
+      nama: 'SAMSUDIN ISMAIL',
+      perusahaan: 'CV. MBAY INDAH',
+      jabatan: 'Direktur',
+      vendorId: 'vendor-mbay-indah',
+      role: 'vendor',
+      createdAt: '2026-11-28'
+    },
+    {
+      id: 'usr_emka_utama',
+      username: 'emkautama',
+      email: 'emka.utama@gmail.com',
+      password: '1234',
+      nama: 'HILARIUS MBUSA',
+      perusahaan: 'CV. EM KA UTAMA',
+      jabatan: 'Direktur',
+      vendorId: 'vendor-emka-utama',
+      role: 'vendor',
+      createdAt: '2026-11-20'
+    },
+    {
+      id: 'usr_tahta_permata',
+      username: 'tahtapermata',
+      email: 'tahta.permata@gmail.com',
+      password: '1234',
+      nama: 'RIKKY MEIZAR',
+      perusahaan: 'CV. TAHTA PERMATA JAYA',
+      jabatan: 'Direktur',
+      vendorId: 'vendor-tahta-permata',
+      role: 'vendor',
+      createdAt: '2026-11-20'
+    }
+  ];
+
+  const DEFAULT_VENDORS = [
+    {
+      id: 'vendor-emka-utama',
+      nama: 'CV. EM KA UTAMA',
+      subJudul: 'KONTRAKTOR - LEVERANSIR',
+      direktur: 'HILARIUS MBUSA',
+      jabatan: 'Direktur',
+      alamat: 'Kel. Mauponggo, Kec. Mauponggo, Kab. Nagekeo Prov. NTT',
+      telepon: '0812 - 3982 - 0000',
+      kotaTtd: 'Mauponggo',
+      kodeSurat: 'EMKA',
+      kabupaten: 'Kabupaten Nagekeo',
+      provinsi: 'Provinsi Nusa Tenggara Timur',
+      namaBank: 'Bank BRI',
+      noRekening: '2185 01 006476 53 6',
+      atasNamaRekening: 'CV. Em Ka Utama',
+      hargaSatuan: 33998000,
+      ppnPersen: 11,
+      pphPersen: 1.5,
+      logoUrl: '/uploads/logo_1795016077279_0d6c7e.jpg',
+      kopSuratUrl: '/uploads/kop_1795026014153_6d225d.png',
+      ttdStempelUrl: '/uploads/ttd_1795026093395_e28f19.png',
+      spesimenUrl: '/uploads/spesimen_1795026246923_b3ccdb.png',
+      logoProvinsiUrl: '/uploads/prov_1795136786734_8ac849.png',
+      logoKabupatenUrl: '/uploads/kab_1795136802239_3d3a4d.png'
+    },
+    {
+      id: 'vendor-tahta-permata',
+      nama: 'CV. TAHTA PERMATA JAYA',
+      subJudul: 'KONTRAKTOR - LEVERANSIR',
+      direktur: 'RIKKY MEIZAR',
+      jabatan: 'Direktur',
+      alamat: 'Jl. Mesjid No. 8 Bandar Khalipah, Kec. Percut Sei Tuan, Kab. Deli Serdang, Provinsi Sumatera Utara 20371',
+      kotaTtd: 'Deli Serdang',
+      kabupaten: 'Kabupaten Maluku Tengah',
+      provinsi: 'Provinsi Maluku',
+      namaBank: 'PT. BANK NEGARA INDONESIA (BNI)',
+      noRekening: '1370538119',
+      atasNamaRekening: 'CV. TAHTA PERMATA JAYA',
+      npwp: '',
+      kodeSurat: 'CV.TPJ',
+      hargaSatuan: 34500000,
+      ppnPersen: 11,
+      pphPersen: 1.75,
+      logoUrl: '/assets/logo-tpj.png',
+      ttdStempelUrl: ''
+    },
+    {
+      id: 'vendor-mbay-indah',
+      nama: 'CV. MBAY INDAH',
+      subJudul: 'KONTRAKTOR - LEVERANSIR',
+      direktur: 'SAMSUDIN ISMAIL',
+      jabatan: 'Direktur',
+      alamat: 'Mbay, Kec. Aesesa, Kab. Nagekeo, Prov. NTT',
+      telepon: '0812-3456-7890',
+      kotaTtd: 'Mbay',
+      kodeSurat: 'MI',
+      kabupaten: 'Kabupaten Nagekeo',
+      provinsi: 'Provinsi Nusa Tenggara Timur',
+      namaBank: 'Bank NTT',
+      noRekening: '-',
+      atasNamaRekening: 'CV. MBAY INDAH',
+      hargaSatuan: 33998000,
+      ppnPersen: 11,
+      pphPersen: 1.5,
+      logoUrl: '/assets/logo-emka.svg',
+      ttdStempelUrl: ''
     }
   ];
 
@@ -335,15 +453,26 @@
     }
 
     const users = (state.users && state.users.length > 0) ? state.users : DEFAULT_USERS;
-    const found = users.find(u =>
+    let found = users.find(u =>
       (u.username.toLowerCase() === userInput.toLowerCase() || (u.email && u.email.toLowerCase() === userInput.toLowerCase())) &&
-      u.password === passInput
+      String(u.password).trim() === passInput
     );
+
+    // Fallback pencarian ke DEFAULT_USERS (memastikan akun bawaan seperti MIHUNTARA / 1234 selalu lolos)
+    if (!found) {
+      found = DEFAULT_USERS.find(u =>
+        (u.username.toLowerCase() === userInput.toLowerCase() || (u.email && u.email.toLowerCase() === userInput.toLowerCase())) &&
+        String(u.password).trim() === passInput
+      );
+      if (found && !state.users.some(u => u.username.toLowerCase() === found.username.toLowerCase())) {
+        state.users.push(found);
+      }
+    }
 
     if (found) {
       state.currentUser = found;
       localStorage.setItem('sim_huntara_current_user', JSON.stringify(found));
-      if (found.vendorId && state.vendors.some(v => v.id === found.vendorId)) {
+      if (found.vendorId) {
         state.selectedVendorId = found.vendorId;
       }
       if (errEl) errEl.style.display = 'none';
@@ -586,6 +715,20 @@
         : (JSON.parse(localStorage.getItem('sim_huntara_users') || 'null') || [...DEFAULT_USERS]);
       if (data.serverInfo) state.serverInfo = data.serverInfo;
 
+      // Sinkronkan DEFAULT_VENDORS agar vendor resmi (seperti CV. MBAY INDAH) selalu ada
+      DEFAULT_VENDORS.forEach(dv => {
+        if (!state.vendors.some(v => v.id === dv.id)) {
+          state.vendors.push(dv);
+        }
+      });
+
+      // Sinkronkan DEFAULT_USERS agar akun resmi (seperti MIHUNTARA) selalu tersedia
+      DEFAULT_USERS.forEach(du => {
+        if (!state.users.some(u => u.username.toLowerCase() === du.username.toLowerCase())) {
+          state.users.push(du);
+        }
+      });
+
       // Periksa sesi login yang tersimpan
       try {
         const stored = localStorage.getItem('sim_huntara_current_user');
@@ -594,7 +737,9 @@
         }
       } catch (_) { }
 
-      if (state.currentUser && state.currentUser.vendorId && state.vendors.some(v => v.id === state.currentUser.vendorId)) {
+      if (state.currentUser && state.currentUser.role === 'vendor' && state.currentUser.vendorId) {
+        state.selectedVendorId = state.currentUser.vendorId;
+      } else if (state.currentUser && state.currentUser.vendorId && state.vendors.some(v => v.id === state.currentUser.vendorId)) {
         state.selectedVendorId = state.currentUser.vendorId;
       } else if (state.vendors.length > 0 && !state.vendors.some(v => v.id === state.selectedVendorId) && state.selectedVendorId !== 'ALL') {
         state.selectedVendorId = state.vendors[0].id;
@@ -606,6 +751,7 @@
       renderAll();
     } else {
       console.warn('Tidak ada data state yang dapat dimuat');
+      state.vendors = [...DEFAULT_VENDORS];
       state.users = [...DEFAULT_USERS];
       updateAuthUI();
       renderAll();
@@ -735,12 +881,22 @@
     };
   }
 
+  function isVendorScoped() {
+    return !!(state.currentUser && state.currentUser.role === 'vendor' && state.currentUser.vendorId);
+  }
+
   function getActiveUnits() {
+    if (isVendorScoped()) {
+      return state.units.filter(u => u.vendorId === state.currentUser.vendorId);
+    }
     if (state.selectedVendorId === 'ALL') return state.units;
     return state.units.filter(u => u.vendorId === state.selectedVendorId);
   }
 
   function getActiveBatches() {
+    if (isVendorScoped()) {
+      return state.batches.filter(b => b.vendorId === state.currentUser.vendorId);
+    }
     if (state.selectedVendorId === 'ALL') return state.batches;
     return state.batches.filter(b => b.vendorId === state.selectedVendorId);
   }
@@ -749,16 +905,34 @@
      SIDEBAR & NAVIGATION
      ======================================================================== */
   function updateSidebarBadges() {
+    if (isVendorScoped()) {
+      state.selectedVendorId = state.currentUser.vendorId;
+    }
+
     const select = document.getElementById('globalVendorSelect');
     if (select) {
-      const optionsHtml = [
-        `<option value="ALL" ${state.selectedVendorId === 'ALL' ? 'selected' : ''}>🌐 Semua Perusahaan (${state.vendors.length} Vendor)</option>`,
-        ...state.vendors.map(v => {
-          const count = state.units.filter(u => u.vendorId === v.id).length;
-          return `<option value="${escapeHtml(v.id)}" ${state.selectedVendorId === v.id ? 'selected' : ''}>🏢 ${escapeHtml(v.nama)} (${count} Unit)</option>`;
-        })
-      ].join('');
-      select.innerHTML = optionsHtml;
+      if (isVendorScoped()) {
+        const myVendor = getVendorById(state.currentUser.vendorId);
+        const count = state.units.filter(u => u.vendorId === myVendor.id).length;
+        select.innerHTML = `<option value="${escapeHtml(myVendor.id)}" selected>🏢 ${escapeHtml(myVendor.nama)} (${count} Unit)</option>`;
+        select.disabled = true;
+        select.style.cursor = 'default';
+        select.style.opacity = '0.95';
+        select.title = 'Layar Khusus Terisolasi: ' + myVendor.nama;
+      } else {
+        select.disabled = false;
+        select.style.cursor = 'pointer';
+        select.style.opacity = '1';
+        select.title = 'Pilih Vendor atau Semua Perusahaan';
+        const optionsHtml = [
+          `<option value="ALL" ${state.selectedVendorId === 'ALL' ? 'selected' : ''}>🌐 Semua Perusahaan (${state.vendors.length} Vendor)</option>`,
+          ...state.vendors.map(v => {
+            const count = state.units.filter(u => u.vendorId === v.id).length;
+            return `<option value="${escapeHtml(v.id)}" ${state.selectedVendorId === v.id ? 'selected' : ''}>🏢 ${escapeHtml(v.nama)} (${count} Unit)</option>`;
+          })
+        ].join('');
+        select.innerHTML = optionsHtml;
+      }
     }
 
     const activeUnits = getActiveUnits();
@@ -768,7 +942,7 @@
     const elUnit = document.getElementById('badgeUnitCount');
     const elReady = document.getElementById('badgeReadyCount');
 
-    if (elVendor) elVendor.textContent = state.vendors.length;
+    if (elVendor) elVendor.textContent = isVendorScoped() ? '1' : state.vendors.length;
     if (elUnit) elUnit.textContent = activeUnits.length;
     if (elReady) elReady.textContent = readyUnits.length;
 
@@ -1123,7 +1297,8 @@
         </div>
       </div>
 
-      <!-- REKAPITULASI MULTI-VENDOR -->
+      <!-- REKAPITULASI MULTI-VENDOR (HANYA DITAMPILKAN UNTUK SUPER ADMIN / PENGAWAS) -->
+      ${!isVendorScoped() ? `
       <div class="card">
         <div class="card-header">
           <h3>🏢 Rekapitulasi Perusahaan / Vendor Pelaksana Huntara</h3>
@@ -1180,6 +1355,19 @@
           </div>
         </div>
       </div>
+      ` : `
+      <div class="card" style="background:#f8fafc;border:1px solid #e2e8f0;">
+        <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h4 style="margin:0 0 4px;color:#0f172a;font-size:15px;">🏢 Akun Terdedikasi: ${escapeHtml(getVendorById(state.currentUser.vendorId).nama)}</h4>
+            <p style="margin:0;font-size:13px;color:#64748b;">Layar ini menampilkan data khusus progres fisik, kuota, dan berkas pencairan perusahaan Anda secara terpisah.</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="window.app.switchTab('vendors')">
+            ⚙️ Profil Perusahaan &amp; Rekening
+          </button>
+        </div>
+      </div>
+      `}
     `;
   }
 
@@ -1187,20 +1375,24 @@
      TAB 2: MASTER DATA PERUSAHAAN / MULTI-VENDOR
      ======================================================================== */
   function renderVendorsTab() {
+    const isVendor = isVendorScoped();
+    const visibleVendors = isVendor ? state.vendors.filter(v => v.id === state.currentUser.vendorId) : state.vendors;
     return `
       <div class="card">
         <div class="card-header">
           <div>
-            <h3>🏢 Daftar Perusahaan / Kontraktor Pelaksana Huntara</h3>
-            <p style="font-size:12.5px;color:var(--text-muted)">Setiap perusahaan memiliki Kop Surat, Logo, Direktur, Nomor Rekening, dan Harga Satuan masing-masing untuk cetak berkas pencairan.</p>
+            <h3>🏢 ${isVendor ? 'Profil Perusahaan Saya' : 'Daftar Perusahaan / Kontraktor Pelaksana Huntara'}</h3>
+            <p style="font-size:12.5px;color:var(--text-muted)">${isVendor ? 'Kelola Kop Surat, Logo Resmi, Direktur, Rekening Bank, dan Harga Satuan perusahaan Anda.' : 'Setiap perusahaan memiliki Kop Surat, Logo, Direktur, Nomor Rekening, dan Harga Satuan masing-masing untuk cetak berkas pencairan.'}</p>
           </div>
+          ${!isVendor ? `
           <button class="btn btn-primary" onclick="window.app.openVendorModal()">
             ➕ Tambah Perusahaan / Vendor Baru
           </button>
+          ` : ''}
         </div>
         <div class="card-body">
           <div class="grid-2">
-            ${state.vendors.map(v => {
+            ${visibleVendors.map(v => {
       const vUnits = state.units.filter(u => u.vendorId === v.id);
       const vBatches = state.batches.filter(b => b.vendorId === v.id);
       return `
@@ -1240,16 +1432,18 @@
                       </div>
                     </div>
                     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;border-top:1px solid #e2e8f0;padding-top:12px;">
+                      ${!isVendor ? `
                       <button class="btn btn-outline btn-sm" onclick="window.app.selectVendor('${escapeHtml(v.id)}')">
                         ✓ Jadikan Vendor Aktif
                       </button>
+                      ` : ''}
                       <button class="btn btn-outline btn-sm" style="border-color:#2563eb;color:#2563eb;" onclick="window.app.openLogoHeaderModal('${escapeHtml(v.id)}')">
                         🏛️ Logo Pemda (Prov/Kab)
                       </button>
                       <button class="btn btn-primary btn-sm" onclick="window.app.openVendorModal('${escapeHtml(v.id)}')">
                         ✏️ Edit Profil & Kop/Rekening
                       </button>
-                      ${state.vendors.length > 1 ? `
+                      ${!isVendor && state.vendors.length > 1 ? `
                         <button class="btn btn-danger btn-sm" onclick="window.app.deleteVendor('${escapeHtml(v.id)}')">
                           🗑️ Hapus
                         </button>
@@ -1641,10 +1835,16 @@
           <div class="card-body">
             <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;padding:16px;margin-bottom:20px;">
               <div class="form-group" style="margin-bottom:12px;">
-                <label style="font-size:13.5px;font-weight:700;color:var(--primary);">Pilih Perusahaan / Vendor Penagih:</label>
-                <select class="form-control" style="font-size:14px;font-weight:600;padding:8px 12px;" onchange="window.app.changeBatchVendor(this.value)">
-                  ${state.vendors.map(v => `<option value="${escapeHtml(v.id)}" ${bf.vendorId === v.id ? 'selected' : ''}>🏢 ${escapeHtml(v.nama)} (Harga: Rp ${formatNumberDot(v.hargaSatuan)}/unit)</option>`).join('')}
-                </select>
+                <label style="font-size:13.5px;font-weight:700;color:var(--primary);">${isVendorScoped() ? 'Perusahaan / Vendor Penagih (Akun Anda):' : 'Pilih Perusahaan / Vendor Penagih:'}</label>
+                ${isVendorScoped() ? `
+                  <div style="font-size:14px;font-weight:700;color:#0f172a;background:#fff;padding:10px 14px;border:1.5px solid #cbd5e1;border-radius:8px;">
+                    🏢 ${escapeHtml(vendor.nama)} &nbsp; <span style="font-size:12px;font-weight:normal;color:#16a34a;">(Harga: Rp ${formatNumberDot(vendor.hargaSatuan)} / unit)</span>
+                  </div>
+                ` : `
+                  <select class="form-control" style="font-size:14px;font-weight:600;padding:8px 12px;" onchange="window.app.changeBatchVendor(this.value)">
+                    ${state.vendors.map(v => `<option value="${escapeHtml(v.id)}" ${bf.vendorId === v.id ? 'selected' : ''}>🏢 ${escapeHtml(v.nama)} (Harga: Rp ${formatNumberDot(v.hargaSatuan)}/unit)</option>`).join('')}
+                  </select>
+                `}
               </div>
 
               <!-- INFO REKENING & LEGALITAS VENDOR -->
@@ -2350,7 +2550,7 @@
                 <label>Pilih Batch Pencairan Gelondongan</label>
                 <select class="form-control" onchange="window.app.setPrintConfig('batchId', this.value)">
                   ${state.batches.length === 0 ? `<option value="">-- Mode Simulasi Cepat (${qty} Unit) --</option>` : ''}
-                  ${state.batches.map(b => {
+                  ${(isVendorScoped() ? state.batches.filter(b => b.vendorId === state.currentUser.vendorId) : state.batches).map(b => {
       const bv = getVendorById(b.vendorId);
       return `<option value="${escapeHtml(b.id)}" ${pc.batchId === b.id ? 'selected' : ''}>${escapeHtml(b.namaBatch)} — ${escapeHtml(bv.nama)} (${b.unitIds.length} Unit)</option>`;
     }).join('')}
@@ -2365,9 +2565,15 @@
             ` : `
               <div class="form-group" style="margin-bottom:0;min-width:185px;">
                 <label>Perusahaan / Vendor</label>
-                <select class="form-control" onchange="window.app.setPrintConfig('vendorId', this.value)">
-                  ${state.vendors.map(v => `<option value="${escapeHtml(v.id)}" ${pc.vendorId === v.id ? 'selected' : ''}>${escapeHtml(v.nama)}</option>`).join('')}
-                </select>
+                ${isVendorScoped() ? `
+                  <div style="font-size:13.5px;font-weight:700;color:#0f172a;background:#f8fafc;padding:8px 12px;border:1px solid #cbd5e1;border-radius:6px;">
+                    🏢 ${escapeHtml(vendor.nama)}
+                  </div>
+                ` : `
+                  <select class="form-control" onchange="window.app.setPrintConfig('vendorId', this.value)">
+                    ${state.vendors.map(v => `<option value="${escapeHtml(v.id)}" ${pc.vendorId === v.id ? 'selected' : ''}>${escapeHtml(v.nama)}</option>`).join('')}
+                  </select>
+                `}
               </div>
               <div class="form-group" style="margin-bottom:0;min-width:145px;">
                 <label>Kecamatan</label>
@@ -5081,6 +5287,10 @@
      ACTIONS & EVENT HANDLERS
      ======================================================================== */
   function selectVendor(vendorId) {
+    if (isVendorScoped() && vendorId !== state.currentUser.vendorId) {
+      showToast('Akses dibatasi: Layar akun Anda khusus untuk ' + getVendorById(state.currentUser.vendorId).nama, 'warning');
+      return;
+    }
     state.selectedVendorId = vendorId;
     if (vendorId !== 'ALL') {
       state.batchForm.vendorId = vendorId;

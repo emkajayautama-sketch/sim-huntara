@@ -155,6 +155,27 @@
       "pphPersen": 1.75,
       "logoUrl": "/assets/logo-tpj.png",
       "ttdStempelUrl": ""
+    },
+    {
+      "id": "vendor-mbay-indah",
+      "nama": "CV. MBAY INDAH",
+      "subJudul": "KONTRAKTOR - LEVERANSIR",
+      "direktur": "SAMSUDIN ISMAIL",
+      "jabatan": "Direktur",
+      "alamat": "Mbay, Kec. Aesesa, Kab. Nagekeo, Prov. NTT",
+      "telepon": "0812-3456-7890",
+      "kotaTtd": "Mbay",
+      "kodeSurat": "MI",
+      "kabupaten": "Kabupaten Nagekeo",
+      "provinsi": "Provinsi Nusa Tenggara Timur",
+      "namaBank": "Bank NTT",
+      "noRekening": "-",
+      "atasNamaRekening": "CV. MBAY INDAH",
+      "hargaSatuan": 33998000,
+      "ppnPersen": 11,
+      "pphPersen": 1.5,
+      "logoUrl": "/assets/logo-emka.svg",
+      "ttdStempelUrl": ""
     }
   ],
   "units": [
@@ -2947,6 +2968,54 @@
       "jabatan": "Direktur Utama",
       "vendorId": "vendor-emka-utama",
       "role": "admin",
+      "createdAt": "2026-11-20"
+    },
+    {
+      "id": "usr_mbay_indah",
+      "username": "MIHUNTARA",
+      "email": "mbay.indah@gmail.com",
+      "password": "1234",
+      "nama": "SAMSUDIN ISMAIL",
+      "perusahaan": "CV. MBAY INDAH",
+      "jabatan": "Direktur",
+      "vendorId": "vendor-mbay-indah",
+      "role": "vendor",
+      "createdAt": "2026-11-28"
+    },
+    {
+      "id": "usr_mbay_indah_alias",
+      "username": "mbayindah",
+      "email": "mbay.indah@gmail.com",
+      "password": "1234",
+      "nama": "SAMSUDIN ISMAIL",
+      "perusahaan": "CV. MBAY INDAH",
+      "jabatan": "Direktur",
+      "vendorId": "vendor-mbay-indah",
+      "role": "vendor",
+      "createdAt": "2026-11-28"
+    },
+    {
+      "id": "usr_emka_utama",
+      "username": "emkautama",
+      "email": "emka.utama@gmail.com",
+      "password": "1234",
+      "nama": "HILARIUS MBUSA",
+      "perusahaan": "CV. EM KA UTAMA",
+      "jabatan": "Direktur",
+      "vendorId": "vendor-emka-utama",
+      "role": "vendor",
+      "createdAt": "2026-11-20"
+    },
+    {
+      "id": "usr_tahta_permata",
+      "username": "tahtapermata",
+      "email": "tahta.permata@gmail.com",
+      "password": "1234",
+      "nama": "RIKKY MEIZAR",
+      "perusahaan": "CV. TAHTA PERMATA JAYA",
+      "jabatan": "Direktur",
+      "vendorId": "vendor-tahta-permata",
+      "role": "vendor",
       "createdAt": "2026-11-20"
     }
   ]
