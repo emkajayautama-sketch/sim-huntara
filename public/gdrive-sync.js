@@ -79,10 +79,17 @@
           };
 
           Object.keys(photoSlots).forEach(k => {
-            const val = photoSlots[k];
-            if (val && typeof val === 'string' && val.trim() && val !== 'Lihat Foto' && val !== u[k]) {
-              u[k] = val.trim();
-              changed = true;
+            let val = photoSlots[k];
+            if (val && typeof val === 'string' && val.trim() && val !== 'Lihat Foto') {
+              val = val.trim();
+              const driveMatch = val.match(/\/d\/([a-zA-Z0-9_-]+)/) || val.match(/id=([a-zA-Z0-9_-]+)/);
+              if (driveMatch && driveMatch[1]) {
+                val = 'https://lh3.googleusercontent.com/d/' + driveMatch[1];
+              }
+              if (val !== u[k]) {
+                u[k] = val;
+                changed = true;
+              }
             }
           });
 
