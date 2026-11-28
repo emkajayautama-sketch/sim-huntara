@@ -18,10 +18,7 @@
     }
   ];
 
-  const DEFAULT_ALASAN_DENAH = `1. Optimalisasi Luas Ruang: Memberikan ruang gerak yang lebih lega pada area dalam bangunan utama.
-2. Keamanan Material & Kesehatan: Menghindari risiko kelembapan berlebih pada dinding partisi kalsiboard yang berbatasan langsung dengan kamar tidur, serta mencegah bau tidak sedap demi menjaga kenyamanan dan kesehatan penghuni.
-3. Alih Fungsi Ruang: Area eks-kamar mandi/WC di dalam bangunan dimanfaatkan sebagai ruang penyimpanan perlengkapan dapur.
-4. Kamar WC yang lama masih bisa difungsikan.`;
+  const DEFAULT_ALASAN_DENAH = '';
 
   const state = {
     activeTab: 'dashboard',
@@ -552,7 +549,7 @@
       if (res.ok) {
         data = await res.json();
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // 2. Jika API tidak tersedia (misal Cloudflare Pages), cek simpanan terbaru di localStorage browser
     if (!data) {
@@ -564,7 +561,7 @@
             data = parsed;
           }
         }
-      } catch (_) {}
+      } catch (_) { }
     }
 
     // 3. Jika localStorage masih kosong (kunjungan pertama di Cloudflare Pages), muat file JSON statis
@@ -595,7 +592,7 @@
         if (stored) {
           state.currentUser = JSON.parse(stored);
         }
-      } catch (_) {}
+      } catch (_) { }
 
       if (state.currentUser && state.currentUser.vendorId && state.vendors.some(v => v.id === state.currentUser.vendorId)) {
         state.selectedVendorId = state.currentUser.vendorId;
@@ -629,7 +626,7 @@
       try {
         localStorage.setItem('sim_huntara_backup', JSON.stringify(payload));
         localStorage.setItem('sim_huntara_users', JSON.stringify(state.users));
-      } catch (_) {}
+      } catch (_) { }
 
       try {
         await fetch('/api/save-state', {
@@ -991,11 +988,10 @@
             <div class="kpi-icon-pill green">⚡</div>
           </div>
           <div class="kpi-value">${countReady} <small style="font-size:14px;font-weight:600">Unit</small></div>
-          <span class="kpi-sub">${
-            countReady >= minUnit
-              ? `✅ Memenuhi syarat min. ${minUnit} unit (Netto Rp ${formatNumberDot(finReady.netto)})`
-              : `⏳ Butuh ${Math.max(0, minUnit - countReady)} unit 100% lagi untuk kuota ${minUnit} unit`
-          }</span>
+          <span class="kpi-sub">${countReady >= minUnit
+        ? `✅ Memenuhi syarat min. ${minUnit} unit (Netto Rp ${formatNumberDot(finReady.netto)})`
+        : `⏳ Butuh ${Math.max(0, minUnit - countReady)} unit 100% lagi untuk kuota ${minUnit} unit`
+      }</span>
         </div>
         <div class="kpi-card sky">
           <div class="kpi-card-header">
@@ -1010,10 +1006,10 @@
       <!-- RINGKASAN PER KECAMATAN -->
       <div class="grid-2">
         ${kecList.map(k => {
-          const pct = k.total > 0 ? Math.round(((k.p50 * 50) + (k.p100 * 100)) / k.total) : 0;
-          const w100 = k.total > 0 ? (k.p100 / k.total) * 100 : 0;
-          const w50 = k.total > 0 ? (k.p50 / k.total) * 100 : 0;
-          return `
+        const pct = k.total > 0 ? Math.round(((k.p50 * 50) + (k.p100 * 100)) / k.total) : 0;
+        const w100 = k.total > 0 ? (k.p100 / k.total) * 100 : 0;
+        const w50 = k.total > 0 ? (k.p50 / k.total) * 100 : 0;
+        return `
             <div class="card" style="margin-bottom:0">
               <div class="card-header">
                 <h3>📍 Kecamatan ${escapeHtml(k.kecamatan)} (${k.desaCount} Desa/Kelurahan)</h3>
@@ -1042,7 +1038,7 @@
               </div>
             </div>
           `;
-        }).join('')}
+      }).join('')}
       </div>
 
       <!-- TABEL MONITORING PROGRES PER DESA / KELURAHAN -->
@@ -1081,10 +1077,10 @@
               </thead>
               <tbody>
                 ${desaList.map((d, idx) => {
-                  const pct = d.total > 0 ? Math.round(((d.p50 * 50) + (d.p100 * 100)) / d.total) : 0;
-                  const w100 = d.total > 0 ? (d.p100 / d.total) * 100 : 0;
-                  const w50 = d.total > 0 ? (d.p50 / d.total) * 100 : 0;
-                  return `
+        const pct = d.total > 0 ? Math.round(((d.p50 * 50) + (d.p100 * 100)) / d.total) : 0;
+        const w100 = d.total > 0 ? (d.p100 / d.total) * 100 : 0;
+        const w50 = d.total > 0 ? (d.p50 / d.total) * 100 : 0;
+        return `
                     <tr>
                       <td>${idx + 1}</td>
                       <td><strong>${escapeHtml(d.desa)}</strong></td>
@@ -1120,7 +1116,7 @@
                       </td>
                     </tr>
                   `;
-                }).join('')}
+      }).join('')}
               </tbody>
             </table>
           </div>
@@ -1153,10 +1149,10 @@
               </thead>
               <tbody>
                 ${state.vendors.map(v => {
-                  const vUnits = state.units.filter(u => u.vendorId === v.id);
-                  const v100 = vUnits.filter(u => Number(u.progres) === 100).length;
-                  const vReady = vUnits.filter(u => Number(u.progres) === 100 && !u.batchId).length;
-                  return `
+        const vUnits = state.units.filter(u => u.vendorId === v.id);
+        const v100 = vUnits.filter(u => Number(u.progres) === 100).length;
+        const vReady = vUnits.filter(u => Number(u.progres) === 100 && !u.batchId).length;
+        return `
                     <tr>
                       <td><strong>${escapeHtml(v.nama)}</strong></td>
                       <td>${escapeHtml(v.direktur)}</td>
@@ -1166,11 +1162,10 @@
                       <td><strong>${vReady} Unit</strong></td>
                       <td>Rp ${formatNumberDot(v.hargaSatuan)}</td>
                       <td>
-                        ${
-                          vReady >= minUnit
-                            ? `<span class="badge badge-100">✅ Siap Cairkan (${vReady} Unit Tersedia)</span>`
-                            : `<span class="badge badge-50">⏳ Kurang ${minUnit - vReady} unit 100% lagi</span>`
-                        }
+                        ${vReady >= minUnit
+            ? `<span class="badge badge-100">✅ Siap Cairkan (${vReady} Unit Tersedia)</span>`
+            : `<span class="badge badge-50">⏳ Kurang ${minUnit - vReady} unit 100% lagi</span>`
+          }
                       </td>
                       <td style="text-align:right">
                         <button class="btn btn-outline btn-sm" onclick="window.app.selectVendor('${escapeHtml(v.id)}')">
@@ -1179,7 +1174,7 @@
                       </td>
                     </tr>
                   `;
-                }).join('')}
+      }).join('')}
               </tbody>
             </table>
           </div>
@@ -1206,9 +1201,9 @@
         <div class="card-body">
           <div class="grid-2">
             ${state.vendors.map(v => {
-              const vUnits = state.units.filter(u => u.vendorId === v.id);
-              const vBatches = state.batches.filter(b => b.vendorId === v.id);
-              return `
+      const vUnits = state.units.filter(u => u.vendorId === v.id);
+      const vBatches = state.batches.filter(b => b.vendorId === v.id);
+      return `
                 <div class="card" style="margin-bottom:0;border:2px solid ${state.selectedVendorId === v.id ? 'var(--primary)' : '#e2e8f0'}">
                   <div class="card-header">
                     <div style="display:flex;align-items:center;gap:12px;">
@@ -1263,7 +1258,7 @@
                   </div>
                 </div>
               `;
-            }).join('')}
+    }).join('')}
           </div>
         </div>
       </div>
@@ -1433,11 +1428,11 @@
                     </td>
                   </tr>
                 ` : filtered.map(u => {
-                  const vendor = getVendorById(u.vendorId);
-                  const isBatal = Boolean(u.statusBatal);
-                  const photoCount = [u.foto0, u.foto50, u.foto100_1, u.foto100_2, u.foto100_3].filter(Boolean).length;
-                  const batchObj = u.batchId ? state.batches.find(b => b.id === u.batchId) : null;
-                  return `
+      const vendor = getVendorById(u.vendorId);
+      const isBatal = Boolean(u.statusBatal);
+      const photoCount = [u.foto0, u.foto50, u.foto100_1, u.foto100_2, u.foto100_3].filter(Boolean).length;
+      const batchObj = u.batchId ? state.batches.find(b => b.id === u.batchId) : null;
+      return `
                     <tr style="${isBatal ? 'background:#fef2f2;' : ''}">
                       <td>
                         <strong>#${u.noBnba}</strong> ${u.tambahan ? '<span title="Data Tambahan (V)" style="color:#16a34a;font-weight:bold">✓</span>' : ''}
@@ -1474,15 +1469,14 @@
                         </label>
                       </td>
                       <td>
-                        ${
-                          isBatal
-                            ? `<span class="badge" style="background:#fee2e2;color:#b91c1c;border:1px solid #f87171;">🚫 Dibatalkan (Tidak Ditagihkan)</span>`
-                            : batchObj
-                              ? `<span class="badge badge-billed" title="${escapeHtml(batchObj.namaBatch)}">💰 ${escapeHtml(batchObj.namaBatch)}</span>`
-                              : Number(u.progres) === 100
-                                ? `<span class="badge badge-100">✅ Siap Ditagihkan</span>`
-                                : `<span class="badge badge-0">Belum Selesai</span>`
-                        }
+                        ${isBatal
+          ? `<span class="badge" style="background:#fee2e2;color:#b91c1c;border:1px solid #f87171;">🚫 Dibatalkan (Tidak Ditagihkan)</span>`
+          : batchObj
+            ? `<span class="badge badge-billed" title="${escapeHtml(batchObj.namaBatch)}">💰 ${escapeHtml(batchObj.namaBatch)}</span>`
+            : Number(u.progres) === 100
+              ? `<span class="badge badge-100">✅ Siap Ditagihkan</span>`
+              : `<span class="badge badge-0">Belum Selesai</span>`
+        }
                       </td>
                       <td style="text-align:right;white-space:nowrap;">
                         <div class="action-dropdown-wrap">
@@ -1494,7 +1488,7 @@
                       </td>
                     </tr>
                   `;
-                }).join('')}
+    }).join('')}
               </tbody>
             </table>
           </div>
@@ -1596,21 +1590,21 @@
 
       <!-- KONTEN MASING-MASING SUB HALAMAN -->
       ${renderBatchSubPageContent({
-        currentSub,
-        vendor,
-        unbilledUnits,
-        displayedEligible,
-        selectedUnitsList,
-        selectedDesasSummary,
-        selectedCount,
-        calc,
-        isValidCount,
-        minUnit,
-        vendorBatches,
-        bf,
-        kecOptions,
-        desaOptions
-      })}
+      currentSub,
+      vendor,
+      unbilledUnits,
+      displayedEligible,
+      selectedUnitsList,
+      selectedDesasSummary,
+      selectedCount,
+      calc,
+      isValidCount,
+      minUnit,
+      vendorBatches,
+      bf,
+      kecOptions,
+      desaOptions
+    })}
     `;
   }
 
@@ -1796,17 +1790,17 @@
               <select class="form-control" style="padding:7px 10px;font-size:13px;" onchange="window.app.setBatchKecamatanFilter(this.value)">
                 <option value="ALL">Semua Kecamatan (${unbilledUnits.length} Unit)</option>
                 ${kecOptions.map(k => {
-                  const cnt = unbilledUnits.filter(u => u.kecamatan === k).length;
-                  return `<option value="${escapeHtml(k)}" ${bf.filterKecamatan === k ? 'selected' : ''}>Kec. ${escapeHtml(k)} (${cnt} Unit)</option>`;
-                }).join('')}
+        const cnt = unbilledUnits.filter(u => u.kecamatan === k).length;
+        return `<option value="${escapeHtml(k)}" ${bf.filterKecamatan === k ? 'selected' : ''}>Kec. ${escapeHtml(k)} (${cnt} Unit)</option>`;
+      }).join('')}
               </select>
 
               <select class="form-control" style="padding:7px 10px;font-size:13px;" onchange="window.app.setBatchDesaFilter(this.value)">
                 <option value="ALL">Semua Desa/Kelurahan (${desaOptions.length} Desa)</option>
                 ${desaOptions.map(d => {
-                  const cnt = unbilledUnits.filter(u => u.desa === d).length;
-                  return `<option value="${escapeHtml(d)}" ${bf.filterDesa === d ? 'selected' : ''}>${escapeHtml(d)} (${cnt} Unit)</option>`;
-                }).join('')}
+        const cnt = unbilledUnits.filter(u => u.desa === d).length;
+        return `<option value="${escapeHtml(d)}" ${bf.filterDesa === d ? 'selected' : ''}>${escapeHtml(d)} (${cnt} Unit)</option>`;
+      }).join('')}
               </select>
 
               <input type="text" class="form-control" style="padding:7px 10px;font-size:13px;" placeholder="🔍 Cari nama warga, NIK, RT, atau No. BNBA..." value="${escapeHtml(bf.searchQuery || '')}" oninput="window.app.setBatchSearchQuery(this.value)" />
@@ -1866,9 +1860,9 @@
                   </thead>
                   <tbody>
                     ${displayedEligible.map(u => {
-                      const checked = bf.selectedUnitIds.includes(u.id);
-                      const photoCount = [u.foto0, u.foto50, u.foto100_1, u.foto100_2, u.foto100_3].filter(Boolean).length;
-                      return `
+        const checked = bf.selectedUnitIds.includes(u.id);
+        const photoCount = [u.foto0, u.foto50, u.foto100_1, u.foto100_2, u.foto100_3].filter(Boolean).length;
+        return `
                         <tr style="cursor:pointer;background:${checked ? '#dcfce7' : 'transparent'};transition:background 0.1s ease;" onclick="window.app.toggleBatchUnit('${escapeHtml(u.id)}')">
                           <td style="text-align:center;">
                             <input type="checkbox" style="width:16px;height:16px;cursor:pointer;" ${checked ? 'checked' : ''} onclick="event.stopPropagation(); window.app.toggleBatchUnit('${escapeHtml(u.id)}')" />
@@ -1890,7 +1884,7 @@
                           </td>
                         </tr>
                       `;
-                    }).join('')}
+      }).join('')}
                   </tbody>
                 </table>
               `}
@@ -2136,11 +2130,11 @@
                     </td>
                   </tr>
                 ` : vendorBatches.map(b => {
-                  const v = getVendorById(b.vendorId);
-                  const bUnits = state.units.filter(u => b.unitIds.includes(u.id));
-                  const desas = [...new Set(bUnits.map(u => u.desa))].join(', ');
-                  const fin = hitungKeuangan(b.unitIds.length, v);
-                  return `
+      const v = getVendorById(b.vendorId);
+      const bUnits = state.units.filter(u => b.unitIds.includes(u.id));
+      const desas = [...new Set(bUnits.map(u => u.desa))].join(', ');
+      const fin = hitungKeuangan(b.unitIds.length, v);
+      return `
                     <tr>
                       <td><strong>${escapeHtml(b.namaBatch)}</strong></td>
                       <td>${escapeHtml(v.nama)}</td>
@@ -2173,7 +2167,7 @@
                       </td>
                     </tr>
                   `;
-                }).join('')}
+    }).join('')}
               </tbody>
             </table>
           </div>
@@ -2357,9 +2351,9 @@
                 <select class="form-control" onchange="window.app.setPrintConfig('batchId', this.value)">
                   ${state.batches.length === 0 ? `<option value="">-- Mode Simulasi Cepat (${qty} Unit) --</option>` : ''}
                   ${state.batches.map(b => {
-                    const bv = getVendorById(b.vendorId);
-                    return `<option value="${escapeHtml(b.id)}" ${pc.batchId === b.id ? 'selected' : ''}>${escapeHtml(b.namaBatch)} — ${escapeHtml(bv.nama)} (${b.unitIds.length} Unit)</option>`;
-                  }).join('')}
+      const bv = getVendorById(b.vendorId);
+      return `<option value="${escapeHtml(b.id)}" ${pc.batchId === b.id ? 'selected' : ''}>${escapeHtml(b.namaBatch)} — ${escapeHtml(bv.nama)} (${b.unitIds.length} Unit)</option>`;
+    }).join('')}
                 </select>
               </div>
               ${state.batches.length === 0 ? `
@@ -3381,8 +3375,52 @@
     }).join('');
   }
 
+  function renderBlankoDottedLinesHtml() {
+    return `
+      <table style="width:100%;border-collapse:collapse;margin:10px 0 24px 0;border:none;background:transparent;">
+        <tbody>
+          <tr>
+            <td style="width:26px;vertical-align:bottom;padding:4px 0 2px;border:none;font-weight:normal;line-height:1.8;">1.</td>
+            <td style="vertical-align:bottom;padding:4px 0 2px 6px;border:none;border-bottom:1.5px dotted #334155;height:26px;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="width:26px;vertical-align:bottom;padding:2px 0 10px;border:none;">&nbsp;</td>
+            <td style="vertical-align:bottom;padding:2px 0 10px 6px;border:none;border-bottom:1.5px dotted #334155;height:26px;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="width:26px;vertical-align:bottom;padding:4px 0 2px;border:none;font-weight:normal;line-height:1.8;">2.</td>
+            <td style="vertical-align:bottom;padding:4px 0 2px 6px;border:none;border-bottom:1.5px dotted #334155;height:26px;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="width:26px;vertical-align:bottom;padding:2px 0 10px;border:none;">&nbsp;</td>
+            <td style="vertical-align:bottom;padding:2px 0 10px 6px;border:none;border-bottom:1.5px dotted #334155;height:26px;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="width:26px;vertical-align:bottom;padding:4px 0 2px;border:none;font-weight:normal;line-height:1.8;">3.</td>
+            <td style="vertical-align:bottom;padding:4px 0 2px 6px;border:none;border-bottom:1.5px dotted #334155;height:26px;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="width:26px;vertical-align:bottom;padding:2px 0 10px;border:none;">&nbsp;</td>
+            <td style="vertical-align:bottom;padding:2px 0 10px 6px;border:none;border-bottom:1.5px dotted #334155;height:26px;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="width:26px;vertical-align:bottom;padding:4px 0 2px;border:none;font-weight:normal;line-height:1.8;">4.</td>
+            <td style="vertical-align:bottom;padding:4px 0 2px 6px;border:none;border-bottom:1.5px dotted #334155;height:26px;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="width:26px;vertical-align:bottom;padding:2px 0 10px;border:none;">&nbsp;</td>
+            <td style="vertical-align:bottom;padding:2px 0 10px 6px;border:none;border-bottom:1.5px dotted #334155;height:26px;">&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  }
+
   function formatAlasanDenahHtml(rawText) {
-    const text = (rawText && rawText.trim()) ? rawText.trim() : DEFAULT_ALASAN_DENAH;
+    if (!rawText || rawText.trim() === '' || rawText.includes('Optimalisasi Luas Ruang') || rawText.includes('CLOSET DI LUAR') || rawText.includes('......')) {
+      return renderBlankoDottedLinesHtml();
+    }
+    const text = rawText.trim();
     const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
     const items = [];
     lines.forEach(line => {
@@ -3397,7 +3435,7 @@
     });
 
     if (items.length === 0) {
-      return `<div style="margin-bottom:18px;line-height:1.7;text-align:justify;">${escapeHtml(text)}</div>`;
+      return renderBlankoDottedLinesHtml();
     }
 
     const rowsHtml = items.map(it => `
@@ -3581,8 +3619,8 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Alasan Perubahan Denah (Standar Resmi 4 Poin BNPB / Kustom)</label>
-              <textarea id="blankoReasonInput" class="form-control" rows="5" style="font-size:12px;line-height:1.5;">${escapeHtml(DEFAULT_ALASAN_DENAH)}</textarea>
+              <label>Alasan Perubahan Denah (Kosongkan untuk Blanko Titik-Titik Tulisan Tangan Warga)</label>
+              <textarea id="blankoReasonInput" class="form-control" rows="4" style="font-size:12px;line-height:1.5;" placeholder="Biarkan kosong agar tercetak garis titik-titik untuk diisi tulisan tangan oleh warga penerima di lapangan."></textarea>
             </div>
             <button class="btn btn-primary" style="width:100%;" onclick="window.app.printSingleBlankoDenah()">
               🖨️ Buka & Cetak Surat Pernyataan Perubahan Denah
@@ -3836,9 +3874,9 @@
                     <td id="rabTotal100Cell" style="text-align:right;color:${is100 ? '#16a34a' : '#dc2626'};font-weight:800;">${totalP100.toFixed(2).replace('.', ',')}%</td>
                     <td colspan="2" id="rabBadgeStatus">
                       ${is100
-                        ? `<span class="badge badge-100">✅ Bobot Pas 100%</span>`
-                        : `<span class="badge badge-0" style="color:#b91c1c;">⚠️ Total Bobot ${totalBobot.toFixed(2).replace('.', ',')}% (Harus 100%)</span>`
-                      }
+        ? `<span class="badge badge-100">✅ Bobot Pas 100%</span>`
+        : `<span class="badge badge-0" style="color:#b91c1c;">⚠️ Total Bobot ${totalBobot.toFixed(2).replace('.', ',')}% (Harus 100%)</span>`
+      }
                     </td>
                   </tr>
                 </tfoot>
@@ -3863,9 +3901,9 @@
           <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
             <div id="rabFooterStatus">
               ${is100
-                ? `<span style="color:#16a34a;font-weight:700;font-size:13px;">✓ Total Bobot Valid (100,00%)</span>`
-                : `<span style="color:#dc2626;font-weight:700;font-size:13px;">⚠️ Total Bobot: ${totalBobot.toFixed(2).replace('.', ',')}% (disarankan genap 100%)</span>`
-              }
+        ? `<span style="color:#16a34a;font-weight:700;font-size:13px;">✓ Total Bobot Valid (100,00%)</span>`
+        : `<span style="color:#dc2626;font-weight:700;font-size:13px;">⚠️ Total Bobot: ${totalBobot.toFixed(2).replace('.', ',')}% (disarankan genap 100%)</span>`
+      }
             </div>
             <div style="display:flex;gap:8px;">
               <button class="btn btn-outline" onclick="window.app.closeModal()">Batal</button>
@@ -4634,8 +4672,8 @@
                   </div>
                   <div style="font-size:12px;color:${u.statusBatal ? '#b91c1c' : '#15803d'};margin-top:2px;">
                     ${u.statusBatal
-                      ? 'Penerima ini ditandai BATAL. Seluruh data, foto & riwayat BNBA tetap tersimpan aman di database, namun otomatis dikeluarkan dari antrian pencairan/tagihan.'
-                      : 'Penerima aktif dalam kuota BNBA dan akan masuk ke daftar siap tagih jika progres 100%.'}
+        ? 'Penerima ini ditandai BATAL. Seluruh data, foto & riwayat BNBA tetap tersimpan aman di database, namun otomatis dikeluarkan dari antrian pencairan/tagihan.'
+        : 'Penerima aktif dalam kuota BNBA dan akan masuk ke daftar siap tagih jika progres 100%.'}
                   </div>
                 </div>
                 <div>
@@ -4877,8 +4915,8 @@
                       <input type="text" class="form-control" value="${escapeHtml(u.keteranganDenah)}" oninput="window._editingUnit.keteranganDenah=this.value" />
                     </div>
                     <div class="form-group">
-                      <label>Alasan Perubahan Denah pada Surat Pernyataan (4 Poin Resmi)</label>
-                      <textarea class="form-control" rows="5" style="font-size:12px;line-height:1.5;" oninput="window._editingUnit.alasanPerubahan=this.value" placeholder="${escapeHtml(DEFAULT_ALASAN_DENAH)}">${escapeHtml(u.alasanPerubahan || DEFAULT_ALASAN_DENAH)}</textarea>
+                      <label>Alasan Perubahan Denah pada Surat Pernyataan</label>
+                      <textarea class="form-control" rows="4" style="font-size:12px;line-height:1.5;" oninput="window._editingUnit.alasanPerubahan=this.value" placeholder="Biarkan kosong untuk mencetak format blanko titik-titik (warga isi tulisan tangan sendiri di lapangan).">${escapeHtml(u.alasanPerubahan || '')}</textarea>
                     </div>
                     <div class="grid-2" style="gap:8px;">
                       <div class="form-group">
