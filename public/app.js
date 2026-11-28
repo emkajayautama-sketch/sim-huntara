@@ -18,6 +18,11 @@
     }
   ];
 
+  const DEFAULT_ALASAN_DENAH = `1. Optimalisasi Luas Ruang: Memberikan ruang gerak yang lebih lega pada area dalam bangunan utama.
+2. Keamanan Material & Kesehatan: Menghindari risiko kelembapan berlebih pada dinding partisi kalsiboard yang berbatasan langsung dengan kamar tidur, serta mencegah bau tidak sedap demi menjaga kenyamanan dan kesehatan penghuni.
+3. Alih Fungsi Ruang: Area eks-kamar mandi/WC di dalam bangunan dimanfaatkan sebagai ruang penyimpanan perlengkapan dapur.
+4. Kamar WC yang lama masih bisa difungsikan.`;
+
   const state = {
     activeTab: 'dashboard',
     selectedVendorId: 'vendor-emka-utama', // 'ALL' or vendorId
@@ -3295,9 +3300,7 @@
           Sehubungan dengan pembangunan Hunian Sementara (Huntara) oleh Pemerintah, bersama ini saya menyatakan alasan perubahan pada denah rumah :
         </div>
 
-        <div style="min-height:110px;border:1px dashed #64748b;padding:12px;margin-bottom:20px;line-height:1.8;background:#fafafa;">
-          ${escapeHtml(u.alasanPerubahan || 'Pemilik rumah meminta perubahan denah kamar mandi/WC dibangun terpisah di luar bangunan Huntara karena pertimbangan luas ruangan kamar (material diberikan).')}
-        </div>
+        <div style="min-height:120px;border:1px solid #94a3b8;border-radius:6px;padding:14px 18px;margin-bottom:20px;line-height:1.7;background:#fafafa;white-space:pre-wrap;text-align:justify;font-size:10pt;">${escapeHtml(u.alasanPerubahan || DEFAULT_ALASAN_DENAH)}</div>
 
         <div style="line-height:1.6;margin-bottom:36px;">
           Pernyataan ini saya buat dengan sebenar-benarnya, tanpa adanya paksaan dari pihak mana pun, untuk dipergunakan sebagaimana mestinya.
@@ -3412,8 +3415,8 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Alasan Perubahan Denah (Bisa dikosongkan untuk ditulis tangan di lapangan)</label>
-              <textarea id="blankoReasonInput" class="form-control" rows="3" placeholder="Contoh: Tidak membuat ruangan WC di dalam Huntara karena ruangan kamar terasa sempit, WC dibangun di luar rumah."></textarea>
+              <label>Alasan Perubahan Denah (Standar Resmi 4 Poin BNPB / Kustom)</label>
+              <textarea id="blankoReasonInput" class="form-control" rows="5" style="font-size:12px;line-height:1.5;">${escapeHtml(DEFAULT_ALASAN_DENAH)}</textarea>
             </div>
             <button class="btn btn-primary" style="width:100%;" onclick="window.app.printSingleBlankoDenah()">
               🖨️ Buka & Cetak Surat Pernyataan Perubahan Denah
@@ -4708,8 +4711,8 @@
                       <input type="text" class="form-control" value="${escapeHtml(u.keteranganDenah)}" oninput="window._editingUnit.keteranganDenah=this.value" />
                     </div>
                     <div class="form-group">
-                      <label>Alasan Perubahan Denah pada Surat Pernyataan</label>
-                      <textarea class="form-control" rows="3" oninput="window._editingUnit.alasanPerubahan=this.value" placeholder="Contoh: Karena ruangan kamar sempit sehingga WC dibangun terpisah di luar bangunan Huntara.">${escapeHtml(u.alasanPerubahan || '')}</textarea>
+                      <label>Alasan Perubahan Denah pada Surat Pernyataan (4 Poin Resmi)</label>
+                      <textarea class="form-control" rows="5" style="font-size:12px;line-height:1.5;" oninput="window._editingUnit.alasanPerubahan=this.value" placeholder="${escapeHtml(DEFAULT_ALASAN_DENAH)}">${escapeHtml(u.alasanPerubahan || DEFAULT_ALASAN_DENAH)}</textarea>
                     </div>
                     <div class="grid-2" style="gap:8px;">
                       <div class="form-group">
@@ -4964,8 +4967,13 @@
     const unit = state.units.find(u => u.id === unitId);
     if (!unit) return;
     unit.perubahanDenah = Boolean(isChecked);
-    if (unit.perubahanDenah && !unit.keteranganDenah) {
-      unit.keteranganDenah = 'PEMILIK RUMAH INGIN MEMBANGUN CLOSET DI LUAR HUNTARA (MATERIAL DI BERIKAN)';
+    if (unit.perubahanDenah) {
+      if (!unit.keteranganDenah) {
+        unit.keteranganDenah = 'PEMILIK RUMAH INGIN MEMBANGUN CLOSET DI LUAR HUNTARA (MATERIAL DI BERIKAN)';
+      }
+      if (!unit.alasanPerubahan) {
+        unit.alasanPerubahan = DEFAULT_ALASAN_DENAH;
+      }
     }
     saveState(`Ubah status denah #${unit.noBnba} ${unit.nama}: ${unit.perubahanDenah ? 'Ya' : 'Tidak'}`);
     renderAll();
@@ -5001,8 +5009,13 @@
     const actionLabel = isChecked ? 'Mencentang SEMUA Perubahan Denah' : 'Menghapus Centang Semua Denah';
     filtered.forEach(u => {
       u.perubahanDenah = Boolean(isChecked);
-      if (u.perubahanDenah && !u.keteranganDenah) {
-        u.keteranganDenah = 'PEMILIK RUMAH INGIN MEMBANGUN CLOSET DI LUAR HUNTARA (MATERIAL DI BERIKAN)';
+      if (u.perubahanDenah) {
+        if (!u.keteranganDenah) {
+          u.keteranganDenah = 'PEMILIK RUMAH INGIN MEMBANGUN CLOSET DI LUAR HUNTARA (MATERIAL DI BERIKAN)';
+        }
+        if (!u.alasanPerubahan) {
+          u.alasanPerubahan = DEFAULT_ALASAN_DENAH;
+        }
       }
     });
     saveState(`${actionLabel} (${filtered.length} unit)`);
@@ -5677,7 +5690,7 @@
     const u = state.units.find(x => x.id === unitId);
     if (!u) return;
     u.perubahanDenah = true;
-    if (reason.trim()) u.alasanPerubahan = reason.trim();
+    u.alasanPerubahan = (reason && reason.trim()) ? reason.trim() : DEFAULT_ALASAN_DENAH;
     saveState('Status perubahan denah diperbarui');
 
     state.printConfig.mode = 'DESA';
