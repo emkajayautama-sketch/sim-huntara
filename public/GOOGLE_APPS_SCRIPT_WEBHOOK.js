@@ -49,7 +49,7 @@ function doGet(e) {
         let val = data[i][j];
         const form = formulas[i] ? formulas[i][j] : '';
         if (form && typeof form === 'string' && form.startsWith('=')) {
-          const matchLink = form.match(/HYPERLINK\("([^"]+)"/i);
+          const matchLink = form.match(/(https?:\/\/[^"';\s)]+)/i);
           if (matchLink && matchLink[1]) {
             val = matchLink[1];
           }
@@ -185,9 +185,10 @@ function updateSpreadsheetWithPhoto(unitId, slotKey, fileUrl, directThumbnailUrl
     if (String(data[i][idColIdx]).trim().toLowerCase() === String(unitId).trim().toLowerCase()) {
       const rowNum = i + 1; // 1-based index
 
-      // Update kolom foto dengan hyperlink
+      // Update kolom foto: simpan thumbnail URL langsung agar bisa dibaca sistem
       if (photoColIdx !== -1) {
-        sheet.getRange(rowNum, photoColIdx + 1).setValue(fileUrl);
+        const imgUrl = directThumbnailUrl || fileUrl;
+        sheet.getRange(rowNum, photoColIdx + 1).setValue(imgUrl);
       }
 
       // Update progres persen jika ada
@@ -201,9 +202,9 @@ function updateSpreadsheetWithPhoto(unitId, slotKey, fileUrl, directThumbnailUrl
         sheet.getRange(rowNum, dateColIdx + 1).setValue(nowStr);
       }
 
-      // Update folder Drive
+      // Update folder Drive: simpan URL mentah agar bisa dibaca sistem
       if (folderColIdx !== -1 && folderUrl) {
-        sheet.getRange(rowNum, folderColIdx + 1).setFormula(`=HYPERLINK("${folderUrl}"; "Buka Folder")`);
+        sheet.getRange(rowNum, folderColIdx + 1).setValue(folderUrl);
       }
 
       break;
