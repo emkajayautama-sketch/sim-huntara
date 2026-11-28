@@ -42,10 +42,19 @@ function doGet(e) {
     const headers = data[0];
     const rows = [];
 
+    const formulas = sheet.getDataRange().getFormulas();
     for (let i = 1; i < data.length; i++) {
       const row = {};
       for (let j = 0; j < headers.length; j++) {
-        row[headers[j]] = data[i][j];
+        let val = data[i][j];
+        const form = formulas[i] ? formulas[i][j] : '';
+        if (form && typeof form === 'string' && form.startsWith('=')) {
+          const matchLink = form.match(/HYPERLINK\("([^"]+)"/i);
+          if (matchLink && matchLink[1]) {
+            val = matchLink[1];
+          }
+        }
+        row[headers[j]] = val;
       }
       rows.push(row);
     }
@@ -178,7 +187,7 @@ function updateSpreadsheetWithPhoto(unitId, slotKey, fileUrl, directThumbnailUrl
 
       // Update kolom foto dengan hyperlink
       if (photoColIdx !== -1) {
-        sheet.getRange(rowNum, photoColIdx + 1).setFormula(`=HYPERLINK("${fileUrl}"; "Lihat Foto")`);
+        sheet.getRange(rowNum, photoColIdx + 1).setValue(fileUrl);
       }
 
       // Update progres persen jika ada

@@ -480,6 +480,12 @@
       if (screen) screen.style.display = 'none';
       updateAuthUI();
       renderAll();
+  // Webhook Auto-Poll Interval (Setiap 10 detik otomatis cek foto baru dari HP)
+  setInterval(() => {
+    if (window.gdriveSync && typeof window.gdriveSync.pullFromWebhook === 'function') {
+      window.gdriveSync.pullFromWebhook(true);
+    }
+  }, 10000);
       showToast(`Selamat datang, ${found.nama || found.username}!`, 'success');
     } else {
       if (errEl) {
@@ -714,6 +720,10 @@
         ? data.users
         : (JSON.parse(localStorage.getItem('sim_huntara_users') || 'null') || [...DEFAULT_USERS]);
       if (data.serverInfo) state.serverInfo = data.serverInfo;
+      // Auto-pull dari Google Spreadsheet Webhook saat aplikasi dibuka
+      if (window.gdriveSync && typeof window.gdriveSync.pullFromWebhook === 'function') {
+        setTimeout(() => window.gdriveSync.pullFromWebhook(true), 800);
+      }
 
       // Sinkronkan DEFAULT_VENDORS agar vendor resmi (seperti CV. MBAY INDAH) selalu ada
       DEFAULT_VENDORS.forEach(dv => {
@@ -6617,7 +6627,19 @@
       }
 
       await saveState(`Foto ${stageLabel} dipasang pada #${u.noBnba} ${u.nama}`);
-      showToast(`✅ Foto ${stageLabel} berhasil dipasang & tersimpan di Galeri HP!`, 'success');
+      showToast(`✅ Foto ${stageLabel} berhasil dipasang!`, 'success');
+      if (window.gdriveSync && typeof window.gdriveSync.sendPhotoToWebhook === 'function') {
+        window.gdriveSync.sendPhotoToWebhook({
+          action: 'upload_photo',
+          unitId: u.id,
+          slotKey: slot,
+          dataUrl: watermarked,
+          recipientName: u.nama,
+          desa: u.desa,
+          kecamatan: u.kecamatan,
+          progressPercent: u.progres
+        });
+      }
       renderQuickPhotoModalContent();
       renderAll();
     };

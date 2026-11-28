@@ -41,6 +41,73 @@
       this.updateUI();
     },
 
+        async pullFromWebhook(isSilent = false) {
+      const url = this.getWebhookUrl();
+      if (!url) return false;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return false;
+        const json = await res.json();
+        if (!json || !Array.isArray(json.data) || !window.app || !window.app.state) return false;
+
+        let updatedCount = 0;
+        const units = window.app.state.units;
+
+        json.data.forEach(r => {
+          const u = units.find(x => x.id === r.ID_UNIT);
+          if (!u) return;
+
+          let changed = false;
+
+          const photoSlots = {
+            foto0: r.FOTO_0_DEPAN,
+            foto0_samping: r.FOTO_0_SAMPING,
+            foto0_dalam: r.FOTO_0_DALAM,
+            foto0_mck: r.FOTO_0_MCK,
+            foto50: r.FOTO_50_DEPAN,
+            foto50_samping: r.FOTO_50_SAMPING,
+            foto50_dalam: r.FOTO_50_DALAM,
+            foto50_mck: r.FOTO_50_MCK,
+            foto100_1: r.FOTO_100_DEPAN,
+            foto100_samping: r.FOTO_100_SAMPING,
+            foto100_2: r.FOTO_100_DALAM,
+            foto100_3: r.FOTO_100_MCK
+          };
+
+          Object.keys(photoSlots).forEach(k => {
+            const val = photoSlots[k];
+            if (val && typeof val === 'string' && val.trim() && val !== 'Lihat Foto' && val !== u[k]) {
+              u[k] = val.trim();
+              changed = true;
+            }
+          });
+
+          if (r.PROGRES_PERSEN !== undefined && r.PROGRES_PERSEN !== null && r.PROGRES_PERSEN !== '') {
+            const numProg = parseInt(r.PROGRES_PERSEN, 10);
+            if (!isNaN(numProg) && numProg > (u.progres || 0)) {
+              u.progres = numProg;
+              changed = true;
+            }
+          }
+
+          if (changed) updatedCount++;
+        });
+
+        if (updatedCount > 0) {
+          if (window.app.saveState) await window.app.saveState(`Menerima ${updatedCount} pembaruan foto/unit dari Google Sheets`, true);
+          if (window.app.renderAll) window.app.renderAll();
+          if (!isSilent && window.app.showToast) {
+            window.app.showToast(`🎯 Berhasil! ${updatedCount} foto/unit terbaru masuk dari Google Spreadsheet!`, 'success');
+          }
+        } else if (!isSilent && window.app.showToast) {
+          window.app.showToast('✅ Data & foto di sistem sudah sama persis dengan Google Sheets.', 'info');
+        }
+        return true;
+      } catch (err) {
+        console.warn('[Webhook] Gagal menarik data dari Google Apps Script:', err);
+        return false;
+      }
+    },
     async sendPhotoToWebhook(payload) {
       const url = this.getWebhookUrl();
       if (!url || !payload || !payload.dataUrl) return false;
