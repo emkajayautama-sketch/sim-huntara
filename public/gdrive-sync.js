@@ -6,7 +6,7 @@
   const DEFAULT_CLIENT_ID = '643355374210-fquo8bi36sb6lhiohsv42tfhof6jtk22.apps.googleusercontent.com';
   const STORAGE_KEY_CLIENT_ID = 'huntara_gdrive_client_id';
   const STORAGE_KEY_USER = 'huntara_gdrive_user';
-  const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyPfbZuc7Oili4pejuW-6x4t22_Tpav8HrTbzjIVejJvE5OLrPgdXn0jJmW8i6BVb7G/exec';
+  const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxk8uQULZN0Un94qbIB-heT1j70SUlsJCMhUu7SC8-sIGbYz_Qr9P48hoNSqNqnqhbi/exec';
   const STORAGE_KEY_WEBHOOK = 'huntara_gdrive_webhook_url';
   function getFolderName() {
     try {
