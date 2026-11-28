@@ -6609,9 +6609,6 @@
         u.progres = 50;
       }
 
-      // Simpan otomatis ke galeri / unduhan HP
-      downloadPhotoToDevice(watermarked, `HUNTARA_${String(u.nama || '').replace(/\s+/g, '_')}_${slot}.jpg`);
-
       await saveState(`Foto ${stageLabel} dipasang pada #${u.noBnba} ${u.nama}`);
       showToast(`✅ Foto ${stageLabel} berhasil dipasang & tersimpan di Galeri HP!`, 'success');
       renderQuickPhotoModalContent();
@@ -6637,9 +6634,6 @@
 
       const watermarked = await applyBnpbWatermark(rawUrl, u, 'LAPANGAN', u.koordinatGps);
       const photoId = 'pic_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-
-      // Simpan otomatis ke galeri HP
-      downloadPhotoToDevice(watermarked, `HUNTARA_${String(u.nama || '').replace(/\s+/g, '_')}_Kantung_${photoId}.jpg`);
 
       const photoItem = {
         id: photoId,
