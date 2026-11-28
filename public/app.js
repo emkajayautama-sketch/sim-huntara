@@ -1388,12 +1388,15 @@
                 <span class="badge badge-denah" style="margin-left:6px;font-size:12px;">${countDenahTampil} dari ${filtered.length} unit tercentang Ubah Denah</span>
               </div>
             </div>
-            <div class="toolbar-right">
+            <div class="toolbar-right" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
               <button type="button" class="btn btn-warning btn-sm" onclick="window.app.bulkSetPerubahanDenah(true)" title="Centang semua unit yang tampil">
                 ☑️ Centang Semua Ubah Denah (${filtered.length} Unit)
               </button>
               <button type="button" class="btn btn-outline btn-sm" onclick="window.app.bulkSetPerubahanDenah(false)" title="Hapus semua centang perubahan denah">
                 ⬜ Hapus Centang Semua
+              </button>
+              <button type="button" class="btn btn-primary btn-sm" style="background:#ea580c;border-color:#c2410c;font-weight:700;" onclick="window.app.printAllSuratDenah()" title="Cetak langsung khusus Surat Pernyataan Perubahan Denah untuk unit yang tercentang">
+                🖨️ Cetak Surat Denah Saja (${countDenahTampil} Unit)
               </button>
             </div>
           </div>
@@ -2284,15 +2287,19 @@
       sheetsHtml = renderSheetSPS(vendor, fin, meta, fullLokasiStr);
     } else if (pc.docType === 'BNBA_LIST') {
       sheetsHtml = renderSheetBnbaList(vendor, targetUnits, meta, fullLokasiStr);
-    } else if (pc.docType === 'LAPORAN_PROGRES' || pc.docType === 'DOKUMENTASI') {
-      sheetsHtml = renderSheetsLaporanProgres(vendor, targetUnits, meta, desaStr, kecStr);
+    } else if (pc.docType === 'SURAT_DENAH' || pc.docType === 'DENAH_ONLY') {
+      sheetsHtml = renderSheetsSuratDenahOnly(vendor, targetUnits);
+    } else if (pc.docType === 'DOKUMENTASI_ONLY') {
+      sheetsHtml = renderSheetsLaporanProgres(vendor, targetUnits, meta, desaStr, kecStr, { includeDenah: false });
+    } else if (pc.docType === 'LAPORAN_PROGRES' || pc.docType === 'DOKUMENTASI' || pc.docType === 'DOKUMENTASI_ALL') {
+      sheetsHtml = renderSheetsLaporanProgres(vendor, targetUnits, meta, desaStr, kecStr, { includeDenah: true });
     } else if (pc.docType === 'FULL_PACKAGE') {
       sheetsHtml =
         renderSheetInvoice(vendor, fin, meta, fullLokasiStr, desaStr, kecStr) +
         renderSheetSPP(vendor, fin, meta, fullLokasiStr) +
         renderSheetSPS(vendor, fin, meta, fullLokasiStr) +
         renderSheetBnbaList(vendor, targetUnits, meta, fullLokasiStr) +
-        renderSheetsLaporanProgres(vendor, targetUnits, meta, desaStr, kecStr);
+        renderSheetsLaporanProgres(vendor, targetUnits, meta, desaStr, kecStr, { includeDenah: true });
     }
 
     return `
@@ -2372,16 +2379,22 @@
               </div>
             `}
 
-            <div class="form-group" style="margin-bottom:0;min-width:280px;">
+            <div class="form-group" style="margin-bottom:0;min-width:320px;">
               <label>Jenis Dokumen yang Ditampilkan</label>
               <select class="form-control" onchange="window.app.setPrintConfig('docType', this.value)">
-                <option value="DOKUMENTASI" ${pc.docType === 'DOKUMENTASI' || pc.docType === 'LAPORAN_PROGRES' ? 'selected' : ''}>📸 Buku Laporan Dokumentasi Progres Fisik (Model Resmi laporan.pdf)</option>
-                <option value="ALL_LETTERS" ${pc.docType === 'ALL_LETTERS' ? 'selected' : ''}>📑 Paket Berkas Surat Pencairan (Invoice + SPP + SPS + Rekap BNBA)</option>
-                <option value="INVOICE" ${pc.docType === 'INVOICE' ? 'selected' : ''}>1. Invoice Tagihan (Format CV. EM KA UTAMA)</option>
-                <option value="SPP" ${pc.docType === 'SPP' ? 'selected' : ''}>2. Surat Permohonan Pembayaran (SPP)</option>
-                <option value="SPS" ${pc.docType === 'SPS' ? 'selected' : ''}>3. Surat Pemberitahuan Selesai 100% (SPS)</option>
-                <option value="BNBA_LIST" ${pc.docType === 'BNBA_LIST' ? 'selected' : ''}>4. Lampiran Rekap Daftar BNBA</option>
-                <option value="FULL_PACKAGE" ${pc.docType === 'FULL_PACKAGE' ? 'selected' : ''}>📚 Bundel Super Lengkap (Semua Surat + Laporan Dokumentasi Foto)</option>
+                <optgroup label="📸 Pilihan Laporan Dokumentasi & Surat Denah">
+                  <option value="SURAT_DENAH" ${pc.docType === 'SURAT_DENAH' || pc.docType === 'DENAH_ONLY' ? 'selected' : ''}>📝 1. Khusus Surat Pernyataan Perubahan Denah Saja (Cetak Duluan untuk Tanda Tangan)</option>
+                  <option value="DOKUMENTASI_ONLY" ${pc.docType === 'DOKUMENTASI_ONLY' ? 'selected' : ''}>📷 2. Laporan Dokumentasi Fisik 0%, 50%, 100% Saja (3 Halaman / Unit, Tanpa Surat Denah)</option>
+                  <option value="DOKUMENTASI" ${pc.docType === 'DOKUMENTASI' || pc.docType === 'LAPORAN_PROGRES' || pc.docType === 'DOKUMENTASI_ALL' ? 'selected' : ''}>📑 3. Lengkap Keduanya: Laporan Dokumentasi Fisik + Surat Perubahan Denah</option>
+                </optgroup>
+                <optgroup label="💼 Paket Berkas Penagihan Keuangan (Termin)">
+                  <option value="ALL_LETTERS" ${pc.docType === 'ALL_LETTERS' ? 'selected' : ''}>📑 Paket Surat Pencairan (Invoice + SPP + SPS + Rekap BNBA)</option>
+                  <option value="INVOICE" ${pc.docType === 'INVOICE' ? 'selected' : ''}>• Invoice Tagihan (Format CV. EM KA UTAMA)</option>
+                  <option value="SPP" ${pc.docType === 'SPP' ? 'selected' : ''}>• Surat Permohonan Pembayaran (SPP)</option>
+                  <option value="SPS" ${pc.docType === 'SPS' ? 'selected' : ''}>• Surat Pemberitahuan Selesai 100% (SPS)</option>
+                  <option value="BNBA_LIST" ${pc.docType === 'BNBA_LIST' ? 'selected' : ''}>• Lampiran Rekap Daftar BNBA</option>
+                  <option value="FULL_PACKAGE" ${pc.docType === 'FULL_PACKAGE' ? 'selected' : ''}>📚 Bundel Super Lengkap (Semua Berkas Surat + Laporan + Denah)</option>
+                </optgroup>
               </select>
             </div>
           </div>
@@ -2960,7 +2973,30 @@
      TEMPLATE LEMBAR A4 #5B: LAPORAN DOKUMENTASI PROGRES FISIK (0% - 50% - 100%)
      SESUAI FILE REFERENSI LAPORAN.PDF
      ======================================================================== */
-  function renderSheetsLaporanProgres(vendor, units, meta, desaStr, kecStr) {
+  function renderSheetsSuratDenahOnly(vendor, units) {
+    const list = units.filter(u => u.perubahanDenah);
+    if (list.length === 0) {
+      return `
+        <div class="print-sheet font-arial" style="padding:40mm 20mm;text-align:center;">
+          <div style="font-size:42px;margin-bottom:12px;">📐</div>
+          <h3 style="color:#b91c1c;margin-bottom:10px;">Tidak Ada Unit yang Ditandai Perubahan Denah</h3>
+          <p style="color:#64748b;font-size:11pt;line-height:1.6;max-width:550px;margin:0 auto 20px;">
+            Pada filter desa/batch yang aktif saat ini, belum ada unit penerima yang dicentang <strong>Perubahan Denah</strong>.<br/>
+            Silakan kembali ke tab <strong>Penerima (BNBA)</strong> dan centang kotak <em>"Ubah Denah"</em> pada unit terkait.
+          </p>
+          <div class="no-print">
+            <button class="btn btn-warning" onclick="window.app.switchTab('units')">
+              🏠 Buka Tab Penerima (BNBA)
+            </button>
+          </div>
+        </div>
+      `;
+    }
+    return list.map(u => renderSheetSuratPernyataanDenah(u, vendor)).join('');
+  }
+
+  function renderSheetsLaporanProgres(vendor, units, meta, desaStr, kecStr, options = {}) {
+    const includeDenah = options.includeDenah !== false;
     const listUnits = units.length > 0 ? units : [{
       noBnba: 1,
       noInsitu: '01',
@@ -3245,7 +3281,7 @@
         </div>
       `;
 
-      const pageDenah = u.perubahanDenah ? renderSheetSuratPernyataanDenah(u, vendor) : '';
+      const pageDenah = (includeDenah && u.perubahanDenah) ? renderSheetSuratPernyataanDenah(u, vendor) : '';
       return page1 + page2 + page3 + pageDenah;
     }).join('');
   }
@@ -5126,13 +5162,18 @@
       </button>
 
       <button type="button" class="action-menu-item" onclick="window.app.closeActionDropdown(); window.app.printSingleUnit('${escapeHtml(u.id)}')">
-        <span class="item-icon">🖨️</span>
-        <span>Cetak Laporan (3 Halaman PDF)</span>
+        <span class="item-icon">📷</span>
+        <span>Cetak Laporan Dokumentasi Fisik</span>
+      </button>
+
+      <button type="button" class="action-menu-item" onclick="window.app.closeActionDropdown(); window.app.printSingleUnitDenah('${escapeHtml(u.id)}')">
+        <span class="item-icon">📝</span>
+        <span>Cetak Surat Perubahan Denah Saja</span>
       </button>
 
       <button type="button" class="action-menu-item" onclick="window.app.closeActionDropdown(); window.app.openUnitDenahModal('${escapeHtml(u.id)}')">
-        <span class="item-icon">📝</span>
-        <span>Surat Perubahan Denah</span>
+        <span class="item-icon">✏️</span>
+        <span>Edit Alasan & Scan Surat Denah</span>
       </button>
 
       <div class="action-menu-divider"></div>
@@ -5559,7 +5600,30 @@
     state.printConfig.kecamatan = u.kecamatan;
     state.printConfig.desa = u.desa;
     state.printConfig.singleUnitId = u.id;
-    state.printConfig.docType = 'DOKUMENTASI';
+    state.printConfig.docType = 'DOKUMENTASI_ONLY';
+    switchTab('print');
+  }
+
+  function printSingleUnitDenah(unitId) {
+    const u = state.units.find(x => x.id === unitId);
+    if (!u) return;
+    u.perubahanDenah = true;
+    if (!u.alasanPerubahan) u.alasanPerubahan = DEFAULT_ALASAN_DENAH;
+    state.printConfig.mode = 'DESA';
+    state.printConfig.vendorId = u.vendorId;
+    state.printConfig.kecamatan = u.kecamatan;
+    state.printConfig.desa = u.desa;
+    state.printConfig.singleUnitId = u.id;
+    state.printConfig.docType = 'SURAT_DENAH';
+    switchTab('print');
+  }
+
+  function printAllSuratDenah() {
+    state.printConfig.mode = 'DESA';
+    state.printConfig.kecamatan = state.unitFilter.kecamatan;
+    state.printConfig.desa = state.unitFilter.desa;
+    state.printConfig.singleUnitId = null;
+    state.printConfig.docType = 'SURAT_DENAH';
     switchTab('print');
   }
 
@@ -5732,7 +5796,8 @@
     state.printConfig.vendorId = u.vendorId;
     state.printConfig.kecamatan = u.kecamatan;
     state.printConfig.desa = u.desa;
-    state.printConfig.docType = 'DOKUMENTASI';
+    state.printConfig.singleUnitId = u.id;
+    state.printConfig.docType = 'SURAT_DENAH';
     switchTab('print');
   }
 
@@ -5946,6 +6011,8 @@
     openPrintForBatch,
     printDesaDokumentasi,
     printSingleUnit,
+    printSingleUnitDenah,
+    printAllSuratDenah,
     resetSingleUnitPrint,
     setPrintConfig,
     quickUpdateVendorRate,
