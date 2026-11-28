@@ -6,7 +6,15 @@
   const DEFAULT_CLIENT_ID = '643355374210-fquo8bi36sb6lhiohsv42tfhof6jtk22.apps.googleusercontent.com';
   const STORAGE_KEY_CLIENT_ID = 'huntara_gdrive_client_id';
   const STORAGE_KEY_USER = 'huntara_gdrive_user';
-  const FOLDER_NAME = 'SIM-HUNTARA-DATA';
+  function getFolderName() {
+    try {
+      const curComp = window.app && window.app.state && window.app.state.currentUser && window.app.state.currentUser.perusahaan;
+      if (curComp) {
+        return `SIM-HUNTARA - ${curComp.toUpperCase()}`;
+      }
+    } catch (_) {}
+    return 'SIM-HUNTARA-DATA';
+  }
   const DB_FILE_NAME = 'database-huntara.json';
   const PHOTOS_FOLDER_NAME = 'Foto-Dokumentasi';
 
@@ -162,8 +170,8 @@
     async initDriveStructure() {
       if (!accessToken) return;
       try {
-        // 1. Cari atau buat folder SIM-HUNTARA-DATA
-        cachedFolderId = await this.getOrCreateFolder(FOLDER_NAME);
+        // 1. Cari atau buat folder khusus perusahaan
+        cachedFolderId = await this.getOrCreateFolder(getFolderName());
         // 2. Cari atau buat subfolder Foto-Dokumentasi
         cachedPhotosFolderId = await this.getOrCreateFolder(PHOTOS_FOLDER_NAME, cachedFolderId);
         // 3. Cek file database-huntara.json
@@ -401,7 +409,7 @@
               <div style="flex:1;">
                 <div style="font-weight:700;font-size:15px;color:#166534;">${escapeHtml(user.name)}</div>
                 <div style="font-size:13px;color:#15803d;">✉️ ${escapeHtml(user.email)}</div>
-                <div style="font-size:12px;color:#166534;margin-top:3px;" id="gdriveStatusText">🟢 Terhubung ke folder: <strong>Google Drive > ${FOLDER_NAME}/</strong></div>
+                <div style="font-size:12px;color:#166534;margin-top:3px;" id="gdriveStatusText">🟢 Terhubung ke folder: <strong>Google Drive > ${getFolderName()}/</strong></div>
               </div>
               <button class="btn btn-outline btn-sm" onclick="window.gdriveSync.signOut()" style="color:#dc2626;border-color:#fca5a5;">
                 Keluar Akun
@@ -419,7 +427,7 @@
               </button>
             </div>
             <p style="font-size:12.5px;color:var(--text-muted);margin:0;">
-              💡 <strong>Otomatis:</strong> Setiap ada perubahan data atau upload foto, aplikasi otomatis menyimpan ke folder <code>${FOLDER_NAME}/</code> di Google Drive akun <code>${escapeHtml(user.email)}</code>.
+              💡 <strong>Otomatis:</strong> Setiap ada perubahan data atau upload foto, aplikasi otomatis menyimpan ke folder <code>${getFolderName()}/</code> di Google Drive akun <code>${escapeHtml(user.email)}</code>.
             </p>
           `;
         } else {
