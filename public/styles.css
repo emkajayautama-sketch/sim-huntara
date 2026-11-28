@@ -2530,5 +2530,59 @@ table.lap-matrix-table td.photo-cell {
   color: #fff;
 }
 
+/* ==========================================================================
+   PERUBAHAN DENAH TOOLBAR & CHECKBOX STYLES
+   ========================================================================== */
+.denah-bulk-toolbar {
+  background: #fff7ed;
+  border: 1.5px solid #fed7aa;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.denah-bulk-toolbar .toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #9a3412;
+}
+
+.denah-bulk-toolbar .toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.denah-check-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  padding: 3px 6px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.denah-check-row:hover {
+  background: #ffedd5;
+}
+
+.denah-checkbox-item {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  accent-color: #ea580c;
+}
+
+
 
 

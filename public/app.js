@@ -1302,12 +1302,15 @@
       return true;
     });
 
+    const countDenahTampil = filtered.filter(u => Boolean(u.perubahanDenah)).length;
+    const allFilteredDenah = filtered.length > 0 && filtered.every(u => Boolean(u.perubahanDenah));
+
     return `
       <div class="card">
         <div class="card-header">
           <div>
             <h3>🏠 Daftar Penerima Huntara (BNBA) & Pemantauan Progres (${filtered.length} dari ${activeUnits.length} Unit)</h3>
-            <p style="font-size:12px;color:var(--text-muted)">Klik tombol 0% / 50% / 100% untuk update cepat, atau klik "Detail & Foto" untuk upload dokumentasi foto dan surat perubahan denah</p>
+            <p style="font-size:12px;color:var(--text-muted)">Klik tombol 0% / 50% / 100% untuk update cepat, atau centang kotak Ubah Denah untuk tandai perubahan denah sanitasi</p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn btn-success btn-sm" onclick="window.app.bulkSetFilteredProgress(100)">
@@ -1371,6 +1374,25 @@
             <button class="btn btn-outline" onclick="window.app.resetUnitFilter()">Reset</button>
           </div>
 
+          <!-- TOOLBAR KHUSUS PERUBAHAN DENAH -->
+          <div class="denah-bulk-toolbar">
+            <div class="toolbar-left">
+              <span style="font-size:20px;">📐</span>
+              <div>
+                <strong>Fitur Perubahan Denah (MCK / Sanitasi):</strong>
+                <span class="badge badge-denah" style="margin-left:6px;font-size:12px;">${countDenahTampil} dari ${filtered.length} unit tercentang Ubah Denah</span>
+              </div>
+            </div>
+            <div class="toolbar-right">
+              <button type="button" class="btn btn-warning btn-sm" onclick="window.app.bulkSetPerubahanDenah(true)" title="Centang semua unit yang tampil">
+                ☑️ Centang Semua Ubah Denah (${filtered.length} Unit)
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="window.app.bulkSetPerubahanDenah(false)" title="Hapus semua centang perubahan denah">
+                ⬜ Hapus Centang Semua
+              </button>
+            </div>
+          </div>
+
           <!-- TABLE BNBA -->
           <div class="table-responsive">
             <table class="data-table">
@@ -1384,7 +1406,13 @@
                   <th>Kecamatan</th>
                   <th>Vendor</th>
                   <th>Ubah Cepat Progres</th>
-                  <th>Foto & Denah</th>
+                  <th>Foto Progres</th>
+                  <th style="text-align:center;min-width:145px;" title="Klik checkbox untuk centang atau hapus semua perubahan denah">
+                    <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin:0;">
+                      <input type="checkbox" style="width:16px;height:16px;cursor:pointer;accent-color:#ea580c;" ${allFilteredDenah ? 'checked' : ''} onchange="window.app.bulkSetPerubahanDenah(this.checked)" />
+                      <span>Ubah Denah</span>
+                    </label>
+                  </th>
                   <th>Status Tagihan</th>
                   <th style="text-align:right">Aksi</th>
                 </tr>
@@ -1392,7 +1420,7 @@
               <tbody>
                 ${filtered.length === 0 ? `
                   <tr>
-                    <td colspan="11" style="text-align:center;padding:28px;color:var(--text-muted)">
+                    <td colspan="12" style="text-align:center;padding:28px;color:var(--text-muted)">
                       Tidak ada data penerima yang sesuai dengan filter di atas.
                     </td>
                   </tr>
@@ -1430,7 +1458,12 @@
                       </td>
                       <td>
                         <span class="badge ${photoCount >= 5 ? 'badge-100' : photoCount > 0 ? 'badge-50' : 'badge-0'}">📷 ${photoCount}/5 Foto</span>
-                        ${u.perubahanDenah ? `<span class="badge badge-denah" title="${escapeHtml(u.alasanPerubahan || 'Perubahan Denah')}">📝 Ubah Denah</span>` : ''}
+                      </td>
+                      <td style="text-align:center;">
+                        <label class="denah-check-row" title="Centang jika penerima #${u.noBnba} ${escapeHtml(u.nama)} memiliki Perubahan Denah">
+                          <input type="checkbox" class="denah-checkbox-item" ${u.perubahanDenah ? 'checked' : ''} onchange="window.app.toggleSingleUnitDenah('${escapeHtml(u.id)}', this.checked)" />
+                          ${u.perubahanDenah ? '<span class="badge badge-denah">📝 Ubah Denah</span>' : '<span class="badge" style="background:#f8fafc;color:#94a3b8;border:1px solid #e2e8f0;">Standar</span>'}
+                        </label>
                       </td>
                       <td>
                         ${
@@ -4925,6 +4958,59 @@
   }
 
   /* ========================================================================
+     FITUR PERUBAHAN DENAH (SATU-SATU & CENTANG SEMUA / BULK)
+     ======================================================================== */
+  function toggleSingleUnitDenah(unitId, isChecked) {
+    const unit = state.units.find(u => u.id === unitId);
+    if (!unit) return;
+    unit.perubahanDenah = Boolean(isChecked);
+    if (unit.perubahanDenah && !unit.keteranganDenah) {
+      unit.keteranganDenah = 'PEMILIK RUMAH INGIN MEMBANGUN CLOSET DI LUAR HUNTARA (MATERIAL DI BERIKAN)';
+    }
+    saveState(`Ubah status denah #${unit.noBnba} ${unit.nama}: ${unit.perubahanDenah ? 'Ya' : 'Tidak'}`);
+    renderAll();
+    showToast(`Unit #${unit.noBnba} ${unit.nama} ditandai ${unit.perubahanDenah ? 'Perubahan Denah' : 'Denah Standar'}.`, 'success');
+  }
+
+  function bulkSetPerubahanDenah(isChecked) {
+    const activeUnits = getActiveUnits();
+    const filtered = activeUnits.filter(u => {
+      if (state.unitFilter.kecamatan !== 'ALL' && u.kecamatan !== state.unitFilter.kecamatan) return false;
+      if (state.unitFilter.desa !== 'ALL' && u.desa !== state.unitFilter.desa) return false;
+      if (state.unitFilter.progres !== 'ALL' && String(u.progres) !== String(state.unitFilter.progres)) return false;
+      if (state.unitFilter.statusTagihan === 'SIAP_TAGIH' && !(Number(u.progres) === 100 && !u.batchId && !u.statusBatal)) return false;
+      if (state.unitFilter.statusTagihan === 'SUDAH_TAGIH' && !u.batchId) return false;
+      if (state.unitFilter.statusTagihan === 'BELUM_TAGIH' && (u.batchId || u.statusBatal)) return false;
+      if (state.unitFilter.statusBatal === 'AKTIF' && u.statusBatal) return false;
+      if (state.unitFilter.statusBatal === 'BATAL' && !u.statusBatal) return false;
+      if (state.unitFilter.search) {
+        const q = state.unitFilter.search.toLowerCase();
+        const match =
+          String(u.nama || '').toLowerCase().includes(q) ||
+          String(u.nik || '').toLowerCase().includes(q) ||
+          String(u.desa || '').toLowerCase().includes(q) ||
+          String(u.rt || '').toLowerCase().includes(q) ||
+          String(u.alasanBatal || '').toLowerCase().includes(q) ||
+          String(u.noBnba || '').toLowerCase().includes(q);
+        if (!match) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) return;
+    const actionLabel = isChecked ? 'Mencentang SEMUA Perubahan Denah' : 'Menghapus Centang Semua Denah';
+    filtered.forEach(u => {
+      u.perubahanDenah = Boolean(isChecked);
+      if (u.perubahanDenah && !u.keteranganDenah) {
+        u.keteranganDenah = 'PEMILIK RUMAH INGIN MEMBANGUN CLOSET DI LUAR HUNTARA (MATERIAL DI BERIKAN)';
+      }
+    });
+    saveState(`${actionLabel} (${filtered.length} unit)`);
+    renderAll();
+    showToast(`Berhasil ${actionLabel} untuk ${filtered.length} unit!`, 'success');
+  }
+
+  /* ========================================================================
      KOLOM AKSI TABEL BNBA: DROPDOWN SUB-MENU MELAYANG (ACTION SUB-MENU)
      ======================================================================== */
   let _activeDropdownUnitId = null;
@@ -5855,7 +5941,9 @@
     submitRegister,
     loginWithNewAccount,
     logout,
-    updateAuthUI
+    updateAuthUI,
+    toggleSingleUnitDenah,
+    bulkSetPerubahanDenah
   };
 })();
 
