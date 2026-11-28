@@ -345,6 +345,8 @@
         state.selectedVendorId = found.vendorId;
       }
       if (errEl) errEl.style.display = 'none';
+      const screen = document.getElementById('loginScreen');
+      if (screen) screen.style.display = 'none';
       updateAuthUI();
       renderAll();
       showToast(`Selamat datang, ${found.nama || found.username}!`, 'success');
