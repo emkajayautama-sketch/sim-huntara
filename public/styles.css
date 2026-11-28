@@ -2002,6 +2002,8 @@ table.lap-matrix-table td.photo-cell {
   }
   .print-sheet {
     box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
     margin: 0 !important;
     width: 210mm !important;
     min-height: 0 !important;

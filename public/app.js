@@ -3260,53 +3260,53 @@
     }
 
     return `
-      <div class="print-sheet font-arial" style="font-size:10.5pt;padding:20mm 20mm;">
-        <div style="text-align:center;font-weight:bold;font-size:11.5pt;margin-bottom:24px;text-transform:uppercase;line-height:1.4;">
+      <div class="print-sheet font-arial" style="font-size:10.5pt;padding:20mm 20mm;border:none;box-shadow:none;">
+        <div style="text-align:center;font-weight:bold;font-size:12pt;margin-bottom:24px;text-transform:uppercase;line-height:1.4;">
           SURAT PERNYATAAN PERUBAHAN DENAH BANGUNAN HUNIAN<br/>SEMENTARA (HUNTARA)
         </div>
 
-        <div style="margin-bottom:12px;">Saya yang bertanda tangan di bawah ini:</div>
+        <div style="margin-bottom:14px;">Saya yang bertanda tangan di bawah ini:</div>
 
-        <table style="border-collapse:collapse;width:100%;margin-bottom:18px;">
+        <table style="border-collapse:collapse;width:100%;margin-bottom:18px;border:none;">
           <tr>
-            <td style="width:160px;padding:5px 0;">Nama</td>
-            <td style="width:15px;">:</td>
-            <td style="border-bottom:1px dotted #000;font-weight:bold;">${escapeHtml(u.nama)}</td>
+            <td style="width:170px;padding:4px 0;border:none;">Nama</td>
+            <td style="width:15px;padding:4px 0;border:none;">:</td>
+            <td style="padding:4px 0;border:none;font-weight:bold;">${escapeHtml(u.nama)}</td>
           </tr>
           <tr>
-            <td style="padding:5px 0;">Tempat/Tanggal Lahir</td>
-            <td>:</td>
-            <td style="border-bottom:1px dotted #000;">${escapeHtml(u.ttl || `${u.desa}, -`)}</td>
+            <td style="padding:4px 0;border:none;">Tempat/Tanggal Lahir</td>
+            <td style="padding:4px 0;border:none;">:</td>
+            <td style="padding:4px 0;border:none;">${escapeHtml(u.ttl || `${u.desa}, -`)}</td>
           </tr>
           <tr>
-            <td style="padding:5px 0;">NIK</td>
-            <td>:</td>
-            <td style="border-bottom:1px dotted #000;">${escapeHtml(u.nik || u.noKk || '')}</td>
+            <td style="padding:4px 0;border:none;">NIK</td>
+            <td style="padding:4px 0;border:none;">:</td>
+            <td style="padding:4px 0;border:none;">${escapeHtml(u.nik || u.noKk || '')}</td>
           </tr>
           <tr>
-            <td style="padding:5px 0;">Alamat</td>
-            <td>:</td>
-            <td style="border-bottom:1px dotted #000;">RT ${escapeHtml(u.rt)}, Desa/Kel. ${escapeHtml(u.desa)}, Kec. ${escapeHtml(u.kecamatan)}</td>
+            <td style="padding:4px 0;border:none;">Alamat</td>
+            <td style="padding:4px 0;border:none;">:</td>
+            <td style="padding:4px 0;border:none;">RT ${escapeHtml(u.rt)}, Desa/Kel. ${escapeHtml(u.desa)}, Kec. ${escapeHtml(u.kecamatan)}</td>
           </tr>
           <tr>
-            <td style="padding:5px 0;">No. HP</td>
-            <td>:</td>
-            <td style="border-bottom:1px dotted #000;">${escapeHtml(u.noHp || '-')}</td>
+            <td style="padding:4px 0;border:none;">No. HP</td>
+            <td style="padding:4px 0;border:none;">:</td>
+            <td style="padding:4px 0;border:none;">${escapeHtml(u.noHp || '-')}</td>
           </tr>
         </table>
 
         <div style="line-height:1.6;text-align:justify;margin-bottom:14px;">
           Dengan ini menyatakan bahwa saya adalah warga terdampak bencana di Desa/Kelurahan ${escapeHtml(u.desa)}, Kecamatan ${escapeHtml(u.kecamatan)}, ${escapeHtml(vendor.kabupaten)}.<br/>
-          Sehubungan dengan pembangunan Hunian Sementara (Huntara) oleh Pemerintah, bersama ini saya menyatakan alasan perubahan pada denah rumah :
+          Sehubungan dengan pembangunan Hunian Sementara (Huntara) oleh Pemerintah, bersama ini saya menyatakan alasan perubahan pada denah rumah:
         </div>
 
-        <div style="min-height:120px;border:1px solid #94a3b8;border-radius:6px;padding:14px 18px;margin-bottom:20px;line-height:1.7;background:#fafafa;white-space:pre-wrap;text-align:justify;font-size:10pt;">${escapeHtml(u.alasanPerubahan || DEFAULT_ALASAN_DENAH)}</div>
+        <div style="margin-bottom:20px;padding:0;line-height:1.75;white-space:pre-wrap;text-align:justify;font-size:10.5pt;background:transparent;border:none;">${escapeHtml(u.alasanPerubahan || DEFAULT_ALASAN_DENAH)}</div>
 
-        <div style="line-height:1.6;margin-bottom:36px;">
+        <div style="line-height:1.6;margin-bottom:36px;text-align:justify;">
           Pernyataan ini saya buat dengan sebenar-benarnya, tanpa adanya paksaan dari pihak mana pun, untuk dipergunakan sebagaimana mestinya.
         </div>
 
-        <div style="display:flex;justify-content:space-between;margin-top:24px;">
+        <div style="display:flex;justify-content:space-between;margin-top:28px;">
           <div style="width:42%;text-align:center;">
             <div>Mengetahui,</div>
             <div>${escapeHtml(u.jabatanKepalaDesa || 'Kepala Desa / Lurah')} ${escapeHtml(u.desa)}</div>
@@ -3315,7 +3315,7 @@
           </div>
           <div style="width:42%;text-align:center;">
             <div>${escapeHtml(u.desa)}, ${escapeHtml(u.tglPernyataan || '........................ 2026')}</div>
-            <div>Yang Menyatakan</div>
+            <div>Yang Menyatakan,</div>
             <div style="height:75px;"></div>
             <div style="font-weight:bold;">( ${escapeHtml(u.nama)} )</div>
           </div>
