@@ -6680,6 +6680,16 @@
     renderAll();
   }
 
+  async function assignLockerPhotoToStage(unitId, photoId, targetStage) {
+    const slotMap = {
+      '0%': 'foto0',
+      '50%': 'foto50',
+      '100%': 'foto100_1'
+    };
+    const slotKey = slotMap[targetStage] || 'foto100_1';
+    return assignLockerPhotoToSlot(unitId, photoId, slotKey);
+  }
+
   function replicateAnglePhotos(unitId, stage) {
     const u = state.units.find(x => x.id === unitId);
     if (!u) return;
@@ -7059,6 +7069,11 @@
     snapOrUploadToSlot,
     snapOrUploadToLocker,
     assignLockerPhotoToStage,
+    assignLockerPhotoToSlot,
+    replicateAnglePhotos,
+    downloadPhotoToDevice,
+    setQuickDocFilterTab,
+    exportSingleUnitPhotos,
     deleteLockerPhoto,
     deleteQuickSlotPhoto
   };
