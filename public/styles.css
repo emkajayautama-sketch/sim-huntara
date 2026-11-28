@@ -1017,8 +1017,8 @@ table.data-table tr:hover td {
   background: radial-gradient(ellipse at 50% 20%, #1e293b 0%, #0b1120 100%);
   padding: 38px 24px;
   border-radius: 16px;
-  border: 1px solid #334155;
-  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.45);
+  border: none;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1032,7 +1032,9 @@ table.data-table tr:hover td {
   background: #ffffff;
   color: #000000;
   padding: 14mm 16mm;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  box-shadow: none;
+  border: none;
+  outline: none;
   font-family: 'Times New Roman', Times, serif;
   font-size: 11.5pt;
   line-height: 1.4;
@@ -1983,8 +1985,16 @@ table.lap-matrix-table td.photo-cell {
 }
 
 @media print {
-  body {
+  *, *::before, *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  html, body {
     background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    outline: none !important;
     display: block !important;
   }
   .sidebar,
@@ -1999,6 +2009,10 @@ table.lap-matrix-table td.photo-cell {
     margin: 0 !important;
     background: #fff !important;
     display: block !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
   .print-sheet {
     box-shadow: none !important;

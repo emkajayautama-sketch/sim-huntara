@@ -3464,7 +3464,7 @@
     }
 
     return `
-      <div class="print-sheet font-arial" style="font-size:10.5pt;padding:20mm 20mm;border:none;box-shadow:none;">
+      <div class="print-sheet font-arial" style="font-size:10.5pt;padding:20mm 20mm;border:none !important;box-shadow:none !important;outline:none !important;">
         <div style="text-align:center;font-weight:bold;font-size:12pt;margin-bottom:24px;text-transform:uppercase;line-height:1.4;">
           SURAT PERNYATAAN PERUBAHAN DENAH BANGUNAN HUNIAN<br/>SEMENTARA (HUNTARA)
         </div>
